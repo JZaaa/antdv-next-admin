@@ -258,6 +258,7 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 /* ================================================================
    Tokens — local design system for login
    ================================================================ */
@@ -268,11 +269,31 @@ const handleSubmit = async () => {
   --login-ink-4: var(--color-text-quaternary);
   --login-bg: var(--color-bg-layout);
   --login-bg-elev: var(--color-bg-container);
-  --login-bg-subtle: color-mix(in srgb, var(--color-bg-layout) 72%, var(--color-bg-container));
+  --login-bg-elev-r: var(--color-bg-container-r);
+  --login-bg-elev-g: var(--color-bg-container-g);
+  --login-bg-elev-b: var(--color-bg-container-b);
+  --login-bg-elev-rgb: var(--color-bg-container-rgb);
+  --login-bg-elev-alpha: var(--color-bg-container-alpha);
+  --login-bg-subtle: #{compat.blend('color-bg-layout', 'color-bg-container', 0.72)};
   --login-line: var(--color-border-secondary);
+  --login-line-r: var(--color-border-secondary-r);
+  --login-line-g: var(--color-border-secondary-g);
+  --login-line-b: var(--color-border-secondary-b);
+  --login-line-rgb: var(--color-border-secondary-rgb);
+  --login-line-alpha: var(--color-border-secondary-alpha);
   --login-line-strong: var(--color-border);
   --login-brand: var(--color-primary);
+  --login-brand-r: var(--color-primary-r);
+  --login-brand-g: var(--color-primary-g);
+  --login-brand-b: var(--color-primary-b);
+  --login-brand-rgb: var(--color-primary-rgb);
+  --login-brand-alpha: var(--color-primary-alpha);
   --login-accent: var(--color-primary-5);
+  --login-accent-r: var(--color-primary-5-r);
+  --login-accent-g: var(--color-primary-5-g);
+  --login-accent-b: var(--color-primary-5-b);
+  --login-accent-rgb: var(--color-primary-5-rgb);
+  --login-accent-alpha: var(--color-primary-5-alpha);
   --login-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   min-height: 100vh;
@@ -330,7 +351,7 @@ const handleSubmit = async () => {
   height: 8px;
   border-radius: 50%;
   background: var(--login-accent);
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--login-accent) 20%, transparent);
+  box-shadow: 0 0 0 4px compat.fade('login-accent', 0.2);
 }
 
 .grid-bg::before {
@@ -471,17 +492,17 @@ const handleSubmit = async () => {
   height: 7px;
   border-radius: 50%;
   background: var(--login-accent);
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--login-accent) 18%, transparent);
+  box-shadow: 0 0 0 4px compat.fade('login-accent', 0.18);
   animation: pulse 2.4s var(--login-ease) infinite;
 }
 
 @keyframes pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 4px color-mix(in oklab, var(--login-accent) 18%, transparent);
+    box-shadow: 0 0 0 4px compat.fade('login-accent', 0.18);
   }
   50% {
-    box-shadow: 0 0 0 8px color-mix(in oklab, var(--login-accent) 5%, transparent);
+    box-shadow: 0 0 0 8px compat.fade('login-accent', 0.05);
   }
 }
 
@@ -636,16 +657,12 @@ const handleSubmit = async () => {
 
 .login-card {
   padding: 28px;
-  border: 1px solid color-mix(in srgb, var(--login-line) 78%, transparent);
+  border: 1px solid compat.fade('login-line', 0.78);
   border-radius: calc(var(--radius-lg) + 4px);
   background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--login-bg-elev) 92%, transparent),
-      var(--login-bg-elev)
-    ),
+    linear-gradient(180deg, compat.fade('login-bg-elev', 0.92), var(--login-bg-elev)),
     var(--login-bg-elev);
-  box-shadow: 0 24px 70px color-mix(in srgb, #000 7%, transparent);
+  box-shadow: 0 24px 70px compat.fade(#000, 0.07);
 }
 
 .eyebrow {
@@ -707,7 +724,7 @@ const handleSubmit = async () => {
 
   :deep(.ant-input-affix-wrapper-focused) {
     border-color: var(--login-brand);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--login-brand) 12%, transparent);
+    box-shadow: 0 0 0 3px compat.fade('login-brand', 0.12);
   }
 
   :deep(.ant-btn-primary) {
@@ -721,7 +738,7 @@ const handleSubmit = async () => {
 
   :deep(.ant-btn-primary:not(:disabled):hover) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px color-mix(in srgb, var(--login-brand) 25%, transparent);
+    box-shadow: 0 6px 20px compat.fade('login-brand', 0.25);
   }
 
   :deep(.ant-btn-primary:not(:disabled):active) {
@@ -742,7 +759,7 @@ const handleSubmit = async () => {
     .slider-bg.success {
       color: var(--color-success);
       border-color: var(--color-success-border);
-      background: color-mix(in srgb, var(--color-success) 9%, var(--login-bg-elev));
+      background: compat.blend('color-success', 'login-bg-elev', 0.09);
     }
 
     .slider-text {
@@ -751,7 +768,7 @@ const handleSubmit = async () => {
     }
 
     .slider-track {
-      background: color-mix(in srgb, var(--login-brand) 10%, transparent);
+      background: compat.fade('login-brand', 0.1);
       border-right-color: var(--login-brand);
     }
 
@@ -851,8 +868,8 @@ const handleSubmit = async () => {
   &:hover,
   &.active {
     color: var(--login-brand);
-    border-color: color-mix(in srgb, var(--login-brand) 52%, var(--login-line));
-    background: color-mix(in srgb, var(--login-brand) 8%, var(--login-bg-elev));
+    border-color: compat.blend('login-brand', 'login-line', 0.52);
+    background: compat.blend('login-brand', 'login-bg-elev', 0.08);
   }
 
   &:hover {
@@ -907,7 +924,7 @@ const handleSubmit = async () => {
    Dark mode overrides
    ================================================================ */
 :root.dark .login-shell {
-  --login-bg-subtle: color-mix(in srgb, #1a1a1f 80%, var(--login-bg-elev));
+  --login-bg-subtle: #{compat.blend(#1a1a1f, 'login-bg-elev', 0.8)};
 
   .grid-bg,
   .grid-bg-fine {

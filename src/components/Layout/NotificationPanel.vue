@@ -204,6 +204,7 @@ const handleViewAll = () => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .notification-panel {
   width: min(392px, calc(100vw - 32px));
   max-height: min(560px, calc(100vh - 120px));
@@ -242,8 +243,8 @@ const handleViewAll = () => {
       font-size: 12px;
       font-weight: 600;
       color: var(--color-primary);
-      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
-      border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+      background: compat.fade('color-primary', 0.12);
+      border: 1px solid compat.fade('color-primary', 0.2);
     }
   }
 
@@ -287,7 +288,7 @@ const handleViewAll = () => {
       }
 
       &.unread {
-        background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+        background: compat.fade('color-primary', 0.08);
       }
 
       .notification-icon {
@@ -406,7 +407,7 @@ const handleViewAll = () => {
 
     .tone-system .notification-icon {
       color: var(--color-primary);
-      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+      background: compat.fade('color-primary', 0.12);
     }
 
     .tone-message .notification-icon {
@@ -443,8 +444,8 @@ const handleViewAll = () => {
         border-radius: 20px;
         background: linear-gradient(
           145deg,
-          color-mix(in srgb, var(--color-primary) 16%, transparent),
-          color-mix(in srgb, var(--color-primary) 4%, transparent)
+          compat.fade('color-primary', 0.16),
+          compat.fade('color-primary', 0.04)
         );
         display: flex;
         align-items: center;
@@ -501,7 +502,7 @@ const handleViewAll = () => {
       color: var(--color-primary);
 
       &:hover {
-        background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+        background: compat.fade('color-primary', 0.08);
       }
     }
   }

@@ -334,6 +334,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .tiptap-editor-wrapper {
   border: 1px solid var(--color-border);
   border-radius: 4px;
@@ -460,7 +461,7 @@ onBeforeUnmount(() => {
 
     /* 选中样式 */
     ::selection {
-      background: color-mix(in srgb, var(--color-primary) 24%, transparent);
+      background: compat.fade('color-primary', 0.24);
     }
   }
 }

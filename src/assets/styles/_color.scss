@@ -1,0 +1,43 @@
+@use 'sass:color';
+@use 'sass:meta';
+@use 'sass:map';
+@use 'sass:string';
+
+// Tokens carry numeric RGB channels so themes can change without color-mix().
+@function channel($value, $channel) {
+  @if meta.type-of($value) == 'color' {
+    @return color.channel($value, $channel, $space: rgb);
+  }
+  $suffix: (
+    'red': r,
+    'green': g,
+    'blue': b,
+    'alpha': alpha,
+  );
+  @return string.unquote('var(--#{$value}-#{map.get($suffix, $channel)})');
+}
+
+// Mixing with transparent preserves the original RGB and multiplies its alpha,
+// including the former oklab-to-transparent effects (no hue interpolation).
+@function fade($value, $opacity) {
+  @if meta.type-of($value) == 'color' {
+    @return color.change($value, $alpha: color.channel($value, 'alpha') * $opacity);
+  }
+  @return string.unquote(
+    'rgba(var(--#{$value}-rgb), calc(var(--#{$value}-alpha, 1) * #{$opacity}))'
+  );
+}
+
+// Alpha-premultiplied sRGB interpolation, including custom HEX colors with alpha.
+@function blend($first, $second, $weight) {
+  $other: 1 - $weight;
+  $first-alpha: channel($first, 'alpha');
+  $second-alpha: channel($second, 'alpha');
+  $alpha: 'calc(#{$first-alpha} * #{$weight} + #{$second-alpha} * #{$other})';
+  // Fully transparent inputs produce transparent black rather than division by zero.
+  $divisor: 'max(#{$alpha}, 0.000001)';
+  $red: 'calc((#{channel($first, 'red')} * #{$first-alpha} * #{$weight} + #{channel($second, 'red')} * #{$second-alpha} * #{$other}) / #{$divisor})';
+  $green: 'calc((#{channel($first, 'green')} * #{$first-alpha} * #{$weight} + #{channel($second, 'green')} * #{$second-alpha} * #{$other}) / #{$divisor})';
+  $blue: 'calc((#{channel($first, 'blue')} * #{$first-alpha} * #{$weight} + #{channel($second, 'blue')} * #{$second-alpha} * #{$other}) / #{$divisor})';
+  @return string.unquote('rgba(#{$red}, #{$green}, #{$blue}, #{$alpha})');
+}

@@ -58,7 +58,7 @@ export const basicRoutes: AppRouteRecordRaw[] = [
     redirect: "/dashboard",
     component: () => import("@/components/Layout/AdminLayout.vue"),
     meta: {
-      title: "Dashboard",
+      title: "menu.dashboard",
       requiresAuth: true,
     },
     children: [
@@ -67,7 +67,7 @@ export const basicRoutes: AppRouteRecordRaw[] = [
         name: "Redirect",
         component: () => import("@/views/redirect/index.vue"),
         meta: {
-          title: "Redirect",
+          title: "common.redirecting",
           hidden: true,
         },
       },

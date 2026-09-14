@@ -301,6 +301,7 @@ const getTabLabel = (tab: Tab) => {
 </script>
 
 <style scoped lang="scss">
+
 .tab-bar {
   display: flex;
   align-items: center;
@@ -452,6 +453,7 @@ const getTabLabel = (tab: Tab) => {
 </style>
 
 <style lang="scss">
+@use '@/assets/styles/color' as compat;
 // Global style overrides for dark mode
 // Using non-scoped style to ensure we can target Ant Design internals reliably
 .tab-bar-overflow-dropdown {
@@ -485,7 +487,7 @@ const getTabLabel = (tab: Tab) => {
 }
 
 html.dark .tab-bar .ant-tabs-tab.ant-tabs-tab-active {
-  background: color-mix(in srgb, var(--color-primary) 25%, transparent) !important;
+  background: compat.fade('color-primary', 0.25) !important;
   border-color: transparent !important;
 
   .ant-tabs-tab-btn {

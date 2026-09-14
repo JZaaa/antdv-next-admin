@@ -1,14 +1,7 @@
 <template>
   <!-- Dot mode -->
-  <span
-    v-if="mode === 'dot'"
-    class="pro-status pro-status-dot"
-    :style="dotStyle"
-  >
-    <span
-      class="pro-status-dot-indicator"
-      :style="{ background: statusColor }"
-    />
+  <span v-if="mode === 'dot'" class="pro-status pro-status-dot" :style="dotStyle">
+    <span class="pro-status-dot-indicator" :style="{ background: statusColor }" />
     {{ statusText }}
   </span>
 
@@ -22,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import type { ProStatusMode, ProStatusMap } from "@/types/pro";
+import type { ProStatusMode, ProStatusMap } from '@/types/pro';
 
-import { computed } from "vue";
+import { computed } from 'vue';
 
 interface Props {
   value: string | number;
@@ -33,36 +26,25 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  mode: "dot",
+  mode: 'dot',
 });
 
 const config = computed(() => props.statusMap[String(props.value)]);
 const statusText = computed(() => config.value?.text ?? String(props.value));
-const statusColor = computed(
-  () => config.value?.color ?? "var(--color-text-tertiary)",
-);
+const statusColor = computed(() => config.value?.color ?? 'var(--color-text-tertiary)');
 
 const dotStyle = computed(() => {
   const c = statusColor.value;
   return {
-    "--pro-status-color": c,
-    "--pro-status-bg": hexToRgba(c, 0.1),
+    '--pro-status-color': c,
   };
 });
-
-function hexToRgba(hex: string, alpha: number): string {
-  // Handle named colors by returning a light background
-  if (!hex.startsWith("#"))
-    return `color-mix(in srgb, ${hex} ${alpha * 100}%, transparent)`;
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 </script>
 
 <style scoped lang="scss">
 .pro-status-dot {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -71,7 +53,17 @@ function hexToRgba(hex: string, alpha: number): string {
   font-size: 12px;
   line-height: 20px;
   color: var(--pro-status-color);
-  background: var(--pro-status-bg);
+  // A separate background preserves CSS variables, named colors and source alpha.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--pro-status-color);
+    opacity: 0.1;
+    pointer-events: none;
+  }
 
   .pro-status-dot-indicator {
     width: 6px;

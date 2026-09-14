@@ -248,6 +248,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .ai-panel {
   height: 100%;
   display: flex;
@@ -264,7 +265,7 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   padding: 10px 12px;
   border-bottom: 1px solid var(--color-border-secondary);
-  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-bg-container));
+  background: compat.blend('color-primary', 'color-bg-container', 0.06);
 }
 
 .title-wrap {
@@ -334,7 +335,7 @@ onBeforeUnmount(() => {
 }
 
 .message-item.is-assistant .message-content {
-  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  background: compat.fade('color-primary', 0.1);
   color: var(--color-text-primary);
 }
 

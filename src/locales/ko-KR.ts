@@ -24,6 +24,7 @@ export default {
     yes: '예',
     no: '아니요',
     loading: '로드 중...',
+    redirecting: '이동 중...',
     noData: '데이터 없음',
     success: '성공',
     error: '오류',

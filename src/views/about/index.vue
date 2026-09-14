@@ -129,7 +129,7 @@
               target="_blank"
               rel="noopener noreferrer"
               class="tech-item"
-              :style="{ '--tech-color': tech.color }"
+              :style="hexColorVariables('tech-color', tech.color)"
             >
               <div class="tech-dot"></div>
               <div class="tech-info">
@@ -152,7 +152,7 @@
           </template>
           <a-row :gutter="[16, 16]">
             <a-col v-for="f in features" :key="f.title" :xs="24" :sm="12" :lg="6">
-              <div class="feature-card" :style="{ '--feat-color': f.color }">
+              <div class="feature-card" :style="hexColorVariables('feat-color', f.color)">
                 <div class="feature-icon-wrap">
                   <component :is="f.icon" class="feature-icon" />
                 </div>
@@ -189,6 +189,7 @@ import {
 
 import logoImg from '@/assets/images/logo.png';
 import { $t } from '@/locales';
+import { hexColorVariables } from '@/utils/color';
 
 const version = __APP_VERSION__;
 
@@ -268,6 +269,7 @@ const features = [
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .about-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -285,7 +287,7 @@ const features = [
   background: linear-gradient(
     135deg,
     var(--color-primary) 0%,
-    color-mix(in srgb, var(--color-primary) 65%, #000) 100%
+    compat.blend('color-primary', #000, 0.65) 100%
   );
   color: #fff;
 }
@@ -454,7 +456,7 @@ const features = [
     width: 28px;
     height: 28px;
     border-radius: 6px;
-    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    background: compat.fade('color-primary', 0.1);
 
     .card-icon {
       font-size: 16px;
@@ -553,7 +555,7 @@ const features = [
 
   &:hover {
     border-color: var(--tech-color);
-    background: color-mix(in srgb, var(--tech-color) 4%, var(--color-bg-container));
+    background: compat.blend('tech-color', 'color-bg-container', 0.04);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   }
@@ -564,7 +566,7 @@ const features = [
     border-radius: 50%;
     flex-shrink: 0;
     background: var(--tech-color);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tech-color) 15%, transparent);
+    box-shadow: 0 0 0 3px compat.fade('tech-color', 0.15);
   }
 
   .tech-info {
@@ -601,7 +603,7 @@ const features = [
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 
   &:hover {
-    border-color: color-mix(in srgb, var(--feat-color) 40%, var(--color-border-secondary));
+    border-color: compat.blend('feat-color', 'color-border-secondary', 0.4);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
@@ -614,7 +616,7 @@ const features = [
     height: 40px;
     flex-shrink: 0;
     border-radius: 10px;
-    background: color-mix(in srgb, var(--feat-color) 10%, transparent);
+    background: compat.fade('feat-color', 0.1);
 
     .feature-icon {
       font-size: 20px;

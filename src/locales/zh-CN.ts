@@ -24,6 +24,7 @@ export default {
     yes: '是',
     no: '否',
     loading: '加载中...',
+    redirecting: '跳转中...',
     noData: '暂无数据',
     success: '操作成功',
     error: '操作失败',

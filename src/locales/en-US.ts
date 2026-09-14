@@ -24,6 +24,7 @@ export default {
     yes: 'Yes',
     no: 'No',
     loading: 'Loading...',
+    redirecting: 'Redirecting...',
     noData: 'No Data',
     success: 'Success',
     error: 'Error',

@@ -24,6 +24,7 @@ export default {
     yes: 'はい',
     no: 'いいえ',
     loading: '読み込み中...',
+    redirecting: 'リダイレクト中...',
     noData: 'データなし',
     success: '成功',
     error: 'エラー',

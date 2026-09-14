@@ -344,6 +344,7 @@ loadAllConfigs();
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .page-container {
   display: flex;
   gap: 16px;
@@ -386,7 +387,7 @@ loadAllConfigs();
     }
 
     &.ant-menu-item-selected {
-      background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+      background: compat.fade('color-primary', 0.08);
 
       .group-name {
         color: var(--color-primary);

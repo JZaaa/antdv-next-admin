@@ -129,7 +129,7 @@ export function routesToMenuTree(routes: AppRouteRecordRaw[], basePath = ''): Me
 
       return menu;
     })
-    .toSorted((a, b) => {
+    .sort((a, b) => {
       const orderA = a.meta?.order || 999;
       const orderB = b.meta?.order || 999;
       return orderA - orderB;

@@ -245,7 +245,7 @@ const readFilter = ref<ReadFilter>('all');
 const toneFilter = ref<ToneFilter>('all');
 
 const notifications = computed(() => {
-  return [...notificationStore.notifications].toSorted((a, b) => b.timestamp - a.timestamp);
+  return [...notificationStore.notifications].sort((a, b) => b.timestamp - a.timestamp);
 });
 
 const unreadCount = computed(() => notifications.value.filter((item) => !item.read).length);
@@ -383,6 +383,7 @@ const handleOpenRelated = (notification: Notification) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .notification-center {
   display: grid;
   gap: var(--spacing-lg);
@@ -414,8 +415,8 @@ const handleOpenRelated = (notification: Notification) => {
     top: -100px;
     background: radial-gradient(
       circle,
-      color-mix(in srgb, var(--color-primary) 24%, transparent) 0%,
-      color-mix(in srgb, var(--color-primary) 2%, transparent) 70%
+      compat.fade('color-primary', 0.24) 0%,
+      compat.fade('color-primary', 0.02) 70%
     );
   }
 
@@ -471,7 +472,7 @@ const handleOpenRelated = (notification: Notification) => {
   padding: 14px 14px 12px;
   border-radius: 12px;
   border: 1px solid var(--color-border-secondary);
-  background: color-mix(in srgb, var(--color-bg-container) 72%, transparent);
+  background: compat.fade('color-bg-container', 0.72);
   backdrop-filter: blur(2px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
@@ -564,15 +565,15 @@ const handleOpenRelated = (notification: Notification) => {
 
   &:hover {
     transform: translateY(-1px);
-    background: color-mix(in srgb, var(--color-primary) 2%, transparent);
-    border-color: color-mix(in srgb, var(--color-primary) 26%, transparent);
+    background: compat.fade('color-primary', 0.02);
+    border-color: compat.fade('color-primary', 0.26);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
   }
 
   &.active {
     border-color: var(--color-primary);
-    background: color-mix(in srgb, var(--color-primary) 6%, transparent);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 12%, transparent);
+    background: compat.fade('color-primary', 0.06);
+    box-shadow: 0 2px 8px compat.fade('color-primary', 0.12);
   }
 
   &.unread .notice-title {
@@ -725,11 +726,7 @@ const handleOpenRelated = (notification: Notification) => {
   margin: 0;
   padding: 14px 14px 12px;
   border-radius: 12px;
-  background: linear-gradient(
-    145deg,
-    var(--color-bg-layout),
-    color-mix(in srgb, var(--color-primary) 4%, transparent)
-  );
+  background: linear-gradient(145deg, var(--color-bg-layout), compat.fade('color-primary', 0.04));
   border: 1px solid var(--color-border-secondary);
   color: var(--color-text-secondary);
   line-height: 1.8;
@@ -806,7 +803,7 @@ const handleOpenRelated = (notification: Notification) => {
 .notice-icon.tone-system,
 .detail-icon.tone-system {
   color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 13%, transparent);
+  background: compat.fade('color-primary', 0.13);
 }
 
 .notice-icon.tone-message,
@@ -839,25 +836,25 @@ const handleOpenRelated = (notification: Notification) => {
     background: linear-gradient(
       135deg,
       var(--color-bg-container) 0%,
-      color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-container)) 58%,
+      compat.blend('color-primary', 'color-bg-container', 0.12) 58%,
       var(--color-bg-container) 100%
     );
   }
 
   .metric-card {
-    background: color-mix(in srgb, var(--color-bg-container) 85%, transparent);
+    background: compat.fade('color-bg-container', 0.85);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   }
 
   .notice-item {
     &:hover {
-      background: color-mix(in srgb, var(--color-primary) 6%, var(--color-bg-container));
+      background: compat.blend('color-primary', 'color-bg-container', 0.06);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     &.active {
-      background: color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-container));
-      box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 20%, transparent);
+      background: compat.blend('color-primary', 'color-bg-container', 0.1);
+      box-shadow: 0 2px 8px compat.fade('color-primary', 0.2);
     }
   }
 }

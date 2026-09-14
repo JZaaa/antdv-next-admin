@@ -325,6 +325,8 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
+
 .admin-header {
   display: flex;
   align-items: center;
@@ -439,7 +441,7 @@ onBeforeUnmount(() => {
 
     .ai-toggle-btn.active {
       color: var(--color-primary);
-      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+      background: compat.fade('color-primary', 0.12);
     }
 
     // Ensure buttons in nested components follow the same style.

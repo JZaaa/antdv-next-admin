@@ -227,6 +227,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .sidebar-mask {
   position: fixed;
   inset: 0;
@@ -345,7 +346,7 @@ watch(
 
       :deep(.ant-menu-item-selected) {
         color: #fff !important;
-        background: color-mix(in srgb, var(--color-primary) 35%, transparent) !important;
+        background: compat.fade('color-primary', 0.35) !important;
       }
     }
   }

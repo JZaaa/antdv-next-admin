@@ -3,51 +3,51 @@
     <!-- Input -->
     <a-input
       v-if="item.type === 'input'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveInputPlaceholder()"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Password -->
     <a-input-password
       v-else-if="item.type === 'password'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveInputPlaceholder()"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Textarea -->
     <a-textarea
       v-else-if="item.type === 'textarea'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveInputPlaceholder()"
       :rows="4"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Number -->
     <a-input-number
       v-else-if="item.type === 'number'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveInputPlaceholder()"
       style="width: 100%"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Select -->
     <a-select
       v-else-if="item.type === 'select'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveSelectPlaceholder()"
       :options="displayedOptions"
       :show-search="resolveShowSearch()"
       :filter-option="resolveFilterOption()"
       :loading="remoteLoading"
-      v-bind="item.props"
+      v-bind="controlProps"
       @search="handleSearch"
       @update:value="handleChange"
     />
@@ -55,55 +55,55 @@
     <!-- Radio -->
     <a-radio-group
       v-else-if="item.type === 'radio'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :options="resolvedOptions"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Checkbox -->
     <a-checkbox-group
       v-else-if="item.type === 'checkbox'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :options="resolvedOptions"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Switch -->
     <a-switch
       v-else-if="item.type === 'switch'"
-      v-model:checked="modelValue"
-      v-bind="item.props"
+      :checked="modelValue"
+      v-bind="controlProps"
       @update:checked="handleChange"
     />
 
     <!-- Date Picker -->
     <a-date-picker
       v-else-if="item.type === 'datePicker'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveSelectPlaceholder()"
       style="width: 100%"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Time Picker -->
     <a-time-picker
       v-else-if="item.type === 'timePicker'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveSelectPlaceholder()"
       style="width: 100%"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Date Range -->
     <a-range-picker
       v-else-if="item.type === 'dateRange'"
-      v-model:value="modelValue"
+      :value="modelValue"
       style="width: 100%"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
@@ -113,7 +113,7 @@
       :value="modelValue"
       mode="button"
       :button-text="item.placeholder"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
@@ -123,7 +123,7 @@
       :value="modelValue"
       mode="image"
       :button-text="item.placeholder"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
@@ -132,41 +132,41 @@
       v-else-if="item.type === 'avatarUpload'"
       :value="modelValue"
       mode="avatar"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Slider -->
     <a-slider
       v-else-if="item.type === 'slider'"
-      v-model:value="modelValue"
-      v-bind="item.props"
+      :value="modelValue"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Rate -->
     <a-rate
       v-else-if="item.type === 'rate'"
-      v-model:value="modelValue"
-      v-bind="item.props"
+      :value="modelValue"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Cascader -->
     <a-cascader
       v-else-if="item.type === 'cascader'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveSelectPlaceholder()"
       :options="resolvedOptions"
       style="width: 100%"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
 
     <!-- Tree Select -->
     <TreeSelect
       v-else-if="item.type === 'treeSelect'"
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveSelectPlaceholder()"
       :tree-data="treeSelectData"
       :show-search="treeSelectShowSearch"
@@ -174,7 +174,7 @@
       :tree-expanded-keys="isRemoteSearch ? remoteTreeExpandedKeys : undefined"
       :loading="remoteLoading"
       style="width: 100%"
-      v-bind="item.props"
+      v-bind="controlProps"
       @search="handleSearch"
       @update:value="handleChange"
     />
@@ -183,17 +183,17 @@
     <component
       v-else-if="item.type === 'custom' && item.render"
       :is="item.render"
-      v-bind="item.props"
-      v-model:value="modelValue"
+      v-bind="controlProps"
+      :value="modelValue"
       @update:value="handleChange"
     />
 
     <!-- Default -->
     <a-input
       v-else
-      v-model:value="modelValue"
+      :value="modelValue"
       :placeholder="resolveInputPlaceholder()"
-      v-bind="item.props"
+      v-bind="controlProps"
       @update:value="handleChange"
     />
   </div>
@@ -225,9 +225,20 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   formData: () => ({}),
 });
-const emit = defineEmits(['update:value', 'change']);
+const emit = defineEmits<{
+  'update:value': [value: unknown];
+  change: [value: unknown];
+}>();
 
 const modelValue = ref(props.value ?? props.item.initialValue);
+
+const controlProps = computed(() => {
+  const forwarded = { ...props.item.props };
+  // These callbacks are composed by handleChange, not mergeProps (which creates arrays).
+  delete forwarded['onUpdate:value'];
+  delete forwarded['onUpdate:checked'];
+  return forwarded;
+});
 
 const resolvedOptions = computed(() => {
   if (typeof props.item.options === 'function') {
@@ -309,11 +320,6 @@ watch(
   },
 );
 
-watch(modelValue, (val) => {
-  emit('update:value', val);
-  emit('change', val);
-});
-
 watch(
   () => [props.item.name, props.item.searchMode, props.item.remoteSearch],
   () => {
@@ -324,9 +330,13 @@ watch(
   },
 );
 
-const handleChange = (value: unknown) => {
+const handleChange = (value: unknown, ...args: unknown[]): void => {
+  modelValue.value = value;
   emit('update:value', value);
   emit('change', value);
+  const listener =
+    props.item.props?.[props.item.type === 'switch' ? 'onUpdate:checked' : 'onUpdate:value'];
+  if (typeof listener === 'function') listener(value, ...args);
 };
 
 const resolveLabel = () => {

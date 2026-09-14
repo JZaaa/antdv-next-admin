@@ -603,6 +603,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .admin-layout {
   height: 100vh;
   min-height: 100vh;
@@ -866,7 +867,7 @@ watch(
       width: 2px;
       height: 42px;
       border-radius: 999px;
-      background: color-mix(in srgb, var(--color-primary) 35%, var(--color-border-secondary));
+      background: compat.blend('color-primary', 'color-border-secondary', 0.35);
       opacity: 0.4;
       transition: opacity var(--duration-base) var(--ease-out);
     }

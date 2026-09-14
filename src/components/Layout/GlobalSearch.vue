@@ -678,6 +678,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .global-search-overlay {
   position: fixed;
   inset: 0;
@@ -693,6 +694,7 @@ onBeforeUnmount(() => {
 .global-search-content {
   width: calc(100% - 32px);
   max-width: 600px;
+  max-height: calc(100vh - 48px);
   max-height: calc(100dvh - 48px);
   background-color: var(--color-bg-container);
   border-radius: 12px;
@@ -757,6 +759,7 @@ onBeforeUnmount(() => {
 
 .search-body {
   padding: 12px 0;
+  max-height: min(420px, calc(100vh - 196px));
   max-height: min(420px, calc(100dvh - 196px));
   overflow-y: auto;
 }
@@ -800,14 +803,14 @@ onBeforeUnmount(() => {
     height: 18px;
     padding: 0 5px;
     border-radius: 9px;
-    background-color: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+    background-color: compat.fade('color-text-primary', 0.08);
     color: var(--color-text-tertiary);
     font-size: 11px;
     line-height: 18px;
   }
 
   :deep(.ant-segmented-item-selected .collection-count) {
-    background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    background-color: compat.fade('color-primary', 0.12);
     color: var(--color-text-primary);
   }
 
@@ -835,8 +838,8 @@ onBeforeUnmount(() => {
   }
 
   &.active {
-    background-color: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-container));
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 24%, transparent);
+    background-color: compat.blend('color-primary', 'color-bg-container', 0.12);
+    box-shadow: inset 0 0 0 1px compat.fade('color-primary', 0.24);
     color: var(--color-text-primary);
 
     .item-icon {
@@ -1037,6 +1040,7 @@ onBeforeUnmount(() => {
   }
 
   .global-search-content {
+    max-height: calc(100vh - 48px);
     max-height: calc(100dvh - 48px);
   }
 

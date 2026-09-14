@@ -424,6 +424,7 @@ loadDictTypes();
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 // dict types content
 .dict-types-header {
   display: flex;
@@ -494,7 +495,7 @@ loadDictTypes();
     }
 
     &.active {
-      background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+      background: compat.fade('color-primary', 0.08);
 
       &::before {
         height: 60%;

@@ -66,7 +66,7 @@
           v-for="group in showcaseGroups"
           :key="group.key"
           class="group-card"
-          :style="{ '--group-color': group.color }"
+          :style="hexColorVariables('group-color', group.color)"
         >
           <div class="group-head">
             <div class="group-title">{{ group.label }}</div>
@@ -191,6 +191,7 @@ import { computed, ref } from 'vue';
 import IconView from '@/components/Icon/index.vue';
 import IconPicker from '@/components/IconPicker/index.vue';
 import { $t } from '@/locales';
+import { hexColorVariables } from '@/utils/color';
 
 const svgOrbitId = 'icon-demo-orbit';
 const svgPulseId = 'icon-demo-pulse';
@@ -310,6 +311,7 @@ const resetIconValue = () => {
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .icon-demo-page {
   display: flex;
   flex-direction: column;
@@ -389,11 +391,11 @@ const resetIconValue = () => {
 }
 
 .group-card {
-  border: 1px solid color-mix(in srgb, var(--group-color), var(--color-border-secondary) 72%);
+  border: 1px solid compat.blend('group-color', 'color-border-secondary', 0.28);
   border-radius: 12px;
   background: linear-gradient(
     160deg,
-    color-mix(in srgb, var(--group-color), var(--color-bg-container) 90%) 0%,
+    compat.blend('group-color', 'color-bg-container', 0.1) 0%,
     var(--color-bg-container) 55%
   );
   padding: 12px;
@@ -450,9 +452,9 @@ const resetIconValue = () => {
 
   &.active {
     border-color: var(--group-color);
-    background: color-mix(in srgb, var(--group-color), var(--color-bg-container) 89%);
+    background: compat.blend('group-color', 'color-bg-container', 0.11);
     color: var(--group-color);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--group-color), var(--color-bg-container) 55%);
+    box-shadow: 0 0 0 1px compat.blend('group-color', 'color-bg-container', 0.45);
   }
 }
 

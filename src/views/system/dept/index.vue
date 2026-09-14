@@ -238,7 +238,7 @@ const childDepts = computed(() => {
   if (!selectedDept.value) return [];
   return flatList.value
     .filter((d) => d.parentId === selectedDept.value!.id)
-    .toSorted((a, b) => a.sort - b.sort);
+    .sort((a, b) => a.sort - b.sort);
 });
 
 const parentTreeData = computed(() => {

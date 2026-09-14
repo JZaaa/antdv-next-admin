@@ -125,6 +125,7 @@ watch(
 </script>
 
 <style scoped lang="scss">
+@use '@/assets/styles/color' as compat;
 .milkdown-editor {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-base);
@@ -297,7 +298,7 @@ watch(
 
     // 选中样式
     ::selection {
-      background: color-mix(in srgb, var(--color-primary) 24%, transparent);
+      background: compat.fade('color-primary', 0.24);
     }
   }
 }

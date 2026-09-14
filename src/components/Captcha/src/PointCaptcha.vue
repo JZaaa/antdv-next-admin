@@ -118,7 +118,7 @@ const init = () => {
       ctx.restore();
     }
 
-    const targets = [...points.value].toSorted(() => Math.random() - 0.5).slice(0, 3);
+    const targets = [...points.value].sort(() => Math.random() - 0.5).slice(0, 3);
     checkPoints.value = targets.map((p) => p.text);
   };
 };
