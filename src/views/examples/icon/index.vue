@@ -100,7 +100,7 @@
         <article class="guide-card">
           <h4>{{ $t('exampleIcon.svgGuideTitle') }}</h4>
           <ol>
-            <li>{{ $t('exampleIcon.guideStepSvg1') }}</li>
+            <li>{{ $t('exampleIcon.guideStepSvg1', { symbol: '<symbol id="...">' }) }}</li>
             <li>{{ $t('exampleIcon.guideStepSvg2') }}</li>
             <li>{{ $t('exampleIcon.guideStepSvg3') }}</li>
           </ol>

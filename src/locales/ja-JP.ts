@@ -657,7 +657,7 @@ export default {
     guidesSubtitle: '2 つの一般的な統合パス: SVG Symbol と Iconify (オンライン + オフライン)',
     svgGuideTitle: 'SVGの追加と使用方法',
     iconifyGuideTitle: 'アイコン化の使い方',
-    guideStepSvg1: '<symbol id="..."> 定義をアプリ ルート (またはレイアウト ルート) に挿入します。',
+    guideStepSvg1: '{symbol} 定義をアプリ ルート (またはレイアウト ルート) に挿入します。',
     guideStepSvg2:
       'svg:icon-id を持つ Icon コンポーネントを使用します。 svg:アイコン-デモ-オービット。',
     guideStepSvg3:

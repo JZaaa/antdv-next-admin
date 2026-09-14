@@ -671,7 +671,7 @@ export default {
     guidesSubtitle: '两种最常用接入路径：SVG Symbol 与 Iconify（在线 + 离线）',
     svgGuideTitle: 'SVG 如何添加并使用',
     iconifyGuideTitle: 'Iconify 如何使用',
-    guideStepSvg1: '在页面根节点（或全局布局）注入 <symbol id="..."> 图标定义。',
+    guideStepSvg1: '在页面根节点（或全局布局）注入 {symbol} 图标定义。',
     guideStepSvg2: '使用 Icon 组件传入 svg:图标ID，例如 svg:icon-demo-orbit。',
     guideStepSvg3:
       '若希望 IconPicker 识别本地 SVG，可将文件放到 src/assets/icons 并传入 svgIcons。',

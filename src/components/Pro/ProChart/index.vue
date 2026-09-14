@@ -126,7 +126,13 @@ const generatedOption = computed(() => {
 
   return {
     tooltip: { trigger: "axis" },
-    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+    grid: {
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      outerBoundsMode: "same",
+      outerBoundsContain: "axisLabel",
+    },
     xAxis: { type: "category", data: categories },
     yAxis: { type: "value" },
     series: [

@@ -27,7 +27,7 @@
     </template>
 
     <template #content>
-      <a-form-item-rest>
+      <FormItemRest>
         <div class="ip-wrap">
           <div class="ip-row1">
             <a-input
@@ -102,7 +102,7 @@
             />
           </div>
         </div>
-      </a-form-item-rest>
+      </FormItemRest>
     </template>
   </a-popover>
 </template>
@@ -111,6 +111,7 @@
 import { computed, h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
 import IconView from '@/components/Icon/index.vue';
+import FormItemRest from './FormItemRest.vue';
 import { $t } from '@/locales';
 import { loadLocalIconifySet, type IconsJson, type LocalIconifyPrefix } from '@/utils/iconify';
 

@@ -25,7 +25,7 @@
 
     <a-drawer
       v-model:open="drawerOpen"
-      width="560"
+      :size="560"
       :title="$t('examples.scaffold.masterDetail.drawerTitle')"
       :destroy-on-hidden="false"
     >

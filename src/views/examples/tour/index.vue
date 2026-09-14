@@ -61,22 +61,28 @@
     </div>
 
     <a-tour
+      v-if="basicOpen"
       v-model:current="basicCurrent"
       :open="basicOpen"
       :steps="basicSteps"
       :mask="tourConfig.mask"
       :arrow="tourConfig.arrow"
       :type="tourConfig.type"
+      :scroll-into-view-options="tourConfig.scrollIntoView"
+      :get-popup-container="getTourContainer"
       @close="basicOpen = false"
     />
 
     <a-tour
+      v-if="customOpen"
       v-model:current="customCurrent"
       :open="customOpen"
       :steps="customSteps"
       :mask="tourConfig.mask"
       :arrow="tourConfig.arrow"
       :type="tourConfig.type"
+      :scroll-into-view-options="tourConfig.scrollIntoView"
+      :get-popup-container="getTourContainer"
       @close="customOpen = false"
     >
       <template #indicatorsRender="{ current, total }">
@@ -95,7 +101,7 @@ import {
   SearchOutlined,
   SettingOutlined,
 } from '@antdv-next/icons'
-import { reactive, ref } from 'vue'
+import { computed, onDeactivated, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -118,7 +124,7 @@ const tourConfig = reactive({
   type: 'default' as 'default' | 'primary',
 })
 
-const basicSteps = [
+const basicSteps = computed(() => [
   {
     title: t('exampleTour.step1Title'),
     description: t('exampleTour.step1Desc'),
@@ -139,9 +145,9 @@ const basicSteps = [
     description: t('exampleTour.step4Desc'),
     target: () => btn4.value?.$el,
   },
-]
+])
 
-const customSteps = [
+const customSteps = computed(() => [
   {
     title: t('exampleTour.customStep1Title'),
     description: t('exampleTour.customStep1Desc'),
@@ -166,14 +172,26 @@ const customSteps = [
     target: () => btn4.value?.$el,
     placement: 'top' as const,
   },
-]
+])
+
+// Use one connected container for both the tour placeholder and its popup.
+function getTourContainer(): HTMLElement {
+  return document.body
+}
+
+onDeactivated(() => {
+  basicOpen.value = false
+  customOpen.value = false
+})
 
 const startBasicTour = () => {
+  customOpen.value = false
   basicCurrent.value = 0
   basicOpen.value = true
 }
 
 const startCustomTour = () => {
+  basicOpen.value = false
   customCurrent.value = 0
   customOpen.value = true
 }

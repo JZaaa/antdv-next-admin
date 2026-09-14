@@ -656,7 +656,7 @@ export default {
     guidesSubtitle: '두 가지 일반적인 통합 경로: SVG Symbol 및 Iconify(온라인 + 오프라인)',
     svgGuideTitle: 'SVG를 추가하고 사용하는 방법',
     iconifyGuideTitle: 'Iconify를 사용하는 방법',
-    guideStepSvg1: '앱 루트(또는 레이아웃 루트)에 <symbol id="..."> 정의를 삽입합니다.',
+    guideStepSvg1: '앱 루트(또는 레이아웃 루트)에 {symbol} 정의를 삽입합니다.',
     guideStepSvg2: 'svg:icon-id와 함께 아이콘 구성 요소를 사용하세요. svg:아이콘-데모-궤도.',
     guideStepSvg3:
       'IconPicker 로컬 SVG 감지의 경우 src/assets/icons 아래에 파일을 배치하고 svgIcons를 전달합니다.',
