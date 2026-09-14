@@ -8,7 +8,7 @@
     <a-row :gutter="[16, 16]">
       <!-- Basic -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.basic')" :bordered="false">
+        <a-card :title="$t('exampleSpin.basic')" variant="borderless">
           <a-flex align="center" gap="middle">
             <a-spin size="small" />
             <a-spin />
@@ -19,15 +19,15 @@
 
       <!-- Tip -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.tip')" :bordered="false">
+        <a-card :title="$t('exampleSpin.tip')" variant="borderless">
           <a-flex gap="middle">
-            <a-spin :tip="$t('common.loading')" size="small">
+            <a-spin :description="$t('common.loading')" size="small">
               <div class="p-[50px] bg-black/5 rounded" />
             </a-spin>
-            <a-spin :tip="$t('common.loading')">
+            <a-spin :description="$t('common.loading')">
               <div class="p-[50px] bg-black/5 rounded" />
             </a-spin>
-            <a-spin :tip="$t('common.loading')" size="large">
+            <a-spin :description="$t('common.loading')" size="large">
               <div class="p-[50px] bg-black/5 rounded" />
             </a-spin>
           </a-flex>
@@ -36,7 +36,7 @@
 
       <!-- Nested -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.nested')" :bordered="false">
+        <a-card :title="$t('exampleSpin.nested')" variant="borderless">
           <a-flex gap="middle" vertical>
             <a-spin :spinning="nestedLoading">
               <a-alert
@@ -55,7 +55,7 @@
 
       <!-- Delay -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.delay')" :bordered="false">
+        <a-card :title="$t('exampleSpin.delay')" variant="borderless">
           <template #extra>
             <a-tag color="blue">delay=500ms</a-tag>
           </template>
@@ -77,7 +77,7 @@
 
       <!-- Custom Indicator -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.customIndicator')" :bordered="false">
+        <a-card :title="$t('exampleSpin.customIndicator')" variant="borderless">
           <a-flex align="center" gap="middle">
             <a-spin size="small">
               <template #indicator>
@@ -105,7 +105,7 @@
 
       <!-- Percent / Progress -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.percent')" :bordered="false">
+        <a-card :title="$t('exampleSpin.percent')" variant="borderless">
           <a-flex align="center" gap="middle">
             <a-switch
               v-model:checked="autoPercent"
@@ -121,7 +121,7 @@
 
       <!-- Custom Styles -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.customStyle')" :bordered="false">
+        <a-card :title="$t('exampleSpin.customStyle')" variant="borderless">
           <a-flex align="center" gap="middle">
             <a-spin v-bind="sharedStyleProps" :styles="{ indicator: { color: '#00d4ff' } }" />
             <a-spin
@@ -140,7 +140,7 @@
 
       <!-- Fullscreen -->
       <a-col :span="24" :lg="12">
-        <a-card :title="$t('exampleSpin.fullscreen')" :bordered="false">
+        <a-card :title="$t('exampleSpin.fullscreen')" variant="borderless">
           <a-button type="primary" @click="showFullscreen">
             {{ $t('exampleSpin.showFullscreen') }}
           </a-button>

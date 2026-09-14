@@ -8,7 +8,7 @@
     <a-row :gutter="[16, 16]">
       <!-- 基础用法 -->
       <a-col :span="24">
-        <a-card title="基础用法" :bordered="false">
+        <a-card title="基础用法" variant="borderless">
           <p class="desc">支持实时预览的 Markdown 编辑器，基于 ProseMirror 构建</p>
           <MilkdownEditor
             v-model="content1"
@@ -25,7 +25,7 @@
 
       <!-- 默认内容 -->
       <a-col :span="24">
-        <a-card title="默认内容" :bordered="false">
+        <a-card title="默认内容" variant="borderless">
           <p class="desc">支持设置默认内容，自动渲染为可编辑的富文本</p>
           <MilkdownEditor v-model="content2" :height="400" />
         </a-card>
@@ -33,7 +33,7 @@
 
       <!-- 只读模式 -->
       <a-col :span="24" :lg="12">
-        <a-card title="只读模式" :bordered="false">
+        <a-card title="只读模式" variant="borderless">
           <p class="desc">支持只读模式，用于展示 Markdown 内容</p>
           <MilkdownEditor v-model="content3" :readonly="true" :height="250" />
         </a-card>
@@ -41,7 +41,7 @@
 
       <!-- 特性说明 -->
       <a-col :span="24" :lg="12">
-        <a-card title="支持的特性" :bordered="false">
+        <a-card title="支持的特性" variant="borderless">
           <a-list size="small">
             <a-list-item>
               <CheckCircleOutlined class="feature-icon" />

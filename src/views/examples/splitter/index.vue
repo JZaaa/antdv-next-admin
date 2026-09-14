@@ -22,7 +22,7 @@
             </a-splitter>
 
             <h4 style="margin-top: 24px">{{ $t('exampleSplitter.verticalSplit') }}</h4>
-            <a-splitter :style="{ height: '200px', border: '1px solid var(--color-border)' }" layout="vertical">
+            <a-splitter :style="{ height: '200px', border: '1px solid var(--color-border)' }" orientation="vertical">
               <a-splitter-panel>
                 <div class="panel-content panel-top">
                   {{ $t('exampleSplitter.topPanel') }}
@@ -47,7 +47,7 @@
                 </div>
               </a-splitter-panel>
               <a-splitter-panel>
-                <a-splitter layout="vertical">
+                <a-splitter orientation="vertical">
                   <a-splitter-panel>
                     <div class="panel-content panel-main">
                       {{ $t('exampleSplitter.mainContent') }}
@@ -141,7 +141,7 @@
                 </div>
               </a-splitter-panel>
               <a-splitter-panel>
-                <a-splitter layout="vertical">
+                <a-splitter orientation="vertical">
                   <a-splitter-panel>
                     <div class="panel-content panel-code">
                       <pre class="code-preview"><code>import {{ '{' }} createApp {{ '}' }} from 'vue'

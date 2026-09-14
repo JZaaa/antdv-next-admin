@@ -19,25 +19,31 @@
 
     <div class="card">
       <div class="section-title">{{ $t('examples.scaffold.testing.implementationTitle') }}</div>
-      <a-steps direction="vertical" size="small">
-        <a-step
-          :title="$t('examples.scaffold.testing.step1Title')"
-          :description="$t('examples.scaffold.testing.step1Description')"
-        />
-        <a-step
-          :title="$t('examples.scaffold.testing.step2Title')"
-          :description="$t('examples.scaffold.testing.step2Description')"
-        />
-        <a-step
-          :title="$t('examples.scaffold.testing.step3Title')"
-          :description="$t('examples.scaffold.testing.step3Description')"
-        />
-      </a-steps>
+      <a-steps orientation="vertical" size="small" :items="implementationSteps" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
+import { $t } from '@/locales';
+
+const implementationSteps = computed(() => [
+  {
+    title: $t('examples.scaffold.testing.step1Title'),
+    content: $t('examples.scaffold.testing.step1Description'),
+  },
+  {
+    title: $t('examples.scaffold.testing.step2Title'),
+    content: $t('examples.scaffold.testing.step2Description'),
+  },
+  {
+    title: $t('examples.scaffold.testing.step3Title'),
+    content: $t('examples.scaffold.testing.step3Description'),
+  },
+]);
+
 const unitCode = `import { describe, expect, it } from 'vitest'
 
 function splitKeywords(keyword: string) {

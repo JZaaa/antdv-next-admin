@@ -3,7 +3,7 @@
     <a-row :gutter="16">
       <!-- User Info Card -->
       <a-col :xs="24" :lg="8">
-        <a-card :bordered="false" class="profile-card">
+        <a-card variant="borderless" class="profile-card">
           <div class="profile-header">
             <a-avatar
               :src="authStore.user?.avatar"
@@ -77,7 +77,7 @@
       <!-- Change Password Card -->
       <a-col :xs="24" :lg="16">
         <a-card
-          :bordered="false"
+          variant="borderless"
           :title="$t('profile.changePassword')"
           class="password-card"
         >

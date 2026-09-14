@@ -37,7 +37,7 @@
     <a-row :gutter="[16, 16]" class="info-section">
       <!-- Project Info -->
       <a-col :xs="24" :lg="12">
-        <a-card :bordered="false" class="info-card">
+        <a-card variant="borderless" class="info-card">
           <template #title>
             <div class="card-title-row">
               <span class="card-icon-wrap"><ProfileOutlined class="card-icon" /></span>
@@ -114,7 +114,7 @@
 
       <!-- Tech Stack -->
       <a-col :xs="24" :lg="12">
-        <a-card :bordered="false" class="info-card">
+        <a-card variant="borderless" class="info-card">
           <template #title>
             <div class="card-title-row">
               <span class="card-icon-wrap"><CodeOutlined class="card-icon" /></span>
@@ -143,7 +143,7 @@
 
       <!-- Features -->
       <a-col :span="24">
-        <a-card :bordered="false" class="info-card">
+        <a-card variant="borderless" class="info-card">
           <template #title>
             <div class="card-title-row">
               <span class="card-icon-wrap"><BulbOutlined class="card-icon" /></span>

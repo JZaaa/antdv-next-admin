@@ -24,17 +24,10 @@
       />
     </div>
 
-    <a-steps :current="currentStep" size="small" class="pro-step-form-steps">
-      <a-step
-        v-for="(step, index) in steps"
-        :key="index"
-        :title="step.title"
-        :description="step.description"
-      >
-        <template v-if="step.icon" #icon>
-          <component :is="step.icon" />
-        </template>
-      </a-step>
+    <a-steps :current="currentStep" :items="stepItems" size="small" class="pro-step-form-steps">
+      <template #iconRender="{ oriNode, info }">
+        <component :is="steps[info.index]?.icon || oriNode" />
+      </template>
     </a-steps>
 
     <div class="pro-step-form-content">
@@ -100,6 +93,9 @@ const emit = defineEmits<{
 }>();
 
 const currentStep = ref(props.modelValue);
+const stepItems = computed(() =>
+  props.steps.map((step) => ({ title: step.title, content: step.description })),
+);
 const progress = computed(() => getStepProgress(currentStep.value, props.steps.length));
 const activeStep = computed(() => props.steps[progress.value.current - 1]);
 

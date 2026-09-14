@@ -201,7 +201,7 @@ const editor = useEditor({
   content: props.modelValue,
   editable: !props.disabled,
   extensions: [
-    StarterKitExtension,
+    StarterKitExtension.configure({ link: false }),
     ImageExtension.configure({
       inline: true,
       allowBase64: true,
