@@ -192,29 +192,37 @@ import { $t } from '@/locales';
 import { hexColorVariables } from '@/utils/color';
 
 const version = __APP_VERSION__;
+const dependencyVersions = APP_DEPENDENCY_VERSIONS;
 
 const heroBadges = [
-  { label: 'Vue 3', bg: 'rgba(66, 184, 131, 0.25)' },
+  {
+    label: `Vue ${dependencyVersions.vue?.split('.')[0] ?? ''}`.trim(),
+    bg: 'rgba(66, 184, 131, 0.25)',
+  },
   { label: 'TypeScript', bg: 'rgba(49, 120, 198, 0.25)' },
   { label: 'Vite', bg: 'rgba(100, 108, 255, 0.25)' },
   { label: 'Antdv Next', bg: 'rgba(255, 255, 255, 0.15)' },
 ];
 
 const techList = [
-  { name: 'Vue', version: '3.4', color: '#42b883', url: 'https://vuejs.org' },
-  { name: 'TypeScript', version: '5.3', color: '#3178c6', url: 'https://www.typescriptlang.org' },
-  { name: 'Vite', version: '5.0', color: '#646cff', url: 'https://vite.dev' },
-  { name: 'Antdv Next', version: 'Next', color: '#1677ff', url: 'https://antdv-next.com' },
-  { name: 'Pinia', version: '2.1', color: '#ffd859', url: 'https://pinia.vuejs.org' },
-  { name: 'Vue Router', version: '4.2', color: '#42b883', url: 'https://router.vuejs.org' },
-  { name: 'Vue I18n', version: '11.0', color: '#42b883', url: 'https://vue-i18n.intlify.dev' },
-  { name: 'Axios', version: '1.6', color: '#5a29e4', url: 'https://axios-http.com' },
-  { name: 'ECharts', version: '5.4', color: '#e43961', url: 'https://echarts.apache.org' },
-  { name: 'TailwindCSS', version: '3.4', color: '#06b6d4', url: 'https://tailwindcss.com' },
-  { name: 'Iconify', version: '5.0', color: '#1769aa', url: 'https://iconify.design' },
-  { name: 'Tiptap', version: '3.19', color: '#68cef8', url: 'https://tiptap.dev' },
-  { name: 'Day.js', version: '1.11', color: '#ff6f61', url: 'https://day.js.org' },
-];
+  { name: 'Vue', packageName: 'vue', color: '#42b883', url: 'https://vuejs.org' },
+  { name: 'TypeScript', packageName: 'typescript', color: '#3178c6', url: 'https://www.typescriptlang.org' },
+  { name: 'Vite', packageName: 'vite', color: '#646cff', url: 'https://vite.dev' },
+  { name: 'Antdv Next', packageName: 'antdv-next', color: '#1677ff', url: 'https://antdv-next.com' },
+  { name: 'Pinia', packageName: 'pinia', color: '#ffd859', url: 'https://pinia.vuejs.org' },
+  { name: 'Vue Router', packageName: 'vue-router', color: '#42b883', url: 'https://router.vuejs.org' },
+  { name: 'Vue I18n', packageName: 'vue-i18n', color: '#42b883', url: 'https://vue-i18n.intlify.dev' },
+  { name: 'Axios', packageName: 'axios', color: '#5a29e4', url: 'https://axios-http.com' },
+  { name: 'ECharts', packageName: 'echarts', color: '#e43961', url: 'https://echarts.apache.org' },
+  { name: 'Tailwind CSS', packageName: 'tailwindcss', color: '#06b6d4', url: 'https://tailwindcss.com' },
+  { name: 'Iconify', packageName: '@iconify/vue', color: '#1769aa', url: 'https://iconify.design' },
+  { name: 'Tiptap', packageName: '@tiptap/vue-3', color: '#68cef8', url: 'https://tiptap.dev' },
+  { name: 'Milkdown', packageName: '@milkdown/vue', color: '#7e57c2', url: 'https://milkdown.dev' },
+  { name: 'CodeMirror', packageName: '@codemirror/view', color: '#d30707', url: 'https://codemirror.net' },
+  { name: 'Day.js', packageName: 'dayjs', color: '#ff6f61', url: 'https://day.js.org' },
+]
+  .filter((tech) => Object.hasOwn(dependencyVersions, tech.packageName))
+  .map((tech) => ({ ...tech, version: dependencyVersions[tech.packageName] }));
 
 const features = [
   {

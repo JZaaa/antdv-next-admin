@@ -1,5 +1,6 @@
 import { AntdvNextResolver } from "@antdv-next/auto-import-resolver";
 import vue from "@vitejs/plugin-vue";
+import { readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
@@ -7,10 +8,24 @@ import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
 
 import pkg from "./package.json";
 
+// Read installed versions so the About page describes this build, including pnpm symlinks.
+const dependencyVersions = Object.fromEntries(
+  Object.keys({ ...pkg.dependencies, ...pkg.devDependencies }).map((name) => {
+    const manifest: { version?: unknown } = JSON.parse(
+      readFileSync(new URL(`./node_modules/${name}/package.json`, import.meta.url), "utf8"),
+    );
+    if (typeof manifest.version !== "string") {
+      throw new Error(`Missing installed version for ${name}`);
+    }
+    return [name, manifest.version];
+  }),
+);
+
 export default defineConfig({
   base: "/",
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
+    APP_DEPENDENCY_VERSIONS: JSON.stringify(dependencyVersions),
   },
   plugins: [
     vue(),
