@@ -456,7 +456,7 @@ onBeforeUnmount(() => {
   }
 }
 
-@container (max-width: 1200px) {
+@mixin dashboard-medium {
   .dashboard-container {
     .stats-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -468,7 +468,7 @@ onBeforeUnmount(() => {
   }
 }
 
-@container (max-width: 768px) {
+@mixin dashboard-small {
   .dashboard-container {
     .welcome-panel {
       padding: 22px 18px;
@@ -491,6 +491,25 @@ onBeforeUnmount(() => {
     .stats-grid {
       grid-template-columns: 1fr;
     }
+  }
+}
+
+@supports (container-type: inline-size) {
+  @container (max-width: 1200px) {
+    @include dashboard-medium;
+  }
+  @container (max-width: 768px) {
+    @include dashboard-small;
+  }
+}
+
+// Chrome 100 uses viewport breakpoints when container queries are unavailable.
+@supports not (container-type: inline-size) {
+  @media (max-width: 1200px) {
+    @include dashboard-medium;
+  }
+  @media (max-width: 768px) {
+    @include dashboard-small;
   }
 }
 </style>

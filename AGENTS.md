@@ -38,6 +38,9 @@ npm run build:check      # vue-tsc type check + production build
 npm run build:demo       # Demo build for static hosting (browser-side mock)
 npm run preview          # Preview production build locally
 npm run type-check       # Run vue-tsc --noEmit (NO auto-fix)
+npm run check:compat     # Chrome 100 build configuration and source API checks
+npm run check:compat:dist # Also check built CSS in dist/ (build first)
+npm run check:ci         # Full checks plus production and demo builds (ends with demo output)
 
 # Testing (Vitest)
 npm run test:unit        # Run unit tests in watch mode
@@ -221,6 +224,7 @@ if (canAll(['user.edit', 'user.approve'])) {
 ### Browser Compatibility
 - **Minimum supported browser**: Chrome ≥ 100. All changes must remain compatible with Chrome 100.
 - Check JavaScript APIs, CSS features, dependencies, and build targets against this baseline. Features unsupported in Chrome 100 require a compatible fallback or polyfill.
+- Run `check:compat` and check built CSS with `check:compat:dist`. Exact reviewed exceptions require a reason in `scripts/chrome100-exceptions.json`; remove stale entries. See `docs/chrome-100-ci.md` for coverage and limits.
 
 ### Environment Variables
 - **Development** (`.env.development`): `VITE_USE_MOCK=true`, `VITE_API_BASE_URL=/api`

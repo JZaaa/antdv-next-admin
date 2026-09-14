@@ -41,6 +41,9 @@ npm run build:demo       # 在线 Demo 构建，启用浏览器端 Mock
 npm run build:check      # 类型检查 + 生产构建
 npm run build:demo:check # 类型检查 + 在线 Demo 构建
 npm run preview          # 预览生产构建
+npm run check:compat     # Chrome 100 配置与源码规则检查
+npm run check:compat:dist # 检查构建后的静态 CSS（需先构建）
+npm run check:ci         # 完整 CI 检查，含生产和 Demo 构建
 ```
 
 发布或提交前建议执行:
@@ -48,6 +51,8 @@ npm run preview          # 预览生产构建
 ```bash
 npm run lint && npm run format:check && npm run type-check && npm run test:unit:run && npm run build:check
 ```
+
+Chrome 100 防回归检查已接入 Build 和 Pages 工作流，使用 `pnpm install --frozen-lockfile` 安装依赖。完整检查可运行 `npm run check:ci`，最后生成 Demo 产物。规则范围、兼容例外和发布注意事项见 [Chrome 100 自动检查](docs/chrome-100-ci.md)。
 
 ## 技术栈
 

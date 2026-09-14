@@ -40,8 +40,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install rolldown native bindings
-        run: pnpm add @rolldown/binding-linux-x64-gnu -D
+      - name: Chrome 100 source and configuration checks
+        run: pnpm run check:compat
 
       - name: Type check
         run: pnpm run type-check
@@ -56,6 +56,9 @@ jobs:
         run: pnpm run build:demo
         env:
           NODE_ENV: production
+
+      - name: Check Demo CSS compatibility
+        run: pnpm run check:compat:dist
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
