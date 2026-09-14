@@ -1,6 +1,6 @@
 <template>
   <a-popover
-    v-model:open="open"
+    :open="open"
     trigger="click"
     placement="bottomLeft"
     :overlay-style="{ width: '360px', paddingTop: '4px' }"
@@ -9,6 +9,7 @@
   >
     <template #default>
       <a-input
+        ref="triggerRef"
         v-model:value="inputValue"
         class="ip-input-trigger"
         :placeholder="placeholder"
@@ -19,8 +20,19 @@
         @change="onInputChange"
       >
         <template #suffix>
-          <button type="button" class="ip-icon-trigger" @mousedown.prevent.stop="togglePopover">
-            <IconView :icon="inputValue || 'ion:apps-outline'" :size="18" />
+          <button
+            type="button"
+            class="ip-icon-trigger"
+            :aria-label="placeholder"
+            @click.stop="togglePopover"
+          >
+            <IconView
+              v-if="inputValue"
+              :icon="inputValue"
+              :size="18"
+              :allow-online="enableOnlineSearch"
+            />
+            <AppstoreOutlined v-else />
           </button>
         </template>
       </a-input>
@@ -28,7 +40,7 @@
 
     <template #content>
       <FormItemRest>
-        <div class="ip-wrap">
+        <div ref="popupRef" class="ip-wrap" @keydown.esc.stop.prevent="onOpenChange(false)">
           <div class="ip-row1">
             <a-input
               ref="searchRef"
@@ -38,7 +50,7 @@
               class="ip-search"
             >
               <template #prefix>
-                <IconView icon="antdv-next:SearchOutlined" color="#999" />
+                <SearchOutlined style="color: #999" />
               </template>
             </a-input>
           </div>
@@ -78,11 +90,12 @@
                 <button
                   type="button"
                   class="ip-item"
+                  :aria-label="name"
                   :class="{ selected: effectiveValue === name }"
                   :style="{ '--hover-color': getIconMeta(name).color }"
                   @click="apply(name)"
                 >
-                  <IconView :icon="name" :size="20" />
+                  <IconView :icon="name" :size="20" :allow-online="enableOnlineSearch" />
                   <div class="ip-item-bar" />
                 </button>
               </a-tooltip>
@@ -99,7 +112,12 @@
               show-less-items
               :show-size-changer="false"
               class="ip-pagination"
-            />
+            >
+              <template #itemRender="{ page: itemPage, type, element }">
+                <span v-if="type === 'page'" class="ip-page-number">{{ itemPage }}</span>
+                <component :is="element" v-else />
+              </template>
+            </a-pagination>
           </div>
         </div>
       </FormItemRest>
@@ -108,12 +126,16 @@
 </template>
 
 <script setup lang="ts">
+import { AppstoreOutlined, SearchOutlined } from '@antdv-next/icons';
+import { iconBuildSettings } from 'virtual:local-icon-assets';
 import { computed, h, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
 import IconView from '@/components/Icon/index.vue';
-import FormItemRest from './FormItemRest.vue';
 import { $t } from '@/locales';
+import { getAntdvIconNames, preloadAntdvIcons } from '@/utils/antdvIcons';
 import { loadLocalIconifySet, type IconsJson, type LocalIconifyPrefix } from '@/utils/iconify';
+
+import FormItemRest from './FormItemRest.vue';
 
 type Category = 'all' | 'ri' | 'mdi' | 'ion' | 'antdv-next' | 'svg' | 'online';
 
@@ -125,6 +147,7 @@ interface Props {
   svgIcons?: string[];
   svgPrefix?: string;
   onlineLimit?: number;
+  enableOnlineSearch?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -132,6 +155,7 @@ const props = withDefaults(defineProps<Props>(), {
   pageSize: 36,
   svgPrefix: 'icon-',
   onlineLimit: 120,
+  enableOnlineSearch: false,
 });
 
 const emit = defineEmits<{
@@ -143,6 +167,8 @@ const emit = defineEmits<{
 const boundValue = computed(() => props.value ?? props.modelValue ?? '');
 
 const open = ref(false);
+const triggerRef = ref<{ focus: (options?: FocusOptions) => void } | null>(null);
+const popupRef = ref<HTMLElement | null>(null);
 const editableValue = ref(boundValue.value);
 const inputSnapshot = ref(editableValue.value);
 
@@ -183,22 +209,26 @@ const iconifyNames = (prefix: string, json: IconsJson) => {
 };
 
 const loadIconifySet = (prefix: LocalIconifyPrefix) =>
-  loadLocalIconifySet(prefix).then((iconsJson) => {
-    const names = iconifyNames(prefix, iconsJson);
-    if (prefix === 'ri') {
-      riNames.value = names;
-    } else if (prefix === 'mdi') {
-      mdiNames.value = names;
-    } else {
-      ionNames.value = names;
-    }
-  });
+  loadLocalIconifySet(prefix)
+    .then((iconsJson) => {
+      const names = iconifyNames(prefix, iconsJson);
+      if (prefix === 'ri') {
+        riNames.value = names;
+      } else if (prefix === 'mdi') {
+        mdiNames.value = names;
+      } else {
+        ionNames.value = names;
+      }
+    })
+    .catch((error: unknown) => {
+      console.error(`Failed to load ${prefix} icons for the picker:`, error);
+    });
 
 const loadOfflineIconSets = () => {
-  void loadIconifySet('ri');
-  void loadIconifySet('mdi');
-  void loadIconifySet('ion');
-  void loadAntdvIcons();
+  for (const prefix of ['ri', 'mdi', 'ion'] as const) {
+    if (iconBuildSettings.collections[prefix] === 'all') void loadIconifySet(prefix);
+  }
+  if (iconBuildSettings.antd === 'all') void loadAntdvIcons();
 };
 
 const normalizeSvgName = (name: string) => {
@@ -232,10 +262,10 @@ const loadAntdvIcons = async () => {
     return antdvIconsLoadPromise;
   }
 
-  antdvIconsLoadPromise = import('@antdv-next/icons').then((icons) => {
-    antdvIconNames.value = Object.keys(icons)
-      .filter((name) => /(Outlined|Filled|TwoTone)$/.test(name))
-      .map((name) => `antdv-next:${name}`);
+  antdvIconNames.value = getAntdvIconNames().map((name) => `antdv-next:${name}`);
+  antdvIconsLoadPromise = preloadAntdvIcons().catch((error: unknown) => {
+    antdvIconsLoadPromise = null;
+    console.error('Failed to preload Antdv icons for the picker:', error);
   });
 
   return antdvIconsLoadPromise;
@@ -298,6 +328,7 @@ const onlineAbortController = ref<AbortController | null>(null);
 let onlineTimer: ReturnType<typeof setTimeout> | null = null;
 
 const shouldSearchOnline = computed(() => {
+  if (!iconBuildSettings.online || !props.enableOnlineSearch || !open.value) return false;
   const query = keyword.value.trim();
   if (query.length < 2) {
     return false;
@@ -391,7 +422,7 @@ const scheduleOnlineSearch = () => {
   }, 300);
 };
 
-watch([keyword, category], () => {
+watch([keyword, category, open, () => props.enableOnlineSearch], () => {
   scheduleOnlineSearch();
 });
 
@@ -468,17 +499,25 @@ const renderCategoryLabel = (key: string, count: number) => {
   ]);
 };
 
-const categoryOptions = computed(() => [
-  { value: 'all', label: renderCategoryLabel('all', allCount.value) },
-  { value: 'ri', label: renderCategoryLabel('ri', riAll.value.length) },
-  { value: 'mdi', label: renderCategoryLabel('mdi', mdiAll.value.length) },
-  { value: 'ion', label: renderCategoryLabel('ion', ionAll.value.length) },
-  {
-    value: 'antdv-next',
-    label: renderCategoryLabel('antdv-next', antdvAll.value.length),
-  },
-  { value: 'svg', label: renderCategoryLabel('svg', svgAll.value.length) },
-]);
+const categoryOptions = computed(() =>
+  [
+    { value: 'all', label: renderCategoryLabel('all', allCount.value) },
+    { value: 'ri', label: renderCategoryLabel('ri', riAll.value.length) },
+    { value: 'mdi', label: renderCategoryLabel('mdi', mdiAll.value.length) },
+    { value: 'ion', label: renderCategoryLabel('ion', ionAll.value.length) },
+    {
+      value: 'antdv-next',
+      label: renderCategoryLabel('antdv-next', antdvAll.value.length),
+    },
+    { value: 'svg', label: renderCategoryLabel('svg', svgAll.value.length) },
+  ].filter((item) => {
+    if (item.value === 'antdv-next') return iconBuildSettings.antd === 'all';
+    if (item.value === 'ri' || item.value === 'mdi' || item.value === 'ion') {
+      return iconBuildSettings.collections[item.value] === 'all';
+    }
+    return true;
+  }),
+);
 
 const effectiveValue = computed(() => boundValue.value);
 
@@ -490,7 +529,7 @@ const emitUpdate = (value: string) => {
 
 const focusSearch = () => {
   nextTick(() => {
-    searchRef.value?.focus?.();
+    if (open.value) searchRef.value?.focus?.();
   });
 };
 
@@ -507,17 +546,14 @@ const detectCategoryByIcon = (iconName: string): Category => {
 };
 
 const togglePopover = () => {
-  open.value = !open.value;
-  if (open.value) {
-    focusSearch();
-  }
+  onOpenChange(!open.value);
 };
 
 const apply = (name: string) => {
   editableValue.value = name;
   inputSnapshot.value = name;
   emitUpdate(name);
-  open.value = false;
+  onOpenChange(false);
 };
 
 const onInputChange = () => {
@@ -540,10 +576,15 @@ const onOpenChange = (next: boolean) => {
   if (next) {
     inputSnapshot.value = editableValue.value;
     category.value = detectCategoryByIcon(boundValue.value.trim());
+    if (!categoryOptions.value.some((item) => item.value === category.value))
+      category.value = 'all';
     page.value = 1;
     loadOfflineIconSets();
     focusSearch();
   } else {
+    if (popupRef.value?.contains(document.activeElement)) {
+      triggerRef.value?.focus({ preventScroll: true });
+    }
     editableValue.value = inputSnapshot.value;
   }
   open.value = next;
@@ -789,6 +830,16 @@ watch([category, keyword], () => {
   min-width: 24px;
   height: 24px;
   line-height: 22px;
+}
+
+/* 页码使用非交互文本，交互和键盘焦点由 Pagination 外层管理。 */
+.ip-page-number {
+  display: block;
+  padding: 0 6px;
+}
+
+.ip-pagination :deep(.ant-pagination-item-active) .ip-page-number {
+  color: var(--ant-color-primary, var(--color-primary));
 }
 
 /* Tooltip 内容 */

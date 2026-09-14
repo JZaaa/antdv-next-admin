@@ -638,8 +638,7 @@ export default {
     renderTitle: '3 つのレンダリング モード',
     renderSubtitle: '任意のサンプルをクリックして、以下の IconPicker に適用します。',
     pickerTitle: 'アイコンピッカーのデモ',
-    pickerSubtitle:
-      'オンライン検索をトリガーするには、2 文字以上を入力します。オフラインアイコンセットはカテゴリ別に用意されています',
+    pickerSubtitle: '有効なローカルアイコンセットを名前で検索します。オンライン検索は初期状態で無効です。',
     modelLabel: 'アイコンの値',
     previewLabel: 'ライブプレビュー',
     copy: '値のコピー',
@@ -663,10 +662,18 @@ export default {
     guideStepSvg3:
       'IconPicker のローカル SVG 検出の場合、src/assets/icons の下にファイルを配置し、svgIcons を渡します。',
     guideStepIconify1: 'iconify 名を直接渡します: ri:home-line / mdi:account / ion:apps-outline。',
-    guideStepIconify2:
-      'IconPicker には、ネットワークなしで利用できるオフライン セット (ri / mdi / ion) が含まれています。',
-    guideStepIconify3:
-      '[すべて/オンライン] カテゴリに、Iconify オンラインを検索するためのキーワード (少なくとも 2 文字) を入力します。',
+    guideStepIconify2: 'IconPicker は all に設定されたローカルアイコンセットを表示します。リソースはサイトと一緒に配布され、イントラネットで利用できます。',
+    guideStepIconify3: 'オンライン検索は初期状態で無効です。設定の online とコンポーネントの enableOnlineSearch を両方有効にした場合のみ公開 API にアクセスします。',
+    packingTitle: 'アイコンのビルドとイントラネット配布',
+    packingIntro: 'プロジェクト直下の icon.config.ts でセットごとに設定します。選択画面のカテゴリも同じ設定に従います。',
+    packingOff: 'リソースを生成せず、選択カテゴリも非表示にします。無効なセットへのソース参照はビルド時に報告します。',
+    packingUsed: 'src、mock 内の完全なアイコン名と safelist の項目だけを含めます。セット全体の選択には対応しません。',
+    packingAll: 'セット全体を配布します。通常表示は必要な分割ファイルを読み込み、選択画面を開くと残りも読み込みます。',
+    packingShared: 'Icon と IconPicker はリソースとキャッシュを共有します。SVG は一度だけ保存され、別名と元のアイコンは同じ分割ファイルに入ります。',
+    packingOffline: '分割ファイルは配布先サイトから取得し、公開 CDN は不要です。イントラネットには dist 全体を配布してください。',
+    packingCurrent: '現在のビルド設定',
+    packingDynamic: 'バックエンドの値や動的な名前は safelist に追加するか、対象セットを all にします。Antdv 設定は動的な名前のみを制御し、静的インポートは必要な分だけ含まれます。',
+    packingRestart: 'RI が不要なら ri を off にし、ソースとサンプル内の RI 参照を削除します。設定変更後は開発サーバーを再起動し、公開時に再ビルドします。',
     modeSvg: 'SVG スプライト',
     modeAntdv: 'antdv-next',
     modeIconify: 'アイコン化',

@@ -2,6 +2,8 @@ import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
+import { localIconAssetsPlugin } from './build/local-icon-assets';
+
 const vuePlugin = vue();
 const transformVue =
   typeof vuePlugin.transform === 'function' ? vuePlugin.transform : vuePlugin.transform?.handler;
@@ -17,7 +19,7 @@ if (typeof transformVue === 'function') {
 }
 
 export default defineConfig({
-  plugins: [vuePlugin],
+  plugins: [localIconAssetsPlugin(), vuePlugin],
   test: {
     environment: 'node',
     globals: false,

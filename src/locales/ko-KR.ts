@@ -637,8 +637,7 @@ export default {
     renderTitle: '세 가지 렌더링 모드',
     renderSubtitle: '샘플을 클릭하여 아래 IconPicker에 적용하세요.',
     pickerTitle: '아이콘 선택기 데모',
-    pickerSubtitle:
-      '온라인 검색을 실행하려면 2자 이상을 입력하세요. 오프라인 아이콘 세트는 카테고리별로 제공됩니다.',
+    pickerSubtitle: '활성화된 로컬 아이콘 모음을 이름으로 검색합니다. 온라인 검색은 기본적으로 꺼져 있습니다.',
     modelLabel: '아이콘 값',
     previewLabel: '실시간 미리보기',
     copy: '값 복사',
@@ -662,10 +661,18 @@ export default {
       'IconPicker 로컬 SVG 감지의 경우 src/assets/icons 아래에 파일을 배치하고 svgIcons를 전달합니다.',
     guideStepIconify1:
       'iconify 이름을 직접 전달합니다: ri:home-line / mdi:account / ion:apps-outline.',
-    guideStepIconify2:
-      'IconPicker에는 네트워크 없이 사용할 수 있는 오프라인 세트(ri/mdi/ion)가 포함되어 있습니다.',
-    guideStepIconify3:
-      'All/Online 카테고리에 키워드(2자 이상)를 입력하시면 Iconify 온라인을 검색하실 수 있습니다.',
+    guideStepIconify2: 'IconPicker는 all로 설정한 로컬 아이콘 모음만 표시합니다. 리소스는 사이트와 함께 배포되어 내부망에서 사용할 수 있습니다.',
+    guideStepIconify3: '온라인 검색은 기본적으로 꺼져 있습니다. 설정의 online과 컴포넌트의 enableOnlineSearch를 모두 켜야 공개 API에 접근합니다.',
+    packingTitle: '아이콘 빌드 및 내부망 배포',
+    packingIntro: '프로젝트 루트의 icon.config.ts에서 아이콘 모음별로 설정합니다. 선택기 분류에도 같은 설정이 적용됩니다.',
+    packingOff: '리소스를 생성하지 않고 선택기에서도 숨깁니다. 비활성화된 모음을 소스에서 참조하면 빌드가 위치를 알려줍니다.',
+    packingUsed: 'src, mock에서 찾은 완전한 아이콘 이름과 safelist 항목만 포함합니다. 전체 모음 선택은 제공하지 않습니다.',
+    packingAll: '전체 모음을 배포합니다. 일반 표시는 필요한 조각만 읽고 선택기를 열면 나머지도 읽습니다.',
+    packingShared: 'Icon과 IconPicker가 리소스와 캐시를 공유합니다. SVG는 한 번만 저장되며 별칭은 원본과 같은 조각에 저장됩니다.',
+    packingOffline: '조각 파일은 배포 사이트에서 읽으며 공개 CDN이 필요하지 않습니다. 내부망에 dist 디렉터리 전체를 배포하세요.',
+    packingCurrent: '현재 빌드 설정',
+    packingDynamic: '백엔드 값이나 동적 이름은 safelist에 추가하거나 해당 모음을 all로 설정하세요. Antdv 설정은 동적 이름만 제어하며 정적 컴포넌트는 필요한 것만 포함됩니다.',
+    packingRestart: 'RI가 필요 없다면 ri를 off로 설정하고 소스와 예제의 RI 참조를 제거하세요. 설정 변경 후 개발 서버를 재시작하고 배포 시 다시 빌드하세요.',
     modeSvg: 'SVG 스프라이트',
     modeAntdv: 'antdv-다음',
     modeIconify: '아이콘화하다',

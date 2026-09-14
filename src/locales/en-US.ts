@@ -658,8 +658,7 @@ export default {
     renderTitle: 'Three Render Modes',
     renderSubtitle: 'Click any sample to apply it to IconPicker below',
     pickerTitle: 'IconPicker Demo',
-    pickerSubtitle:
-      'Type 2+ chars to trigger online search; offline icon sets are available by category',
+    pickerSubtitle: 'Search enabled local collections by name. Online search is disabled by default.',
     modelLabel: 'Icon Value',
     previewLabel: 'Live Preview',
     copy: 'Copy Value',
@@ -683,10 +682,18 @@ export default {
       'For IconPicker local SVG detection, place files under src/assets/icons and pass svgIcons.',
     guideStepIconify1:
       'Pass iconify names directly: ri:home-line / mdi:account / ion:apps-outline.',
-    guideStepIconify2:
-      'IconPicker includes offline sets (ri / mdi / ion), available without network.',
-    guideStepIconify3:
-      'In All/Online category, type keywords (at least 2 chars) to search Iconify online.',
+    guideStepIconify2: 'IconPicker shows local collections configured as all. Assets are deployed with the site for intranet use.',
+    guideStepIconify3: 'Online search is off by default. Both online in the configuration and enableOnlineSearch on the picker must be enabled to access the public API.',
+    packingTitle: 'Icon Bundling and Intranet Deployment',
+    packingIntro: 'Configure each collection in icon.config.ts at the project root. Picker categories follow the same configuration.',
+    packingOff: 'Emit no assets and hide the picker category. Builds report source references to disabled collections.',
+    packingUsed: 'Bundle complete icon name literals found in src and mock, plus safelist entries. No full picker catalogue.',
+    packingAll: 'Bundle the full collection and show its picker category. Individual icons load shards; opening the picker loads the remaining collection.',
+    packingShared: 'Icon and IconPicker share assets and cached requests. Each SVG is stored once; aliases share a shard with their original icon.',
+    packingOffline: 'Shards are served by the deployed site without a public CDN. Deploy the complete dist directory on your intranet.',
+    packingCurrent: 'Current build configuration',
+    packingDynamic: 'Add backend-provided or computed names to safelist, or use all for their collection. The Antdv setting controls dynamic names; static component imports remain tree-shaken.',
+    packingRestart: 'To remove RI, set ri to off and remove RI references from source and examples. Restart development after configuration changes and rebuild for deployment.',
     modeSvg: 'SVG Sprite',
     modeAntdv: 'antdv-next',
     modeIconify: 'Iconify',

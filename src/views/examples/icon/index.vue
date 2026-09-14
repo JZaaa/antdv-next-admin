@@ -100,7 +100,7 @@
         <article class="guide-card">
           <h4>{{ $t('exampleIcon.svgGuideTitle') }}</h4>
           <ol>
-            <li>{{ $t('exampleIcon.guideStepSvg1', { symbol: '<symbol id="...">' }) }}</li>
+            <li>{{ $t('exampleIcon.guideStepSvg1', { symbol: svgSymbolExample }) }}</li>
             <li>{{ $t('exampleIcon.guideStepSvg2') }}</li>
             <li>{{ $t('exampleIcon.guideStepSvg3') }}</li>
           </ol>
@@ -115,6 +115,30 @@
             <li>{{ $t('exampleIcon.guideStepIconify3') }}</li>
           </ol>
           <pre><code>{{ iconifyGuideCode }}</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h3>{{ $t('exampleIcon.packingTitle') }}</h3>
+        <p>{{ $t('exampleIcon.packingIntro') }}</p>
+      </div>
+      <div class="guide-grid">
+        <article class="guide-card">
+          <ul>
+            <li><strong>off</strong> — {{ $t('exampleIcon.packingOff') }}</li>
+            <li><strong>used</strong> — {{ $t('exampleIcon.packingUsed') }}</li>
+            <li><strong>all</strong> — {{ $t('exampleIcon.packingAll') }}</li>
+          </ul>
+          <p>{{ $t('exampleIcon.packingShared') }}</p>
+          <p>{{ $t('exampleIcon.packingOffline') }}</p>
+        </article>
+        <article class="guide-card">
+          <h4>{{ $t('exampleIcon.packingCurrent') }} — icon.config.ts</h4>
+          <pre><code>{{ packingConfigCode }}</code></pre>
+          <p>{{ $t('exampleIcon.packingDynamic') }}</p>
+          <p>{{ $t('exampleIcon.packingRestart') }}</p>
         </article>
       </div>
     </section>
@@ -186,6 +210,7 @@
 <script setup lang="ts">
 import { CopyOutlined, ReloadOutlined } from '@antdv-next/icons';
 import { message } from 'antdv-next';
+import { iconBuildSettings } from 'virtual:local-icon-assets';
 import { computed, ref } from 'vue';
 
 import IconView from '@/components/Icon/index.vue';
@@ -194,6 +219,8 @@ import { $t } from '@/locales';
 import { hexColorVariables } from '@/utils/color';
 
 const svgOrbitId = 'icon-demo-orbit';
+const packingConfigCode = JSON.stringify(iconBuildSettings, null, 2);
+const svgSymbolExample = '<symbol id="...">';
 const svgPulseId = 'icon-demo-pulse';
 const svgSparkId = 'icon-demo-spark';
 const svgSymbolNames = [svgOrbitId, svgPulseId, svgSparkId];

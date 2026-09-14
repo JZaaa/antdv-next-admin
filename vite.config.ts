@@ -7,6 +7,7 @@ import { defineConfig } from "vite";
 import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
 
 import pkg from "./package.json";
+import { localIconAssetsPlugin } from "./build/local-icon-assets";
 
 // Read installed versions so the About page describes this build, including pnpm symlinks.
 const dependencyVersions = Object.fromEntries(
@@ -28,6 +29,7 @@ export default defineConfig({
     APP_DEPENDENCY_VERSIONS: JSON.stringify(dependencyVersions),
   },
   plugins: [
+    localIconAssetsPlugin(),
     vue(),
     Components({
       dts: false,

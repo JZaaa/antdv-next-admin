@@ -28,10 +28,12 @@
 <script setup lang="ts">
 import type { Component, StyleValue } from 'vue';
 
-import { Icon as IconifyIcon } from '@iconify/vue';
+import { Icon as IconifyIcon, iconLoaded } from '@iconify/vue';
+import { iconBuildSettings } from 'virtual:local-icon-assets';
 import { computed, ref, shallowRef, watch } from 'vue';
 
-import { isLocalIconifyPrefix, loadLocalIconifySet } from '@/utils/iconify';
+import { loadAntdvIcon } from '@/utils/antdvIcons';
+import { isLocalIconifyPrefix, loadLocalIconifyIcon } from '@/utils/iconify';
 import { parseIconName } from '@/utils/iconName';
 
 type NormalizedIconKind = 'iconify' | 'antdv-next' | 'svg';
@@ -42,10 +44,12 @@ interface Props {
   kind?: IconKind;
   size?: number | string;
   style?: StyleValue;
+  allowOnline?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 16,
+  allowOnline: false,
 });
 
 const stripPrefix = (value: string, prefix: string) => {
@@ -92,8 +96,13 @@ watch(
       return;
     }
 
-    const icons = (await import('@antdv-next/icons')) as Record<string, Component>;
-    antdvComp.value = icons[key];
+    antdvComp.value = undefined;
+    try {
+      const icon = await loadAntdvIcon(key);
+      if (resolvedKind.value === kind && antdvKey.value === key) antdvComp.value = icon;
+    } catch (error) {
+      console.error(`Failed to load Antdv icon ${key}:`, error);
+    }
   },
   {
     immediate: true,
@@ -116,21 +125,31 @@ const iconifyPrefix = computed(() => {
 });
 
 const canRenderIconify = computed(() => {
-  return resolvedKind.value === 'iconify' && localIconifyReady.value;
+  return (
+    resolvedKind.value === 'iconify' &&
+    localIconifyReady.value &&
+    (isLocalIconifyPrefix(iconifyPrefix.value) || (iconBuildSettings.online && props.allowOnline))
+  );
 });
 
 watch(
-  [resolvedKind, iconifyPrefix],
-  async ([kind, prefix]) => {
+  [resolvedKind, iconifyIcon],
+  async ([kind, icon]) => {
+    const prefix = icon.split(':')[0] ?? '';
     if (kind !== 'iconify' || !isLocalIconifyPrefix(prefix)) {
       localIconifyReady.value = true;
       return;
     }
 
     localIconifyReady.value = false;
-    await loadLocalIconifySet(prefix);
-    if (resolvedKind.value === 'iconify' && iconifyPrefix.value === prefix) {
-      localIconifyReady.value = true;
+    try {
+      await loadLocalIconifyIcon(prefix, icon.slice(prefix.length + 1));
+      if (resolvedKind.value === 'iconify' && iconifyIcon.value === icon) {
+        // Missing local names stay empty; never fall back to the public Iconify API.
+        localIconifyReady.value = iconLoaded(icon);
+      }
+    } catch (error) {
+      console.error(`Failed to load local ${prefix} icons:`, error);
     }
   },
   {
