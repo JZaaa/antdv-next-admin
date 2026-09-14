@@ -1,5 +1,4 @@
 import { AntdvNextResolver } from "@antdv-next/auto-import-resolver";
-import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
 import Components from "unplugin-vue-components/vite";
@@ -23,7 +22,6 @@ export default defineConfig({
         }),
       ],
     }),
-    tailwindcss(),
     mockDevServerPlugin({
       prefix: "/api",
       log: "error",
@@ -50,7 +48,8 @@ export default defineConfig({
     proxy: {},
   },
   build: {
-    target: "es2020",
+    target: "chrome100",
+    cssTarget: "chrome100",
     outDir: "dist",
     assetsDir: "assets",
     sourcemap: false,

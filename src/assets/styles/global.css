@@ -2,18 +2,21 @@
 
 /* ========== CSS Reset ========== */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Global element resets must stay below the component library's antd layer. */
+@layer app-base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 }
 
 /* ========== Theme Transition ========== */
@@ -78,99 +81,101 @@ html.theme-view-transition::view-transition-new(root) {
   }
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-family);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-base);
-  color: var(--color-text-primary);
-  background-color: var(--color-bg-layout);
-}
+@layer app-base {
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-layout);
+  }
 
-/* ========== Typography ========== */
+  /* ========== Typography ========== */
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  color: var(--color-text-primary);
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+  }
 
-h1 {
-  font-size: var(--font-size-4xl);
-}
-h2 {
-  font-size: var(--font-size-3xl);
-}
-h3 {
-  font-size: var(--font-size-2xl);
-}
-h4 {
-  font-size: var(--font-size-xl);
-}
-h5 {
-  font-size: var(--font-size-lg);
-}
-h6 {
-  font-size: var(--font-size-base);
-}
+  h1 {
+    font-size: var(--font-size-4xl);
+  }
+  h2 {
+    font-size: var(--font-size-3xl);
+  }
+  h3 {
+    font-size: var(--font-size-2xl);
+  }
+  h4 {
+    font-size: var(--font-size-xl);
+  }
+  h5 {
+    font-size: var(--font-size-lg);
+  }
+  h6 {
+    font-size: var(--font-size-base);
+  }
 
-p {
-  margin: 0;
-  line-height: var(--line-height-base);
-}
+  p {
+    margin: 0;
+    line-height: var(--line-height-base);
+  }
 
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-  transition: color var(--duration-base);
-}
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--duration-base);
+  }
 
-a:hover {
-  color: var(--color-primary-5);
-}
+  a:hover {
+    color: var(--color-primary-5);
+  }
 
-/* ========== Lists ========== */
+  /* ========== Lists ========== */
 
-ul,
-ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+  ul,
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-/* ========== Scrollbar ========== */
+  /* ========== Scrollbar ========== */
 
-/* For Webkit browsers */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+  /* For Webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--color-bg-layout);
-}
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-layout);
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-sm);
-}
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-sm);
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border);
-  opacity: 0.8;
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border);
+    opacity: 0.8;
+  }
 
-/* For Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) var(--color-bg-layout);
+  /* For Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) var(--color-bg-layout);
+  }
 }
 
 /* ========== Utility Classes ========== */

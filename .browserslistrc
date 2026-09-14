@@ -1,0 +1,2 @@
+# CSS prefixing baseline; Vite's JS/CSS targets are configured separately.
+Chrome >= 100

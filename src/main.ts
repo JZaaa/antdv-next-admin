@@ -9,8 +9,7 @@ import router from './router';
 import { useMenuPreferencesStore } from './stores/menuPreferences';
 import { service } from './utils/request';
 // Import global styles
-// Tailwind CSS with @layer configuration (must come after reset.css)
-import 'antdv-next/dist/reset.css';
+// This entry declares cascade order and imports the Antd reset in its own layer.
 import './assets/styles/tailwind.css';
 import './assets/styles/variables.css';
 import './assets/styles/animations.css';

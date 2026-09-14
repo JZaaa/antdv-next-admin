@@ -209,7 +209,7 @@ const techList = [
   { name: 'Vue I18n', version: '11.0', color: '#42b883', url: 'https://vue-i18n.intlify.dev' },
   { name: 'Axios', version: '1.6', color: '#5a29e4', url: 'https://axios-http.com' },
   { name: 'ECharts', version: '5.4', color: '#e43961', url: 'https://echarts.apache.org' },
-  { name: 'TailwindCSS', version: '4.2', color: '#06b6d4', url: 'https://tailwindcss.com' },
+  { name: 'TailwindCSS', version: '3.4', color: '#06b6d4', url: 'https://tailwindcss.com' },
   { name: 'Iconify', version: '5.0', color: '#1769aa', url: 'https://iconify.design' },
   { name: 'Tiptap', version: '3.19', color: '#68cef8', url: 'https://tiptap.dev' },
   { name: 'Day.js', version: '1.11', color: '#ff6f61', url: 'https://day.js.org' },

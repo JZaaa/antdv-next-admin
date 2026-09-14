@@ -1,16 +1,18 @@
-@layer theme, base, antd, components, utilities;
+/* Declare order before either static resets or runtime CSS-in-JS use these layers. */
+@layer reset, tailwind-base, app-base, antd, tailwind-components, tailwind-utilities;
 
-@import 'tailwindcss';
+@import 'antdv-next/dist/reset.css' layer(reset);
 
-@theme {
-  --color-primary: var(--color-primary);
-  --color-text-primary: var(--color-text-primary);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-bg-container: var(--color-bg-container);
-  --color-bg-layout: var(--color-bg-layout);
-  --color-border: var(--color-border);
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-  --color-error: var(--color-error);
-  --color-info: var(--color-info);
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-components {
+  @tailwind components;
+}
+
+@layer tailwind-utilities {
+  @tailwind utilities;
+  /* Tailwind 3 otherwise appends variants outside this native cascade layer. */
+  @tailwind variants;
 }

@@ -1,6 +1,6 @@
 # Antdv Next Admin - Agent Guidelines
 
-A Vue 3 + TypeScript + Ant Design Vue admin scaffold with RBAC, theming, i18n (zh-CN/en-US/ja-JP/ko-KR), Tailwind CSS 4, Codemirror 6, and mock APIs.
+A Vue 3 + TypeScript + Ant Design Vue admin scaffold with RBAC, theming, i18n (zh-CN/en-US/ja-JP/ko-KR), Tailwind CSS 3.4, Codemirror 6, and mock APIs.
 
 ## Project Structure
 
@@ -217,6 +217,10 @@ if (canAll(['user.edit', 'user.approve'])) {
 ```
 
 ## Configuration & Environment
+
+### Browser Compatibility
+- **Minimum supported browser**: Chrome ≥ 100. All changes must remain compatible with Chrome 100.
+- Check JavaScript APIs, CSS features, dependencies, and build targets against this baseline. Features unsupported in Chrome 100 require a compatible fallback or polyfill.
 
 ### Environment Variables
 - **Development** (`.env.development`): `VITE_USE_MOCK=true`, `VITE_API_BASE_URL=/api`

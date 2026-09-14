@@ -1,21 +1,29 @@
 <template>
-  <a-config-provider
-    :theme="antdThemeConfig"
-    :input="inputConfig"
-    :select="selectConfig"
-    :date-picker="datePickerConfig"
-    :range-picker="datePickerConfig"
-    :button="buttonConfig"
-    :locale="antdLocale"
-  >
-    <a-app>
-      <router-view />
-    </a-app>
-  </a-config-provider>
+  <StyleProvider layer>
+    <a-config-provider
+      :theme="antdThemeConfig"
+      :input="inputConfig"
+      :select="selectConfig"
+      :date-picker="datePickerConfig"
+      :range-picker="datePickerConfig"
+      :button="buttonConfig"
+      :locale="antdLocale"
+    >
+      <a-app>
+        <router-view />
+      </a-app>
+    </a-config-provider>
+  </StyleProvider>
 </template>
 
 <script setup lang="ts">
-import { App as AntApp, ConfigProvider, theme as antdTheme, type ThemeConfig } from 'antdv-next';
+import {
+  App as AntApp,
+  ConfigProvider,
+  StyleProvider,
+  theme as antdTheme,
+  type ThemeConfig,
+} from 'antdv-next';
 import enUS from 'antdv-next/dist/locale/en_US';
 import jaJP from 'antdv-next/dist/locale/ja_JP';
 import koKR from 'antdv-next/dist/locale/ko_KR';
@@ -68,13 +76,15 @@ watchEffect(() => {
 
   ConfigProvider.config({
     holderRender: (children) =>
-      h(
-        ConfigProvider,
-        {
-          locale: currentLocale,
-          theme: currentTheme,
-        },
-        () => h(AntApp, null, () => children),
+      h(StyleProvider, { layer: true }, () =>
+        h(
+          ConfigProvider,
+          {
+            locale: currentLocale,
+            theme: currentTheme,
+          },
+          () => h(AntApp, null, () => children),
+        ),
       ),
   });
 });
