@@ -70,7 +70,23 @@
       </div>
 
       <div class="form-wrap">
-        <div class="login-card">
+        <div
+          v-if="authenticated"
+          class="login-card login-transition"
+          role="status"
+          aria-live="polite"
+        >
+          <CheckCircleOutlined class="login-transition-icon" />
+          <h2 id="login-form-title">{{ $t('login.loginSuccess') }}</h2>
+          <p class="form-sub">
+            {{ $t(navigationFailed ? 'login.enterFailed' : 'login.entering') }}
+          </p>
+          <a-button v-if="navigationFailed" type="primary" size="large" @click="enterWorkspace">
+            {{ $t('login.retryEntering') }}
+          </a-button>
+          <a-spin v-else size="large" />
+        </div>
+        <div v-else class="login-card">
           <div class="eyebrow">{{ $t('login.securityEyebrow') }}</div>
           <h2 id="login-form-title">{{ $t('login.formTitle') }}</h2>
           <p class="form-sub">{{ $t('login.formSubtitle') }}</p>
@@ -179,8 +195,8 @@
 <script setup lang="ts">
 import { CheckCircleOutlined, LockOutlined, UserOutlined } from '@antdv-next/icons';
 import { message } from 'antdv-next';
-import { reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { nextTick, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import logoImg from '@/assets/images/logo.png';
 import { SliderCaptcha } from '@/components/Captcha';
@@ -192,10 +208,13 @@ import { useSettingsStore } from '@/stores/settings';
 import { clearSessionState } from '@/utils/session';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const settingsStore = useSettingsStore();
 
 const loading = ref(false);
+const authenticated = ref(false);
+const navigationFailed = ref(false);
 const captchaVerified = ref(false);
 const captchaRef = ref<InstanceType<typeof SliderCaptcha>>();
 const formState = reactive({
@@ -238,13 +257,35 @@ const selectDemoAccount = (username: string) => {
   formState.password = '123456';
 };
 
+async function enterWorkspace(): Promise<void> {
+  navigationFailed.value = false;
+  await nextTick();
+  try {
+    const redirect = route.query.redirect;
+    const target =
+      typeof redirect === 'string' &&
+      /^\/(?![\\/])/.test(redirect) &&
+      router.resolve(redirect).name !== 'Login'
+        ? redirect
+        : '/';
+    const failure = await router.replace(target);
+    if (failure) {
+      throw failure;
+    }
+  } catch (error: unknown) {
+    console.error('Failed to enter workspace after login:', error);
+    navigationFailed.value = true;
+  }
+}
+
 const handleSubmit = async () => {
+  if (loading.value || authenticated.value || !captchaVerified.value) return;
   loading.value = true;
   try {
     clearSessionState(router);
     await authStore.login(formState.username, formState.password);
-    message.success($t('login.loginSuccess'));
-    router.push('/');
+    authenticated.value = true;
+    await enterWorkspace();
   } catch (error: unknown) {
     message.error(
       (error instanceof Error ? error.message : String(error)) || $t('login.loginFailed'),
@@ -259,6 +300,17 @@ const handleSubmit = async () => {
 
 <style scoped lang="scss">
 @use '@/assets/styles/color' as compat;
+
+.login-transition {
+  text-align: center;
+
+  .login-transition-icon {
+    margin-bottom: 24px;
+    color: var(--color-success);
+    font-size: 48px;
+  }
+}
+
 /* ================================================================
    Tokens — local design system for login
    ================================================================ */

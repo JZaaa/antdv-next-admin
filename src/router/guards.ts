@@ -199,7 +199,7 @@ export function setupRouterGuards(router: Router) {
       try {
         await ensureDynamicRoutes(router, authStore, permissionStore, dictStore);
         initTabsIfNeeded(tabsStore, permissionStore);
-        return { path: to.fullPath, replace: true };
+        return { path: to.path, query: to.query, hash: to.hash, replace: true };
       } catch (error) {
         console.error('Failed to recover dynamic route:', error);
         return '/403';
@@ -226,7 +226,7 @@ export function setupRouterGuards(router: Router) {
           initTabsIfNeeded(tabsStore, permissionStore);
 
           // Continue to the target route
-          return { ...to, replace: true };
+          return { path: to.path, query: to.query, hash: to.hash, replace: true };
         } catch (error) {
           console.error('Failed to generate routes:', error);
           return '/403';

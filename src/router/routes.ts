@@ -817,7 +817,8 @@ export const notFoundRoute: AppRouteRecordRaw = {
   component: () => import("@/views/error/404.vue"),
   meta: {
     title: "error.404",
-    requiresAuth: false,
+    // Before login, this can also match a dynamic route that is not registered yet.
+    requiresAuth: true,
     hidden: true,
   },
 };

@@ -11,7 +11,7 @@ describe('not found route recovery', () => {
     expect(shouldRecoverDynamicRoute('NotFoundCatchAll', true, true)).toBe(false);
   });
 
-  it('does not treat public unknown URLs as protected routes', () => {
+  it('does not recover dynamic routes before authentication', () => {
     expect(shouldRecoverDynamicRoute('NotFoundCatchAll', false, false)).toBe(false);
   });
 
