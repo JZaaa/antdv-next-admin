@@ -25,7 +25,13 @@ function evaluateColor(expression: string, variables: Record<string, string> = {
   });
   const match = value.match(/^rgba?\(([^)]+)\)$/);
   if (!match) throw new Error(`Expected computed RGB, received ${value}`);
-  const channels = match[1].split(',').map(Number);
+  // Sass can serialize fractional RGB channels as percentages (also supported by Chrome 100).
+  const channels = match[1].split(',').map((channel, index) => {
+    const token = channel.trim();
+    return token.endsWith('%')
+      ? (Number(token.slice(0, -1)) / 100) * (index < 3 ? 255 : 1)
+      : Number(token);
+  });
   if (channels.length === 3) channels.push(1);
   return channels;
 }

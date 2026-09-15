@@ -2,7 +2,7 @@ import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-import { localIconAssetsPlugin } from './build/local-icon-assets';
+import { localIconAssetsPlugin } from './build/local-icon-assets.ts';
 
 const vuePlugin = vue();
 const transformVue =

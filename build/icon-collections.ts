@@ -1,6 +1,6 @@
-import type { IconsJson } from '../src/utils/iconify';
+import type { IconsJson } from '../src/utils/iconify.ts';
 
-import { getIconShard, ICON_SHARD_COUNT } from '../src/utils/iconShard';
+import { getIconShard, ICON_SHARD_COUNT } from '../src/utils/iconShard.ts';
 
 export function getAliasRoots(collection: IconsJson): Record<string, string> {
   const roots: Record<string, string> = {};

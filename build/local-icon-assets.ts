@@ -1,12 +1,12 @@
-import type { IconsJson } from '../src/utils/iconify';
+import type { IconsJson } from '../src/utils/iconify.ts';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve, relative } from 'node:path';
 
-import iconConfig, { type IconBuildConfig } from '../icon.config';
-import { getIconShard, ICON_SHARD_COUNT } from '../src/utils/iconShard';
-import { findIconNames, getAliasRoots, selectIcons, splitIconCollection } from './icon-collections';
+import iconConfig, { type IconBuildConfig } from '../icon.config.ts';
+import { getIconShard, ICON_SHARD_COUNT } from '../src/utils/iconShard.ts';
+import { findIconNames, getAliasRoots, selectIcons, splitIconCollection } from './icon-collections.ts';
 
 const MODULE_ID = 'virtual:local-icon-assets';
 const RESOLVED_ID = `\0${MODULE_ID}`;

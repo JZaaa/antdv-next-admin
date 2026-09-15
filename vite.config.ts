@@ -6,8 +6,8 @@ import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
 import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
 
-import pkg from "./package.json";
-import { localIconAssetsPlugin } from "./build/local-icon-assets";
+import pkg from "./package.json" with { type: "json" };
+import { localIconAssetsPlugin } from "./build/local-icon-assets.ts";
 
 // Read installed versions so the About page describes this build, including pnpm symlinks.
 const dependencyVersions = Object.fromEntries(

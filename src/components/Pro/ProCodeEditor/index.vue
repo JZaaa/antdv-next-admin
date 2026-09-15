@@ -58,7 +58,7 @@ import { Codemirror } from "vue-codemirror";
 import type { Extension } from "@codemirror/state";
 import {
   keymap,
-  lineNumbers,
+  lineNumbers as createLineNumbers,
   highlightActiveLineGutter,
   highlightSpecialChars,
   drawSelection,
@@ -78,7 +78,7 @@ import {
   syntaxHighlighting,
   defaultHighlightStyle,
   bracketMatching,
-  foldGutter,
+  foldGutter as createFoldGutter,
 } from "@codemirror/language";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -334,12 +334,12 @@ const baseExtensions = computed<Extension[]>(() => {
   ];
 
   if (props.lineNumbers) {
-    ext.push(lineNumbers());
+    ext.push(createLineNumbers());
     ext.push(highlightActiveLineGutter());
   }
 
   if (props.foldGutter) {
-    ext.push(foldGutter());
+    ext.push(createFoldGutter());
   }
 
   if (props.theme === "auto") {
