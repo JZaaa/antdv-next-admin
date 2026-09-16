@@ -61,6 +61,8 @@ preferences: {
 
 关闭个性化后，侧栏展开/收起、已启用 AI 模块的打开/关闭/拖拽仍可在当前页面临时操作，但不会写入偏好缓存。重新开启个性化且未升级缓存版本时，将恢复原先保存的用户偏好。
 
+顶部右侧还支持追加、替换内容及自定义用户菜单，详见 [顶部右侧插槽](./layout-slots.md)。
+
 ## 读取、更新和重置
 
 业务组件继续使用 `useSettingsStore`、`useThemeStore`、`useLayoutStore` 现有方法。它们共享 `usePreferencesStore`，不再分别定义默认值和存储逻辑。

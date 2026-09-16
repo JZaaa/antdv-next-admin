@@ -23,7 +23,20 @@
           }"
         >
           <!-- Header -->
-          <Header v-if="!layoutStore.pageFullscreen" />
+          <Header v-if="!layoutStore.pageFullscreen">
+            <template v-if="$slots['header-right']" #header-right="slotProps">
+              <slot name="header-right" v-bind="slotProps" />
+            </template>
+            <template v-if="$slots['header-right-before']" #header-right-before="slotProps">
+              <slot name="header-right-before" v-bind="slotProps" />
+            </template>
+            <template v-if="$slots['header-right-after']" #header-right-after="slotProps">
+              <slot name="header-right-after" v-bind="slotProps" />
+            </template>
+            <template v-if="$slots['header-user']" #header-user="slotProps">
+              <slot name="header-user" v-bind="slotProps" />
+            </template>
+          </Header>
 
           <!-- Tabs -->
           <TabBar v-if="settingsStore.features.tabs" />
@@ -110,7 +123,20 @@
             </div>
           </div>
           <div class="header-right">
-            <Header :show-breadcrumb="false" :show-collapse-button="false" />
+            <Header :show-breadcrumb="false" :show-collapse-button="false">
+              <template v-if="$slots['header-right']" #header-right="slotProps">
+                <slot name="header-right" v-bind="slotProps" />
+              </template>
+              <template v-if="$slots['header-right-before']" #header-right-before="slotProps">
+                <slot name="header-right-before" v-bind="slotProps" />
+              </template>
+              <template v-if="$slots['header-right-after']" #header-right-after="slotProps">
+                <slot name="header-right-after" v-bind="slotProps" />
+              </template>
+              <template v-if="$slots['header-user']" #header-user="slotProps">
+                <slot name="header-user" v-bind="slotProps" />
+              </template>
+            </Header>
           </div>
           <div ref="measureMenuWrapRef" class="horizontal-menu-measure-wrap" aria-hidden="true">
             <a-menu
@@ -178,6 +204,7 @@
 </template>
 
 <script setup lang="ts">
+import type { AdminLayoutSlots } from '@/types/layoutSlots';
 import type { MenuItem as MenuItemType } from '@/types/router';
 import type { MenuProps } from 'antdv-next';
 
@@ -208,6 +235,8 @@ import { renderIcon } from '@/utils/icon';
 import Header from './Header.vue';
 import Sidebar from './Sidebar.vue';
 import TabBar from './TabBar.vue';
+
+defineSlots<AdminLayoutSlots>();
 
 const AICollabPanel = defineAsyncComponent(() => import('./AICollabPanel.vue'));
 

@@ -18,90 +18,98 @@
     </div>
 
     <div class="header-right">
-      <!-- Global Search Trigger -->
-      <a-button
-        v-if="settingsStore.features.search"
-        type="text"
-        class="header-action search-btn"
-        :aria-label="$t('layout.menuSearchDialog')"
-        @click="openGlobalSearch"
-      >
-        <SearchOutlined />
-      </a-button>
-      <button
-        v-if="settingsStore.features.search"
-        type="button"
-        class="search-trigger desktop-only"
-        :aria-label="$t('layout.menuSearchDialog')"
-        @click="openGlobalSearch"
-      >
-        <SearchOutlined class="search-icon" />
-        <span class="search-text">{{ $t('common.search') }}</span>
-        <span class="search-key" aria-hidden="true">
-          <span class="search-key-text">{{ isMac ? '⌘' : 'Ctrl' }}</span>
-          <span class="search-key-k">K</span>
-        </span>
-      </button>
-
-      <!-- Desktop: Show all actions -->
-      <template v-if="!layoutStore.isMobile">
-        <a-tooltip
-          v-if="layoutStore.aiEntryVisible"
-          :title="
-            layoutStore.aiCollabEnabled ? $t('layout.aiCollabDisable') : $t('layout.aiCollabEnable')
-          "
+      <slot name="header-right" v-bind="headerSlotProps">
+        <slot name="header-right-before" v-bind="headerSlotProps" />
+        <!-- Global Search Trigger -->
+        <a-button
+          v-if="settingsStore.features.search"
+          type="text"
+          class="header-action search-btn"
+          :aria-label="$t('layout.menuSearchDialog')"
+          @click="openGlobalSearch"
         >
-          <a-button
-            type="text"
-            class="header-action ai-toggle-btn"
-            :class="{ active: layoutStore.aiCollabEnabled }"
-            @click="layoutStore.toggleAiCollab"
-          >
-            <MessageOutlined />
-          </a-button>
-        </a-tooltip>
-
-        <!-- Fullscreen Toggle -->
-        <FullscreenToggle v-if="settingsStore.features.fullscreen" />
-
-        <!-- Notifications -->
-        <NotificationPanel v-if="settingsStore.features.notifications" />
-
-        <!-- Theme Toggle -->
-        <ThemeToggle
-          v-if="settingsStore.features.personalization && settingsStore.features.themeSwitch"
-        />
-
-        <!-- Language Switch -->
-        <LanguageSwitch
-          v-if="settingsStore.features.personalization && settingsStore.showLanguageSwitch"
-        />
-
-        <!-- Settings -->
-        <a-tooltip v-if="settingsStore.features.personalization" :title="$t('settings.title')">
-          <a-button type="text" class="header-action" @click="openSettings">
-            <SettingOutlined />
-          </a-button>
-        </a-tooltip>
-
-        <!-- Divider -->
-        <a-divider type="vertical" style="height: 20px; margin: 0 4px" />
-      </template>
-
-      <!-- Mobile: More menu (three dots) -->
-      <a-dropdown
-        v-else-if="moreMenuProps.items.length"
-        :trigger="['click']"
-        placement="bottomRight"
-        :menu="moreMenuProps"
-      >
-        <a-button type="text" class="header-action">
-          <MoreOutlined />
+          <SearchOutlined />
         </a-button>
-      </a-dropdown>
+        <button
+          v-if="settingsStore.features.search"
+          type="button"
+          class="search-trigger desktop-only"
+          :aria-label="$t('layout.menuSearchDialog')"
+          @click="openGlobalSearch"
+        >
+          <SearchOutlined class="search-icon" />
+          <span class="search-text">{{ $t('common.search') }}</span>
+          <span class="search-key" aria-hidden="true">
+            <span class="search-key-text">{{ isMac ? '⌘' : 'Ctrl' }}</span>
+            <span class="search-key-k">K</span>
+          </span>
+        </button>
 
-      <!-- User Avatar Dropdown -->
-      <AvatarDropdown />
+        <!-- Desktop: Show all actions -->
+        <template v-if="!layoutStore.isMobile">
+          <a-tooltip
+            v-if="layoutStore.aiEntryVisible"
+            :title="
+              layoutStore.aiCollabEnabled
+                ? $t('layout.aiCollabDisable')
+                : $t('layout.aiCollabEnable')
+            "
+          >
+            <a-button
+              type="text"
+              class="header-action ai-toggle-btn"
+              :class="{ active: layoutStore.aiCollabEnabled }"
+              @click="layoutStore.toggleAiCollab"
+            >
+              <MessageOutlined />
+            </a-button>
+          </a-tooltip>
+
+          <!-- Fullscreen Toggle -->
+          <FullscreenToggle v-if="settingsStore.features.fullscreen" />
+
+          <!-- Notifications -->
+          <NotificationPanel v-if="settingsStore.features.notifications" />
+
+          <!-- Theme Toggle -->
+          <ThemeToggle
+            v-if="settingsStore.features.personalization && settingsStore.features.themeSwitch"
+          />
+
+          <!-- Language Switch -->
+          <LanguageSwitch
+            v-if="settingsStore.features.personalization && settingsStore.showLanguageSwitch"
+          />
+
+          <!-- Settings -->
+          <a-tooltip v-if="settingsStore.features.personalization" :title="$t('settings.title')">
+            <a-button type="text" class="header-action" @click="openSettings">
+              <SettingOutlined />
+            </a-button>
+          </a-tooltip>
+
+          <!-- Divider -->
+          <a-divider type="vertical" style="height: 20px; margin: 0 4px" />
+        </template>
+
+        <!-- Mobile: More menu (three dots) -->
+        <a-dropdown
+          v-else-if="moreMenuProps.items.length"
+          :trigger="['click']"
+          placement="bottomRight"
+          :menu="moreMenuProps"
+        >
+          <a-button type="text" class="header-action">
+            <MoreOutlined />
+          </a-button>
+        </a-dropdown>
+
+        <!-- User Avatar Dropdown -->
+        <slot name="header-user" v-bind="headerSlotProps">
+          <AvatarDropdown />
+        </slot>
+        <slot name="header-right-after" v-bind="headerSlotProps" />
+      </slot>
     </div>
 
     <!-- Global Search Modal -->
@@ -119,6 +127,8 @@
 </template>
 
 <script setup lang="ts">
+import type { LayoutHeaderSlotProps, LayoutHeaderSlots } from '@/types/layoutSlots';
+
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -154,6 +164,8 @@ import ThemeToggle from './ThemeToggle.vue';
 const GlobalSearch = defineAsyncComponent(() => import('./GlobalSearch.vue'));
 const NotificationPanel = defineAsyncComponent(() => import('./NotificationPanel.vue'));
 const SettingsDrawer = defineAsyncComponent(() => import('./SettingsDrawer.vue'));
+
+defineSlots<LayoutHeaderSlots>();
 
 interface Props {
   showBreadcrumb?: boolean;
@@ -193,6 +205,12 @@ const openSettings = () => {
   settingsDrawerLoaded.value = true;
   settingsDrawerOpen.value = true;
 };
+
+const headerSlotProps = computed<LayoutHeaderSlotProps>(() => ({
+  isMobile: layoutStore.isMobile,
+  openSearch: openGlobalSearch,
+  openSettings,
+}));
 
 const toggleFullscreen = () => {
   if (!document.fullscreenElement) {
