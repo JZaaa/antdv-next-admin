@@ -1,0 +1,39 @@
+{
+  "name": "schema-form",
+  "version": "2.0.0",
+  "delivery": "copy-entire-source-directory",
+  "entry": "index.ts",
+  "minimumBrowser": "Chrome 100",
+  "testedBrowser": "Chrome 100.0.4896.0",
+  "build": {
+    "vueSfc": true,
+    "css": true,
+    "dynamicImport": true,
+    "jsTarget": "chrome100",
+    "cssTarget": "chrome100"
+  },
+  "testedDependencies": {
+    "vue": "3.5.42",
+    "antdv-next": "1.5.4",
+    "dayjs": "1.11.23",
+    "@tanstack/vue-form": "1.33.5",
+    "@tanstack/store": "0.11.1",
+    "zod": "4.4.3",
+    "zod-defaults": "0.2.3"
+  },
+  "hostOptional": ["antdv-next ConfigProvider for theme and control locale", "business adapters"],
+  "notRequired": [
+    "router",
+    "pinia",
+    "axios",
+    "tailwindcss",
+    "vue-i18n",
+    "project aliases",
+    "global control registration"
+  ],
+  "entries": {
+    "useSchemaForm": "Modern Vben form-ui 5.8.0; antdv-next only"
+  },
+  "excluded": ["Deprecated APIs, aliases and configuration protocols", "Multi-UI adapters"],
+  "publicEntrypoints": ["useSchemaForm"]
+}

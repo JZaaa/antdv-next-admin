@@ -1,0 +1,17 @@
+{
+  "source": [
+    {
+      "file": "src/libs/form/internal/zod.ts",
+      "rule": "js-api",
+      "code": "z.union",
+      "reason": "Zod 4.4.3 的 schema 联合类型构造函数，并非 Chrome 100 缺失的 Set.prototype.union；由 Zod 默认值单元测试及 Chrome 100 表单回归覆盖。"
+    },
+    {
+      "file": "src/views/examples/schema-form/demos/RulesDemo.vue",
+      "rule": "js-api",
+      "code": "z.union",
+      "reason": "从表单库导出的 z 为 Zod 4.4.3，z.union 用于可选邮箱 schema，并非 Set.prototype.union；Chrome 100 文档示例回归验证邮箱错误与清空提交。"
+    }
+  ],
+  "dist": []
+}

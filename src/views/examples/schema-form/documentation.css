@@ -1,0 +1,193 @@
+.form-documentation {
+  max-width: 1320px;
+  margin: 0 auto;
+  color: var(--ant-color-text);
+}
+.form-doc-intro,
+.form-doc-section,
+.form-demo-block {
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: 10px;
+  background: var(--ant-color-bg-container);
+  scroll-margin-top: 20px;
+  min-width: 0;
+}
+.form-documentation h1 {
+  font-size: 30px;
+  margin: 4px 0 12px;
+  font-weight: 650;
+}
+.form-documentation h2 {
+  font-size: 20px;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+.form-documentation h3 {
+  font-size: 16px;
+  margin: 24px 0 12px;
+}
+.form-documentation p {
+  line-height: 1.8;
+}
+.form-doc-eyebrow {
+  color: var(--ant-color-primary);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+.form-doc-badges {
+  margin: 16px 0;
+}
+.form-doc-nav,
+.form-demo-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.form-doc-nav button {
+  border: 1px solid var(--ant-color-border-secondary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: var(--ant-color-text);
+  background: var(--ant-color-bg-container);
+  cursor: pointer;
+}
+.form-doc-nav button:hover {
+  color: var(--ant-color-primary);
+  border-color: var(--ant-color-primary);
+}
+.form-demo-block > header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  justify-content: space-between;
+}
+.form-demo-block > header p,
+.form-demo-related {
+  color: var(--ant-color-text-secondary);
+}
+.form-demo-block > header .ant-btn {
+  flex-shrink: 0;
+}
+.form-demo-preview {
+  padding-top: 24px;
+  margin-top: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+}
+.form-demo-source {
+  margin-top: 20px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+  padding-top: 14px;
+}
+.form-documentation summary {
+  cursor: pointer;
+  color: var(--ant-color-primary);
+  overflow-wrap: anywhere;
+}
+.form-demo-file-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0 8px;
+}
+.form-demo-file pre,
+.form-doc-types {
+  max-height: 520px;
+  overflow: auto;
+  background: var(--ant-color-fill-quaternary);
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+.form-demo-result {
+  display: block;
+  padding: 16px;
+  margin-top: 16px;
+  background: var(--ant-color-fill-quaternary);
+  border-radius: 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.form-doc-table-wrap {
+  overflow-x: auto;
+  margin: 24px 0;
+}
+.form-documentation table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.form-documentation caption {
+  text-align: left;
+  caption-side: top;
+  color: var(--ant-color-text);
+  font-weight: 600;
+  padding-bottom: 12px;
+}
+.form-documentation th,
+.form-documentation td {
+  padding: 12px;
+  border: 1px solid var(--ant-color-border-secondary);
+  text-align: left;
+  vertical-align: top;
+  min-width: 110px;
+}
+.form-documentation td:last-child {
+  min-width: 190px;
+}
+.form-documentation th {
+  background: var(--ant-color-fill-quaternary);
+  white-space: nowrap;
+}
+.form-documentation code {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.form-doc-link {
+  color: var(--ant-color-primary);
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background: none;
+  white-space: nowrap;
+}
+.form-doc-filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.form-doc-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+  max-width: 100%;
+}
+.form-doc-filters label:first-child {
+  flex: 1;
+}
+.form-doc-filters .ant-select {
+  width: 180px;
+}
+@media (max-width: 600px) {
+  .form-doc-intro,
+  .form-doc-section,
+  .form-demo-block {
+    padding: 16px;
+  }
+  .form-demo-block > header {
+    flex-direction: column;
+  }
+  .form-documentation h1 {
+    font-size: 25px;
+  }
+  .form-demo-preview .ant-card-body {
+    padding: 12px;
+  }
+}

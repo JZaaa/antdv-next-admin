@@ -349,6 +349,17 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             },
           },
           {
+            path: "/examples/schema-form",
+            name: "ExamplesSchemaForm",
+            component: () => import("@/views/examples/schema-form/index.vue"),
+            meta: {
+              title: "menu.schemaForm",
+              icon: "FormOutlined",
+              requiresAuth: true,
+              order: 1.5,
+            },
+          },
+          {
             path: "/examples/i18n-input",
             name: "ExamplesI18nInput",
             component: () => import("@/views/examples/i18n-input/index.vue"),

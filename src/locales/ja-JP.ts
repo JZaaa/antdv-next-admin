@@ -106,6 +106,7 @@ export default {
     table: 'テーブルの例',
     icon: 'アイコンの例',
     form: 'フォーム例',
+    schemaForm: 'SchemaForm',
     jsonInput: 'JSON入力',
     i18nInput: 'I18n入力',
     advancedFilter: '高度なフィルタービルダー',

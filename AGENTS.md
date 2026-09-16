@@ -224,7 +224,7 @@ if (canAll(['user.edit', 'user.approve'])) {
 ### Browser Compatibility
 - **Minimum supported browser**: Chrome ≥ 100. All changes must remain compatible with Chrome 100.
 - Check JavaScript APIs, CSS features, dependencies, and build targets against this baseline. Features unsupported in Chrome 100 require a compatible fallback or polyfill.
-- Run `check:compat` and check built CSS with `check:compat:dist`. Exact reviewed exceptions require a reason in `scripts/chrome100-exceptions.json`; remove stale entries. See `docs/chrome-100-ci.md` for coverage and limits.
+- Run `check:compat` and check built CSS with `check:compat:dist`. Exact reviewed exceptions require a reason in `scripts/compat/chrome100-exceptions.json`; remove stale entries. See `docs/chrome-100-ci.md` for coverage and limits.
 
 ### Environment Variables
 - **Development** (`.env.development`): `VITE_USE_MOCK=true`, `VITE_API_BASE_URL=/api`

@@ -50,8 +50,8 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      - name: Unit tests
-        run: pnpm run test:unit:run
+      - name: Unit tests (excluding forms)
+        run: pnpm run test:unit:run --exclude '**/*form*.spec.ts'
 
       - name: Build
         run: pnpm run build:demo

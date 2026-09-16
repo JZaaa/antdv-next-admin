@@ -108,6 +108,7 @@ export default {
     table: '表格示例',
     icon: '图标示例',
     form: '表单示例',
+    schemaForm: 'SchemaForm 独立表单',
     jsonInput: 'JSON输入',
     i18nInput: '国际化输入',
     advancedFilter: '高级筛选构建器',

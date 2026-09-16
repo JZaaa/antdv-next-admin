@@ -1,0 +1,1126 @@
+/* Standalone fallbacks for the public Vben grid classes (Tailwind 3 breakpoints). */
+.vben-form-grid.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-1 {
+  grid-column: span 1 / span 1;
+}
+.vben-form-grid > .col-start-1 {
+  grid-column-start: 1;
+}
+.vben-form-grid > .col-end-1 {
+  grid-column-end: 1;
+}
+.vben-form-grid.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-2 {
+  grid-column: span 2 / span 2;
+}
+.vben-form-grid > .col-start-2 {
+  grid-column-start: 2;
+}
+.vben-form-grid > .col-end-2 {
+  grid-column-end: 2;
+}
+.vben-form-grid.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-3 {
+  grid-column: span 3 / span 3;
+}
+.vben-form-grid > .col-start-3 {
+  grid-column-start: 3;
+}
+.vben-form-grid > .col-end-3 {
+  grid-column-end: 3;
+}
+.vben-form-grid.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-4 {
+  grid-column: span 4 / span 4;
+}
+.vben-form-grid > .col-start-4 {
+  grid-column-start: 4;
+}
+.vben-form-grid > .col-end-4 {
+  grid-column-end: 4;
+}
+.vben-form-grid.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-5 {
+  grid-column: span 5 / span 5;
+}
+.vben-form-grid > .col-start-5 {
+  grid-column-start: 5;
+}
+.vben-form-grid > .col-end-5 {
+  grid-column-end: 5;
+}
+.vben-form-grid.grid-cols-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-6 {
+  grid-column: span 6 / span 6;
+}
+.vben-form-grid > .col-start-6 {
+  grid-column-start: 6;
+}
+.vben-form-grid > .col-end-6 {
+  grid-column-end: 6;
+}
+.vben-form-grid.grid-cols-7 {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-7 {
+  grid-column: span 7 / span 7;
+}
+.vben-form-grid > .col-start-7 {
+  grid-column-start: 7;
+}
+.vben-form-grid > .col-end-7 {
+  grid-column-end: 7;
+}
+.vben-form-grid.grid-cols-8 {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-8 {
+  grid-column: span 8 / span 8;
+}
+.vben-form-grid > .col-start-8 {
+  grid-column-start: 8;
+}
+.vben-form-grid > .col-end-8 {
+  grid-column-end: 8;
+}
+.vben-form-grid.grid-cols-9 {
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-9 {
+  grid-column: span 9 / span 9;
+}
+.vben-form-grid > .col-start-9 {
+  grid-column-start: 9;
+}
+.vben-form-grid > .col-end-9 {
+  grid-column-end: 9;
+}
+.vben-form-grid.grid-cols-10 {
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-10 {
+  grid-column: span 10 / span 10;
+}
+.vben-form-grid > .col-start-10 {
+  grid-column-start: 10;
+}
+.vben-form-grid > .col-end-10 {
+  grid-column-end: 10;
+}
+.vben-form-grid.grid-cols-11 {
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-11 {
+  grid-column: span 11 / span 11;
+}
+.vben-form-grid > .col-start-11 {
+  grid-column-start: 11;
+}
+.vben-form-grid > .col-end-11 {
+  grid-column-end: 11;
+}
+.vben-form-grid.grid-cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-12 {
+  grid-column: span 12 / span 12;
+}
+.vben-form-grid > .col-start-12 {
+  grid-column-start: 12;
+}
+.vben-form-grid > .col-end-12 {
+  grid-column-end: 12;
+}
+.vben-form-grid.grid-cols-13 {
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+}
+.vben-form-grid > .col-span-13 {
+  grid-column: span 13 / span 13;
+}
+.vben-form-grid > .col-start-13 {
+  grid-column-start: 13;
+}
+.vben-form-grid > .col-end-13 {
+  grid-column-end: 13;
+}
+.vben-form-grid > .col-span-full {
+  grid-column: 1 / -1;
+}
+@media (min-width: 640px) {
+  .vben-form-grid.sm\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .vben-form-grid > .sm\:col-start-1 {
+    grid-column-start: 1;
+  }
+  .vben-form-grid > .sm\:col-end-1 {
+    grid-column-end: 1;
+  }
+  .vben-form-grid.sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  .vben-form-grid > .sm\:col-start-2 {
+    grid-column-start: 2;
+  }
+  .vben-form-grid > .sm\:col-end-2 {
+    grid-column-end: 2;
+  }
+  .vben-form-grid.sm\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+  .vben-form-grid > .sm\:col-start-3 {
+    grid-column-start: 3;
+  }
+  .vben-form-grid > .sm\:col-end-3 {
+    grid-column-end: 3;
+  }
+  .vben-form-grid.sm\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-4 {
+    grid-column: span 4 / span 4;
+  }
+  .vben-form-grid > .sm\:col-start-4 {
+    grid-column-start: 4;
+  }
+  .vben-form-grid > .sm\:col-end-4 {
+    grid-column-end: 4;
+  }
+  .vben-form-grid.sm\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-5 {
+    grid-column: span 5 / span 5;
+  }
+  .vben-form-grid > .sm\:col-start-5 {
+    grid-column-start: 5;
+  }
+  .vben-form-grid > .sm\:col-end-5 {
+    grid-column-end: 5;
+  }
+  .vben-form-grid.sm\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-6 {
+    grid-column: span 6 / span 6;
+  }
+  .vben-form-grid > .sm\:col-start-6 {
+    grid-column-start: 6;
+  }
+  .vben-form-grid > .sm\:col-end-6 {
+    grid-column-end: 6;
+  }
+  .vben-form-grid.sm\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-7 {
+    grid-column: span 7 / span 7;
+  }
+  .vben-form-grid > .sm\:col-start-7 {
+    grid-column-start: 7;
+  }
+  .vben-form-grid > .sm\:col-end-7 {
+    grid-column-end: 7;
+  }
+  .vben-form-grid.sm\:grid-cols-8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-8 {
+    grid-column: span 8 / span 8;
+  }
+  .vben-form-grid > .sm\:col-start-8 {
+    grid-column-start: 8;
+  }
+  .vben-form-grid > .sm\:col-end-8 {
+    grid-column-end: 8;
+  }
+  .vben-form-grid.sm\:grid-cols-9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-9 {
+    grid-column: span 9 / span 9;
+  }
+  .vben-form-grid > .sm\:col-start-9 {
+    grid-column-start: 9;
+  }
+  .vben-form-grid > .sm\:col-end-9 {
+    grid-column-end: 9;
+  }
+  .vben-form-grid.sm\:grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-10 {
+    grid-column: span 10 / span 10;
+  }
+  .vben-form-grid > .sm\:col-start-10 {
+    grid-column-start: 10;
+  }
+  .vben-form-grid > .sm\:col-end-10 {
+    grid-column-end: 10;
+  }
+  .vben-form-grid.sm\:grid-cols-11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-11 {
+    grid-column: span 11 / span 11;
+  }
+  .vben-form-grid > .sm\:col-start-11 {
+    grid-column-start: 11;
+  }
+  .vben-form-grid > .sm\:col-end-11 {
+    grid-column-end: 11;
+  }
+  .vben-form-grid.sm\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-12 {
+    grid-column: span 12 / span 12;
+  }
+  .vben-form-grid > .sm\:col-start-12 {
+    grid-column-start: 12;
+  }
+  .vben-form-grid > .sm\:col-end-12 {
+    grid-column-end: 12;
+  }
+  .vben-form-grid.sm\:grid-cols-13 {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+  }
+  .vben-form-grid > .sm\:col-span-13 {
+    grid-column: span 13 / span 13;
+  }
+  .vben-form-grid > .sm\:col-start-13 {
+    grid-column-start: 13;
+  }
+  .vben-form-grid > .sm\:col-end-13 {
+    grid-column-end: 13;
+  }
+  .vben-form-grid > .sm\:col-span-full {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 768px) {
+  .vben-form-grid.md\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .vben-form-grid > .md\:col-start-1 {
+    grid-column-start: 1;
+  }
+  .vben-form-grid > .md\:col-end-1 {
+    grid-column-end: 1;
+  }
+  .vben-form-grid.md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  .vben-form-grid > .md\:col-start-2 {
+    grid-column-start: 2;
+  }
+  .vben-form-grid > .md\:col-end-2 {
+    grid-column-end: 2;
+  }
+  .vben-form-grid.md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+  .vben-form-grid > .md\:col-start-3 {
+    grid-column-start: 3;
+  }
+  .vben-form-grid > .md\:col-end-3 {
+    grid-column-end: 3;
+  }
+  .vben-form-grid.md\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-4 {
+    grid-column: span 4 / span 4;
+  }
+  .vben-form-grid > .md\:col-start-4 {
+    grid-column-start: 4;
+  }
+  .vben-form-grid > .md\:col-end-4 {
+    grid-column-end: 4;
+  }
+  .vben-form-grid.md\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-5 {
+    grid-column: span 5 / span 5;
+  }
+  .vben-form-grid > .md\:col-start-5 {
+    grid-column-start: 5;
+  }
+  .vben-form-grid > .md\:col-end-5 {
+    grid-column-end: 5;
+  }
+  .vben-form-grid.md\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-6 {
+    grid-column: span 6 / span 6;
+  }
+  .vben-form-grid > .md\:col-start-6 {
+    grid-column-start: 6;
+  }
+  .vben-form-grid > .md\:col-end-6 {
+    grid-column-end: 6;
+  }
+  .vben-form-grid.md\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-7 {
+    grid-column: span 7 / span 7;
+  }
+  .vben-form-grid > .md\:col-start-7 {
+    grid-column-start: 7;
+  }
+  .vben-form-grid > .md\:col-end-7 {
+    grid-column-end: 7;
+  }
+  .vben-form-grid.md\:grid-cols-8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-8 {
+    grid-column: span 8 / span 8;
+  }
+  .vben-form-grid > .md\:col-start-8 {
+    grid-column-start: 8;
+  }
+  .vben-form-grid > .md\:col-end-8 {
+    grid-column-end: 8;
+  }
+  .vben-form-grid.md\:grid-cols-9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-9 {
+    grid-column: span 9 / span 9;
+  }
+  .vben-form-grid > .md\:col-start-9 {
+    grid-column-start: 9;
+  }
+  .vben-form-grid > .md\:col-end-9 {
+    grid-column-end: 9;
+  }
+  .vben-form-grid.md\:grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-10 {
+    grid-column: span 10 / span 10;
+  }
+  .vben-form-grid > .md\:col-start-10 {
+    grid-column-start: 10;
+  }
+  .vben-form-grid > .md\:col-end-10 {
+    grid-column-end: 10;
+  }
+  .vben-form-grid.md\:grid-cols-11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-11 {
+    grid-column: span 11 / span 11;
+  }
+  .vben-form-grid > .md\:col-start-11 {
+    grid-column-start: 11;
+  }
+  .vben-form-grid > .md\:col-end-11 {
+    grid-column-end: 11;
+  }
+  .vben-form-grid.md\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-12 {
+    grid-column: span 12 / span 12;
+  }
+  .vben-form-grid > .md\:col-start-12 {
+    grid-column-start: 12;
+  }
+  .vben-form-grid > .md\:col-end-12 {
+    grid-column-end: 12;
+  }
+  .vben-form-grid.md\:grid-cols-13 {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+  }
+  .vben-form-grid > .md\:col-span-13 {
+    grid-column: span 13 / span 13;
+  }
+  .vben-form-grid > .md\:col-start-13 {
+    grid-column-start: 13;
+  }
+  .vben-form-grid > .md\:col-end-13 {
+    grid-column-end: 13;
+  }
+  .vben-form-grid > .md\:col-span-full {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1024px) {
+  .vben-form-grid.lg\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .vben-form-grid > .lg\:col-start-1 {
+    grid-column-start: 1;
+  }
+  .vben-form-grid > .lg\:col-end-1 {
+    grid-column-end: 1;
+  }
+  .vben-form-grid.lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  .vben-form-grid > .lg\:col-start-2 {
+    grid-column-start: 2;
+  }
+  .vben-form-grid > .lg\:col-end-2 {
+    grid-column-end: 2;
+  }
+  .vben-form-grid.lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+  .vben-form-grid > .lg\:col-start-3 {
+    grid-column-start: 3;
+  }
+  .vben-form-grid > .lg\:col-end-3 {
+    grid-column-end: 3;
+  }
+  .vben-form-grid.lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-4 {
+    grid-column: span 4 / span 4;
+  }
+  .vben-form-grid > .lg\:col-start-4 {
+    grid-column-start: 4;
+  }
+  .vben-form-grid > .lg\:col-end-4 {
+    grid-column-end: 4;
+  }
+  .vben-form-grid.lg\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-5 {
+    grid-column: span 5 / span 5;
+  }
+  .vben-form-grid > .lg\:col-start-5 {
+    grid-column-start: 5;
+  }
+  .vben-form-grid > .lg\:col-end-5 {
+    grid-column-end: 5;
+  }
+  .vben-form-grid.lg\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-6 {
+    grid-column: span 6 / span 6;
+  }
+  .vben-form-grid > .lg\:col-start-6 {
+    grid-column-start: 6;
+  }
+  .vben-form-grid > .lg\:col-end-6 {
+    grid-column-end: 6;
+  }
+  .vben-form-grid.lg\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-7 {
+    grid-column: span 7 / span 7;
+  }
+  .vben-form-grid > .lg\:col-start-7 {
+    grid-column-start: 7;
+  }
+  .vben-form-grid > .lg\:col-end-7 {
+    grid-column-end: 7;
+  }
+  .vben-form-grid.lg\:grid-cols-8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-8 {
+    grid-column: span 8 / span 8;
+  }
+  .vben-form-grid > .lg\:col-start-8 {
+    grid-column-start: 8;
+  }
+  .vben-form-grid > .lg\:col-end-8 {
+    grid-column-end: 8;
+  }
+  .vben-form-grid.lg\:grid-cols-9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-9 {
+    grid-column: span 9 / span 9;
+  }
+  .vben-form-grid > .lg\:col-start-9 {
+    grid-column-start: 9;
+  }
+  .vben-form-grid > .lg\:col-end-9 {
+    grid-column-end: 9;
+  }
+  .vben-form-grid.lg\:grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-10 {
+    grid-column: span 10 / span 10;
+  }
+  .vben-form-grid > .lg\:col-start-10 {
+    grid-column-start: 10;
+  }
+  .vben-form-grid > .lg\:col-end-10 {
+    grid-column-end: 10;
+  }
+  .vben-form-grid.lg\:grid-cols-11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-11 {
+    grid-column: span 11 / span 11;
+  }
+  .vben-form-grid > .lg\:col-start-11 {
+    grid-column-start: 11;
+  }
+  .vben-form-grid > .lg\:col-end-11 {
+    grid-column-end: 11;
+  }
+  .vben-form-grid.lg\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-12 {
+    grid-column: span 12 / span 12;
+  }
+  .vben-form-grid > .lg\:col-start-12 {
+    grid-column-start: 12;
+  }
+  .vben-form-grid > .lg\:col-end-12 {
+    grid-column-end: 12;
+  }
+  .vben-form-grid.lg\:grid-cols-13 {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+  }
+  .vben-form-grid > .lg\:col-span-13 {
+    grid-column: span 13 / span 13;
+  }
+  .vben-form-grid > .lg\:col-start-13 {
+    grid-column-start: 13;
+  }
+  .vben-form-grid > .lg\:col-end-13 {
+    grid-column-end: 13;
+  }
+  .vben-form-grid > .lg\:col-span-full {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1280px) {
+  .vben-form-grid.xl\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .vben-form-grid > .xl\:col-start-1 {
+    grid-column-start: 1;
+  }
+  .vben-form-grid > .xl\:col-end-1 {
+    grid-column-end: 1;
+  }
+  .vben-form-grid.xl\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  .vben-form-grid > .xl\:col-start-2 {
+    grid-column-start: 2;
+  }
+  .vben-form-grid > .xl\:col-end-2 {
+    grid-column-end: 2;
+  }
+  .vben-form-grid.xl\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+  .vben-form-grid > .xl\:col-start-3 {
+    grid-column-start: 3;
+  }
+  .vben-form-grid > .xl\:col-end-3 {
+    grid-column-end: 3;
+  }
+  .vben-form-grid.xl\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-4 {
+    grid-column: span 4 / span 4;
+  }
+  .vben-form-grid > .xl\:col-start-4 {
+    grid-column-start: 4;
+  }
+  .vben-form-grid > .xl\:col-end-4 {
+    grid-column-end: 4;
+  }
+  .vben-form-grid.xl\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-5 {
+    grid-column: span 5 / span 5;
+  }
+  .vben-form-grid > .xl\:col-start-5 {
+    grid-column-start: 5;
+  }
+  .vben-form-grid > .xl\:col-end-5 {
+    grid-column-end: 5;
+  }
+  .vben-form-grid.xl\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-6 {
+    grid-column: span 6 / span 6;
+  }
+  .vben-form-grid > .xl\:col-start-6 {
+    grid-column-start: 6;
+  }
+  .vben-form-grid > .xl\:col-end-6 {
+    grid-column-end: 6;
+  }
+  .vben-form-grid.xl\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-7 {
+    grid-column: span 7 / span 7;
+  }
+  .vben-form-grid > .xl\:col-start-7 {
+    grid-column-start: 7;
+  }
+  .vben-form-grid > .xl\:col-end-7 {
+    grid-column-end: 7;
+  }
+  .vben-form-grid.xl\:grid-cols-8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-8 {
+    grid-column: span 8 / span 8;
+  }
+  .vben-form-grid > .xl\:col-start-8 {
+    grid-column-start: 8;
+  }
+  .vben-form-grid > .xl\:col-end-8 {
+    grid-column-end: 8;
+  }
+  .vben-form-grid.xl\:grid-cols-9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-9 {
+    grid-column: span 9 / span 9;
+  }
+  .vben-form-grid > .xl\:col-start-9 {
+    grid-column-start: 9;
+  }
+  .vben-form-grid > .xl\:col-end-9 {
+    grid-column-end: 9;
+  }
+  .vben-form-grid.xl\:grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-10 {
+    grid-column: span 10 / span 10;
+  }
+  .vben-form-grid > .xl\:col-start-10 {
+    grid-column-start: 10;
+  }
+  .vben-form-grid > .xl\:col-end-10 {
+    grid-column-end: 10;
+  }
+  .vben-form-grid.xl\:grid-cols-11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-11 {
+    grid-column: span 11 / span 11;
+  }
+  .vben-form-grid > .xl\:col-start-11 {
+    grid-column-start: 11;
+  }
+  .vben-form-grid > .xl\:col-end-11 {
+    grid-column-end: 11;
+  }
+  .vben-form-grid.xl\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-12 {
+    grid-column: span 12 / span 12;
+  }
+  .vben-form-grid > .xl\:col-start-12 {
+    grid-column-start: 12;
+  }
+  .vben-form-grid > .xl\:col-end-12 {
+    grid-column-end: 12;
+  }
+  .vben-form-grid.xl\:grid-cols-13 {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+  }
+  .vben-form-grid > .xl\:col-span-13 {
+    grid-column: span 13 / span 13;
+  }
+  .vben-form-grid > .xl\:col-start-13 {
+    grid-column-start: 13;
+  }
+  .vben-form-grid > .xl\:col-end-13 {
+    grid-column-end: 13;
+  }
+  .vben-form-grid > .xl\:col-span-full {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1536px) {
+  .vben-form-grid.\32 xl\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .vben-form-grid > .\32 xl\:col-start-1 {
+    grid-column-start: 1;
+  }
+  .vben-form-grid > .\32 xl\:col-end-1 {
+    grid-column-end: 1;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  .vben-form-grid > .\32 xl\:col-start-2 {
+    grid-column-start: 2;
+  }
+  .vben-form-grid > .\32 xl\:col-end-2 {
+    grid-column-end: 2;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+  .vben-form-grid > .\32 xl\:col-start-3 {
+    grid-column-start: 3;
+  }
+  .vben-form-grid > .\32 xl\:col-end-3 {
+    grid-column-end: 3;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-4 {
+    grid-column: span 4 / span 4;
+  }
+  .vben-form-grid > .\32 xl\:col-start-4 {
+    grid-column-start: 4;
+  }
+  .vben-form-grid > .\32 xl\:col-end-4 {
+    grid-column-end: 4;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-5 {
+    grid-column: span 5 / span 5;
+  }
+  .vben-form-grid > .\32 xl\:col-start-5 {
+    grid-column-start: 5;
+  }
+  .vben-form-grid > .\32 xl\:col-end-5 {
+    grid-column-end: 5;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-6 {
+    grid-column: span 6 / span 6;
+  }
+  .vben-form-grid > .\32 xl\:col-start-6 {
+    grid-column-start: 6;
+  }
+  .vben-form-grid > .\32 xl\:col-end-6 {
+    grid-column-end: 6;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-7 {
+    grid-column: span 7 / span 7;
+  }
+  .vben-form-grid > .\32 xl\:col-start-7 {
+    grid-column-start: 7;
+  }
+  .vben-form-grid > .\32 xl\:col-end-7 {
+    grid-column-end: 7;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-8 {
+    grid-column: span 8 / span 8;
+  }
+  .vben-form-grid > .\32 xl\:col-start-8 {
+    grid-column-start: 8;
+  }
+  .vben-form-grid > .\32 xl\:col-end-8 {
+    grid-column-end: 8;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-9 {
+    grid-column: span 9 / span 9;
+  }
+  .vben-form-grid > .\32 xl\:col-start-9 {
+    grid-column-start: 9;
+  }
+  .vben-form-grid > .\32 xl\:col-end-9 {
+    grid-column-end: 9;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-10 {
+    grid-column: span 10 / span 10;
+  }
+  .vben-form-grid > .\32 xl\:col-start-10 {
+    grid-column-start: 10;
+  }
+  .vben-form-grid > .\32 xl\:col-end-10 {
+    grid-column-end: 10;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-11 {
+    grid-column: span 11 / span 11;
+  }
+  .vben-form-grid > .\32 xl\:col-start-11 {
+    grid-column-start: 11;
+  }
+  .vben-form-grid > .\32 xl\:col-end-11 {
+    grid-column-end: 11;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-12 {
+    grid-column: span 12 / span 12;
+  }
+  .vben-form-grid > .\32 xl\:col-start-12 {
+    grid-column-start: 12;
+  }
+  .vben-form-grid > .\32 xl\:col-end-12 {
+    grid-column-end: 12;
+  }
+  .vben-form-grid.\32 xl\:grid-cols-13 {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\32 xl\:col-span-13 {
+    grid-column: span 13 / span 13;
+  }
+  .vben-form-grid > .\32 xl\:col-start-13 {
+    grid-column-start: 13;
+  }
+  .vben-form-grid > .\32 xl\:col-end-13 {
+    grid-column-end: 13;
+  }
+  .vben-form-grid > .\32 xl\:col-span-full {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1920px) {
+  .vben-form-grid.\33 xl\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .vben-form-grid > .\33 xl\:col-start-1 {
+    grid-column-start: 1;
+  }
+  .vben-form-grid > .\33 xl\:col-end-1 {
+    grid-column-end: 1;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  .vben-form-grid > .\33 xl\:col-start-2 {
+    grid-column-start: 2;
+  }
+  .vben-form-grid > .\33 xl\:col-end-2 {
+    grid-column-end: 2;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+  .vben-form-grid > .\33 xl\:col-start-3 {
+    grid-column-start: 3;
+  }
+  .vben-form-grid > .\33 xl\:col-end-3 {
+    grid-column-end: 3;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-4 {
+    grid-column: span 4 / span 4;
+  }
+  .vben-form-grid > .\33 xl\:col-start-4 {
+    grid-column-start: 4;
+  }
+  .vben-form-grid > .\33 xl\:col-end-4 {
+    grid-column-end: 4;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-5 {
+    grid-column: span 5 / span 5;
+  }
+  .vben-form-grid > .\33 xl\:col-start-5 {
+    grid-column-start: 5;
+  }
+  .vben-form-grid > .\33 xl\:col-end-5 {
+    grid-column-end: 5;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-6 {
+    grid-column: span 6 / span 6;
+  }
+  .vben-form-grid > .\33 xl\:col-start-6 {
+    grid-column-start: 6;
+  }
+  .vben-form-grid > .\33 xl\:col-end-6 {
+    grid-column-end: 6;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-7 {
+    grid-column: span 7 / span 7;
+  }
+  .vben-form-grid > .\33 xl\:col-start-7 {
+    grid-column-start: 7;
+  }
+  .vben-form-grid > .\33 xl\:col-end-7 {
+    grid-column-end: 7;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-8 {
+    grid-column: span 8 / span 8;
+  }
+  .vben-form-grid > .\33 xl\:col-start-8 {
+    grid-column-start: 8;
+  }
+  .vben-form-grid > .\33 xl\:col-end-8 {
+    grid-column-end: 8;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-9 {
+    grid-column: span 9 / span 9;
+  }
+  .vben-form-grid > .\33 xl\:col-start-9 {
+    grid-column-start: 9;
+  }
+  .vben-form-grid > .\33 xl\:col-end-9 {
+    grid-column-end: 9;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-10 {
+    grid-column: span 10 / span 10;
+  }
+  .vben-form-grid > .\33 xl\:col-start-10 {
+    grid-column-start: 10;
+  }
+  .vben-form-grid > .\33 xl\:col-end-10 {
+    grid-column-end: 10;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-11 {
+    grid-column: span 11 / span 11;
+  }
+  .vben-form-grid > .\33 xl\:col-start-11 {
+    grid-column-start: 11;
+  }
+  .vben-form-grid > .\33 xl\:col-end-11 {
+    grid-column-end: 11;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-12 {
+    grid-column: span 12 / span 12;
+  }
+  .vben-form-grid > .\33 xl\:col-start-12 {
+    grid-column-start: 12;
+  }
+  .vben-form-grid > .\33 xl\:col-end-12 {
+    grid-column-end: 12;
+  }
+  .vben-form-grid.\33 xl\:grid-cols-13 {
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+  }
+  .vben-form-grid > .\33 xl\:col-span-13 {
+    grid-column: span 13 / span 13;
+  }
+  .vben-form-grid > .\33 xl\:col-start-13 {
+    grid-column-start: 13;
+  }
+  .vben-form-grid > .\33 xl\:col-end-13 {
+    grid-column-end: 13;
+  }
+  .vben-form-grid > .\33 xl\:col-span-full {
+    grid-column: 1 / -1;
+  }
+}

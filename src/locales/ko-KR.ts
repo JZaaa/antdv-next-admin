@@ -106,6 +106,7 @@ export default {
     table: '테이블 예',
     icon: '아이콘 예',
     form: '양식 예',
+    schemaForm: 'SchemaForm',
     jsonInput: 'JSON 입력',
     i18nInput: 'I18n 입력',
     advancedFilter: '고급 필터 빌더',

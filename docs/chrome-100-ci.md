@@ -30,7 +30,7 @@ pnpm run check:ci
 
 ## 已有功能检测或 polyfill 时
 
-检查器采取保守策略，不自动推断任意 JavaScript 分支、polyfill 或 CSS `@supports` 的安全性。优先改为兼容写法；确需保留命中代码时，在 `scripts/chrome100-exceptions.json` 中添加精确例外，并随 PR 说明回退和验证证据：
+检查器采取保守策略，不自动推断任意 JavaScript 分支、polyfill 或 CSS `@supports` 的安全性。优先改为兼容写法；确需保留命中代码时，在 `scripts/compat/chrome100-exceptions.json` 中添加精确例外，并随 PR 说明回退和验证证据：
 
 ```json
 {
@@ -49,6 +49,8 @@ pnpm run check:ci
 这是格式示例，不是当前项目的例外。`file`、`rule`、`code` 必须精确匹配检查输出，`reason` 必填；过期例外也会使检查失败。不支持通配符。构建 CSS 的文件名包含 hash，确需例外时要针对新产物重新审查。
 
 ## 边界与维护
+
+表单浏览器、独立复制和性能等专项验收均为手动执行，不接入自动 CI。Build 和 Pages 工作流的单测排除 `**/*form*.spec.ts`；本地 `test:unit:run` 与 `check:ci` 仍包含全部单测。项目整体构建、类型、Lint 和兼容检查保持完整源码检查。命令、构建顺序和报告来源说明见 [脚本指南](../scripts/README.md)。Chrome 100 实测需要指定对应浏览器可执行文件。
 
 这是已列出风险的防回归检查，不是完整的浏览器兼容性证明。它不进行类型推断或数据流分析，API 别名、动态属性名、第三方依赖的运行时代码、浏览器注入的 CSS-in-JS、运行时内联样式等仍需要人工检查。方法名与禁用 API 重名的自定义方法也可能被报告，应审查后精确记录例外。
 

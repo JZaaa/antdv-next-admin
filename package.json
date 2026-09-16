@@ -4,6 +4,10 @@
   "type": "module",
   "description": "A modern Vue 3 admin scaffold based on antdv-next",
   "scripts": {
+    "lab:form": "vite --config labs/form-engine/vite.config.ts",
+    "lab:form:build": "vite build --config labs/form-engine/vite.config.ts",
+    "lab:form:check": "node scripts/form/check-form-engine-lab.mjs",
+    "check:form:standalone": "node scripts/form/check-schema-form-standalone.mjs",
     "dev": "vite",
     "build": "vite build",
     "build:demo": "vite build --mode demo",
@@ -11,8 +15,8 @@
     "build:demo:check": "vue-tsc && vite build --mode demo",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
-    "check:compat": "node scripts/check-chrome100.mjs",
-    "check:compat:dist": "node scripts/check-chrome100.mjs --dist dist",
+    "check:compat": "node scripts/compat/check-chrome100.mjs",
+    "check:compat:dist": "node scripts/compat/check-chrome100.mjs --dist dist",
     "check:ci": "npm run check:compat && npm run type-check && npm run lint && npm run test:unit:run && npm run build && npm run check:compat:dist && npm run build:demo && npm run check:compat:dist",
     "test:unit": "vitest",
     "test:unit:run": "vitest run",
@@ -64,6 +68,8 @@
     "@milkdown/theme-nord": "^7.22.1",
     "@milkdown/transformer": "^7.22.1",
     "@milkdown/vue": "^7.22.1",
+    "@tanstack/store": "0.11.1",
+    "@tanstack/vue-form": "1.33.5",
     "@tiptap/extension-image": "^3.31.3",
     "@tiptap/extension-link": "^3.31.3",
     "@tiptap/extension-placeholder": "^3.31.3",
@@ -89,7 +95,9 @@
     "vue-echarts": "^8.3.0",
     "vue-i18n": "^11.4.10",
     "vue-router": "^5.3.1",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "zod": "4.4.3",
+    "zod-defaults": "0.2.3"
   },
   "devDependencies": {
     "@antdv-next/auto-import-resolver": "^1.2.0",

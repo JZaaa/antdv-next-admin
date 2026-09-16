@@ -5,7 +5,7 @@ import { resolveConfig } from 'vite';
 
 import { applyExceptions, checkCss, checkJavaScript, checkVue } from './chrome100-rules.mjs';
 
-const root = fileURLToPath(new URL('../', import.meta.url));
+const root = fileURLToPath(new URL('../../', import.meta.url));
 function files(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = resolve(directory, entry.name);
@@ -16,7 +16,7 @@ function files(directory) {
 async function main() {
   const args = process.argv.slice(2);
   if (args.length && (args.length !== 2 || args[0] !== '--dist')) {
-    throw new Error('Usage: node scripts/check-chrome100.mjs [--dist dist]');
+    throw new Error('Usage: node scripts/compat/check-chrome100.mjs [--dist dist]');
   }
   for (const mode of ['production', 'demo']) {
     const config = await resolveConfig({ root, mode }, 'build', mode);

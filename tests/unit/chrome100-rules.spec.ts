@@ -5,7 +5,7 @@ import {
   checkCss,
   checkJavaScript,
   checkVue,
-} from '../../scripts/chrome100-rules.mjs';
+} from '../../scripts/compat/chrome100-rules.mjs';
 
 describe('Chrome 100 regression checks', () => {
   it('detects unsupported API references, including optional and bracket access', () => {

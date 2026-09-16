@@ -108,6 +108,7 @@ export default {
     table: 'Table Example',
     icon: 'Icon Example',
     form: 'Form Example',
+    schemaForm: 'SchemaForm',
     jsonInput: 'JSON Input',
     i18nInput: 'I18n Input',
     advancedFilter: 'Advanced Filter Builder',
