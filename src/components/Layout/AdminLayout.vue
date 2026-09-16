@@ -44,7 +44,7 @@
                   <slot v-if="$slots.default" />
                   <router-view v-else v-slot="{ Component }">
                     <transition :name="settingsStore.pageAnimation" mode="out-in">
-                      <keep-alive :include="cachedTabs">
+                      <keep-alive :include="cachedTabs" :max="tabsStore.maxCachedTabs">
                         <component :is="Component" :key="pageViewKey" />
                       </keep-alive>
                     </transition>
@@ -139,7 +139,7 @@
                     <slot v-if="$slots.default" />
                     <router-view v-else v-slot="{ Component }">
                       <transition :name="settingsStore.pageAnimation" mode="out-in">
-                        <keep-alive :include="cachedTabs">
+                        <keep-alive :include="cachedTabs" :max="tabsStore.maxCachedTabs">
                           <component :is="Component" :key="pageViewKey" />
                         </keep-alive>
                       </transition>

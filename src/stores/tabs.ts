@@ -12,6 +12,7 @@ import { useSettingsStore } from './settings';
 const TABS_STORAGE_KEY = 'app-tabs-state';
 
 export const useTabsStore = defineStore('tabs', () => {
+  const settingsStore = useSettingsStore();
   // State
   const tabs = ref<Tab[]>([]);
   const activeTabPath = ref<string>('');
@@ -22,6 +23,21 @@ export const useTabsStore = defineStore('tabs', () => {
   const updateTabClosable = (tab: Tab) => {
     tab.closable = !isFixedTab(tab);
   };
+
+  function enforceTabLimit(): void {
+    const ordinaryTabs = tabs.value.filter((tab) => !isFixedTab(tab));
+    const excess = ordinaryTabs.length - settingsStore.maxTabCount;
+    if (excess <= 0) return;
+
+    const pathsToClose = new Set(
+      ordinaryTabs
+        .filter((tab) => tab.path !== activeTabPath.value)
+        .reverse()
+        .slice(0, excess)
+        .map((tab) => tab.path),
+    );
+    tabs.value = tabs.value.filter((tab) => !pathsToClose.has(tab.path));
+  }
 
   const ensureActiveTab = (fallbackPath?: string) => {
     const activeExists = tabs.value.some((tab) => tab.path === activeTabPath.value);
@@ -59,6 +75,13 @@ export const useTabsStore = defineStore('tabs', () => {
       .map((tab) => tab.name);
   });
 
+  // Also bound keyed instances when multiple paths share the same component name.
+  // Allow the outgoing view one slot until KeepAlive prunes include after rendering,
+  // otherwise inserting its replacement can also evict a retained tab's state.
+  const maxCachedTabs = computed(
+    () => settingsStore.maxTabCount + tabs.value.filter(isFixedTab).length + 1,
+  );
+
   const activeTab = computed(() => {
     return tabs.value.find((tab) => tab.path === activeTabPath.value);
   });
@@ -89,6 +112,7 @@ export const useTabsStore = defineStore('tabs', () => {
       }
       updateTabClosable(existingTab);
       activeTabPath.value = path;
+      enforceTabLimit();
       return;
     }
 
@@ -107,8 +131,19 @@ export const useTabsStore = defineStore('tabs', () => {
       affix: isAffix,
     };
 
-    tabs.value.push(newTab);
+    const ordinaryTabs = tabs.value.filter((tab) => !isFixedTab(tab));
+    const tabToReplace =
+      !isAffix && ordinaryTabs.length >= settingsStore.maxTabCount
+        ? ordinaryTabs[ordinaryTabs.length - 1]
+        : undefined;
+    if (tabToReplace) {
+      // Keep the replaced tab's position, including when pinned tabs follow it.
+      tabs.value.splice(tabs.value.indexOf(tabToReplace), 1, newTab);
+    } else {
+      tabs.value.push(newTab);
+    }
     activeTabPath.value = path;
+    enforceTabLimit();
   };
 
   const closeTab = (path: string) => {
@@ -163,6 +198,7 @@ export const useTabsStore = defineStore('tabs', () => {
 
     tab.pinned = !tab.pinned;
     updateTabClosable(tab);
+    enforceTabLimit();
   };
 
   const setActiveTab = (path: string) => {
@@ -232,7 +268,6 @@ export const useTabsStore = defineStore('tabs', () => {
 
   // Save tabs state to localStorage
   const saveTabsState = () => {
-    const settingsStore = useSettingsStore();
     if (!settingsStore.rememberTabState) return;
 
     const state = {
@@ -244,7 +279,6 @@ export const useTabsStore = defineStore('tabs', () => {
 
   // Restore tabs state from localStorage
   const restoreTabsState = (routes: AppRouteRecordRaw[]) => {
-    const settingsStore = useSettingsStore();
     if (!settingsStore.rememberTabState || isRestored.value) return;
 
     const savedState = localStorage.getItem(TABS_STORAGE_KEY);
@@ -273,6 +307,7 @@ export const useTabsStore = defineStore('tabs', () => {
           .map((tab: Tab) => {
             const restoredTab = { ...tab };
             delete restoredTab.favorite;
+            updateTabClosable(restoredTab);
             return restoredTab;
           });
         if (restoredTabs.length > 0) {
@@ -283,6 +318,8 @@ export const useTabsStore = defineStore('tabs', () => {
           } else {
             activeTabPath.value = restoredTabs[0].path;
           }
+          ensureActiveTab();
+          enforceTabLimit();
           isRestored.value = true;
         }
       }
@@ -303,6 +340,8 @@ export const useTabsStore = defineStore('tabs', () => {
     isRestored.value = false;
   };
 
+  watch(() => settingsStore.maxTabCount, enforceTabLimit, { flush: 'sync' });
+
   // Watch for changes and auto-save
   watch(
     () => ({ tabs: tabs.value, activeTabPath: activeTabPath.value }),
@@ -318,6 +357,7 @@ export const useTabsStore = defineStore('tabs', () => {
     activeTabPath,
     // Getters
     cachedTabs,
+    maxCachedTabs,
     activeTab,
     // Actions
     addTab,

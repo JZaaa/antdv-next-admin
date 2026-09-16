@@ -83,6 +83,21 @@
         <div class="hint">{{ $t('settings.rememberTabStateHint') }}</div>
       </div>
 
+      <div class="settings-section">
+        <h4 id="max-tab-count-label">{{ $t('settings.maxTabCount') }}</h4>
+        <a-input-number
+          :value="settingsStore.maxTabCount"
+          :min="1"
+          :max="MAX_TAB_COUNT"
+          :precision="0"
+          aria-labelledby="max-tab-count-label"
+          aria-describedby="max-tab-count-hint"
+          style="width: 100%"
+          @change="settingsStore.setMaxTabCount"
+        />
+        <div id="max-tab-count-hint" class="hint">{{ $t('settings.maxTabCountHint') }}</div>
+      </div>
+
       <!-- AI Chat Split Panel -->
       <div class="settings-section">
         <h4>{{ $t('settings.aiCollab') }}</h4>
@@ -127,7 +142,7 @@ import { computed, ref, watch } from 'vue';
 
 import { $t } from '@/locales';
 import { useLayoutStore } from '@/stores/layout';
-import { useSettingsStore } from '@/stores/settings';
+import { MAX_TAB_COUNT, useSettingsStore } from '@/stores/settings';
 
 const visible = defineModel<boolean>('open', { default: false });
 const settingsStore = useSettingsStore();

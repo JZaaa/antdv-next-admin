@@ -235,6 +235,9 @@ export default {
     grayModeHint: '开启后整个应用呈现灰色调',
     rememberTabState: '记住标签页状态',
     rememberTabStateHint: '刷新页面后自动恢复之前打开的标签页',
+    maxTabCount: '最大标签页数量',
+    maxTabCountHint:
+      '普通标签页上限（1–50，默认 10），不含固定和已钉住的标签。超限时新页面替换最右侧可关闭的标签，并清除被替换页面的状态；调低上限时从右侧清理，保留当前页。',
     aiCollab: 'AI 对话分屏',
     aiCollabHint: '在顶部导航栏显示 AI 对话入口图标',
     aiCollabHintMobile: '移动端暂不支持 AI 对话分屏',

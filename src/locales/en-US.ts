@@ -236,6 +236,9 @@ export default {
     grayModeHint: 'Enable grayscale mode for the entire app',
     rememberTabState: 'Remember Tab State',
     rememberTabStateHint: 'Automatically restore previously opened tabs after refresh',
+    maxTabCount: 'Maximum Tabs',
+    maxTabCountHint:
+      'Limit for ordinary tabs (1–50, default 10), excluding affixed and pinned tabs. New pages replace the rightmost closable tab and clear its page state. Lowering the limit closes tabs from the right while keeping the active page.',
     aiCollab: 'AI Chat Split View',
     aiCollabHint: 'Show AI chat entry icon in the top navigation bar',
     aiCollabHintMobile: 'AI chat split view is not available on mobile',

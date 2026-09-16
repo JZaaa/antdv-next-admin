@@ -6,6 +6,27 @@ import { computed, ref } from 'vue';
 
 import { hexColorVariables, isHexColor } from '@/utils/color';
 
+export const DEFAULT_MAX_TAB_COUNT = 10;
+export const MAX_TAB_COUNT = 50;
+const MAX_TAB_COUNT_STORAGE_KEY = 'app-max-tab-count';
+
+function normalizeMaxTabCount(value: number): number {
+  return Number.isFinite(value)
+    ? Math.min(MAX_TAB_COUNT, Math.max(1, Math.floor(value)))
+    : DEFAULT_MAX_TAB_COUNT;
+}
+
+function readMaxTabCount(): number {
+  try {
+    const saved = localStorage.getItem(MAX_TAB_COUNT_STORAGE_KEY);
+    return saved === null || saved.trim() === ''
+      ? DEFAULT_MAX_TAB_COUNT
+      : normalizeMaxTabCount(Number(saved));
+  } catch {
+    return DEFAULT_MAX_TAB_COUNT;
+  }
+}
+
 const PAGE_ANIMATION_VALUES: Set<string> = new Set([
   'fade',
   'slide-left',
@@ -53,6 +74,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const pageAnimation = ref<PageAnimation>('slide-left');
   const grayMode = ref(false);
   const rememberTabState = ref(true);
+  // Router guards restore tabs before App.onMounted initializes visual settings.
+  const maxTabCount = ref(readMaxTabCount());
   const showLanguageSwitch = ref(true);
 
   // Actions
@@ -120,6 +143,12 @@ export const useSettingsStore = defineStore('settings', () => {
     localStorage.setItem('app-remember-tab-state', enabled.toString());
   };
 
+  function setMaxTabCount(value: number | string | null): void {
+    if (value === null || value === '') return;
+    maxTabCount.value = normalizeMaxTabCount(Number(value));
+    localStorage.setItem(MAX_TAB_COUNT_STORAGE_KEY, String(maxTabCount.value));
+  }
+
   const setShowLanguageSwitch = (enabled: boolean) => {
     showLanguageSwitch.value = enabled;
     localStorage.setItem('app-show-language-switch', enabled.toString());
@@ -132,6 +161,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setPageAnimation('slide-left');
     setGrayMode(false);
     setRememberTabState(true);
+    setMaxTabCount(DEFAULT_MAX_TAB_COUNT);
     setShowLanguageSwitch(true);
   };
 
@@ -158,6 +188,7 @@ export const useSettingsStore = defineStore('settings', () => {
     }
     if (savedGrayMode) setGrayMode(savedGrayMode === 'true');
     rememberTabState.value = savedRememberTabState !== 'false';
+    maxTabCount.value = readMaxTabCount();
     if (savedShowLanguageSwitch !== null) {
       showLanguageSwitch.value = savedShowLanguageSwitch !== 'false';
     }
@@ -173,6 +204,7 @@ export const useSettingsStore = defineStore('settings', () => {
     pageAnimation,
     grayMode,
     rememberTabState,
+    maxTabCount,
     showLanguageSwitch,
     // Actions
     setPrimaryColor,
@@ -182,6 +214,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setPageAnimation,
     setGrayMode,
     setRememberTabState,
+    setMaxTabCount,
     setShowLanguageSwitch,
     resetSettings,
     initSettings,
