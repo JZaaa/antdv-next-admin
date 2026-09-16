@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **antdv-next** (Ant Design Vue) - UI component library
 - **Pinia** - State management
 - **Vue Router** - Routing with dynamic route generation
-- **vue-i18n** - Internationalization (zh-CN, en-US, ja-JP, ko-KR)
+- **vue-i18n** - Internationalization (zh-CN, en-US)
 - **Tailwind CSS 4** - Utility-first CSS (bridged to theme CSS variables)
 - **Codemirror 6** - Code editor with 14 language modes and 7 themes
 - **Vite** - Build tool
@@ -223,8 +223,6 @@ Themes use **CSS variables** defined in `src/assets/styles/variables.css`:
 
 - `zh-CN.ts` - Chinese (default, bundled synchronously)
 - `en-US.ts` - English (lazy-loaded)
-- `ja-JP.ts` - Japanese (lazy-loaded)
-- `ko-KR.ts` - Korean (lazy-loaded)
 - Access via `$t('key')` in templates or `t('key')` from `useI18n()`
 - Helper: `src/utils/i18n.ts` - `resolveLocaleText()` for dynamic text resolution
 
@@ -260,7 +258,7 @@ Integrated via `vue-codemirror` and `@codemirror/*` packages. Supports 14 langua
 
 1. Create view in `src/views/[module]/`
 2. Add route to appropriate category in `src/router/routes.ts`
-3. Add i18n keys to all four locale files: `src/locales/zh-CN.ts`, `en-US.ts`, `ja-JP.ts`, `ko-KR.ts`
+3. Add i18n keys to both locale files: `src/locales/zh-CN.ts`, `en-US.ts`
 4. If requires permissions, set `meta.requiredPermissions` or `meta.requiredRoles`
 5. Router guards will handle dynamic route injection
 

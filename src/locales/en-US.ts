@@ -116,6 +116,7 @@ export default {
     editor: 'Rich Text Editor',
     milkdown: 'Markdown Editor',
     codeEditor: 'Code Editor',
+    captcha: 'Captcha Example',
     modal: 'Modal Example',
     spin: 'Spin Example',
     watermark: 'Watermark',
@@ -197,8 +198,6 @@ export default {
     languages: {
       zhCN: 'Simplified Chinese',
       enUS: 'English',
-      jaJP: 'Japanese',
-      koKR: 'Korean',
     },
     tabs: {
       refresh: 'Refresh',

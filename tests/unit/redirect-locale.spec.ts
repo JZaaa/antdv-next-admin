@@ -2,8 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { createI18n } from 'vue-i18n';
 
 import en from '@/locales/en-US';
-import ja from '@/locales/ja-JP';
-import ko from '@/locales/ko-KR';
 import zh from '@/locales/zh-CN';
 import { basicRoutes } from '@/router/routes';
 
@@ -11,8 +9,6 @@ describe('redirect route translations', () => {
   it.each([
     ['zh-CN', zh],
     ['en-US', en],
-    ['ja-JP', ja],
-    ['ko-KR', ko],
   ] as const)(
     'translates the redirect title in %s without missing-key warnings',
     (locale, messages) => {

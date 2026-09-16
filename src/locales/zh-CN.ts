@@ -197,8 +197,6 @@ export default {
     languages: {
       zhCN: '简体中文',
       enUS: 'English',
-      jaJP: '日本語',
-      koKR: '한국어',
     },
     tabs: {
       refresh: '刷新当前',

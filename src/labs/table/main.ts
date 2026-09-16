@@ -539,7 +539,7 @@ async function run(): Promise<void> {
   });
   await test('languages-and-theme', async () => {
     const observed = [];
-    for (const language of ['zh-CN', 'en-US', 'ja-JP', 'ko-KR'] as const) {
+    for (const language of ['zh-CN', 'en-US'] as const) {
       locale.value = language;
       await nextTick();
       observed.push(VxeUI.getI18n('vxe.table.emptyText'));
@@ -958,17 +958,19 @@ async function run(): Promise<void> {
     assert(api.grid === undefined && api.formApi === undefined, 'cached unmount leaked refs');
   });
   await test('setup-replaces-global-watchers', async () => {
-    const first = ref<TableLocale>('en-US'),
-      second = ref<TableLocale>('ko-KR');
+    const first = ref<TableLocale>('zh-CN'),
+      second = ref<TableLocale>('en-US');
     setupVxeTable({ locale: first });
     const stop = setupVxeTable({ locale: second });
-    first.value = 'ja-JP';
+    first.value = 'en-US';
     await nextTick();
-    assert(VxeUI.getLanguage() === 'ko-KR', 'old global watcher leaked');
+    first.value = 'zh-CN';
+    await nextTick();
+    assert(VxeUI.getLanguage() === 'en-US', 'old global watcher leaked');
     stop();
     second.value = 'zh-CN';
     await nextTick();
-    assert(VxeUI.getLanguage() === 'ko-KR', 'dispose did not stop');
+    assert(VxeUI.getLanguage() === 'en-US', 'dispose did not stop');
     setupVxeTable({ locale, theme });
   });
   await test('remount-single-initial', async () => {

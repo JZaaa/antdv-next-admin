@@ -19,9 +19,9 @@ try {
 import { createApp, defineComponent, h, nextTick } from 'vue';
 import { useVxeGrid, setupVxeTable } from './table';
 let api;
-setupVxeTable({ locale: 'ja-JP', theme: 'dark' });
+setupVxeTable({ locale: 'en-US', theme: 'dark' });
 createApp(defineComponent({setup() {
-  const [Grid, controller] = useVxeGrid({tableTitle: '独立コピー', gridOptions: {
+  const [Grid, controller] = useVxeGrid({tableTitle: 'Standalone copy', gridOptions: {
     height: 320, keepSource: true, rowConfig: { keyField: 'id' },
     columns: [{field:'id',title:'ID'}, {field:'name',title:'Name',editRender:{name:'input'}}],
     editConfig: {trigger:'click',mode:'cell'},

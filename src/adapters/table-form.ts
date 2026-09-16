@@ -4,7 +4,7 @@ import type { Component } from 'vue';
 
 import { computed, watch } from 'vue';
 
-import { enUS, jaJP, koKR, useSchemaForm, zhCN } from '@/libs/form';
+import { enUS, useSchemaForm, zhCN } from '@/libs/form';
 import { tableLocale, tableMessages } from '@/libs/table';
 
 /** Host composition uses only the Form's public API. */
@@ -15,7 +15,7 @@ export function createTableSearch<T extends object = FormValues, S extends objec
   SchemaFormProps<string, Record<never, never>, T, S>,
   FormApi<T, string, Record<never, never>, S>
 > {
-  const locales = { 'zh-CN': zhCN, 'en-US': enUS, 'ja-JP': jaJP, 'ko-KR': koKR };
+  const locales = { 'zh-CN': zhCN, 'en-US': enUS };
   const defaults: SchemaFormProps<string, Record<never, never>, T, S> = {
     compact: true,
     showCollapseButton: true,

@@ -10,7 +10,7 @@
 | `compat/chrome100-rules.mjs` | JS、Vue、CSS 的具体检查规则 | 被检查入口和单元测试引用，不单独执行 |
 | `compat/chrome100-exceptions.json` | 精确兼容例外 | `file + rule + code` 精确匹配，`reason` 必填；未命中的过期例外会失败 |
 | `form/check-form-engine-lab.mjs` | 浏览器验收入口 | 启动本地 Vite/preview 和独立无头 Chrome，生成 `docs/spec/*results.json`、截图及失败诊断 |
-| `form/schema-form-example-scenario.mjs` | 集成页面场景 | 登录、回填、提交、动态字段、弹窗会话、查询、四语言和窄屏；由浏览器入口调用 |
+| `form/schema-form-example-scenario.mjs` | 集成页面场景 | 登录、回填、提交、动态字段、弹窗会话、查询、中英文和窄屏；由浏览器入口调用 |
 | `form/schema-form-documentation-scenario.mjs` | 文档页面场景 | 示例交互、展示源码一致性、能力表、字段宽度、开关和校验提示；由浏览器入口调用 |
 | `form/check-schema-form-standalone.mjs` | 独立复制构建 | 将 `src/libs/form` 复制到临时目录，生成 `dist/schema-form-standalone` 后清理临时源目录；不执行浏览器验收 |
 | `form/compare-vben-form-runtime.mjs` | Vben 行为和 API 性能对照 | 读取本地 Vben，输出 `vben-form-runtime-contract-comparison.json` 和 `vben-form-runtime-comparison.json` |

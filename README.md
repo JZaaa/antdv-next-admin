@@ -96,7 +96,7 @@ src/components/Captcha/   # 滑块、旋转、拼图、点选验证码统一导�
 src/composables/          # 权限、水印、全屏等组合式函数
 src/constants/            # 权限码等常量
 src/directives/           # 自定义指令，包括 v-permission
-src/locales/              # zh-CN / en-US / ja-JP / ko-KR 国际化资源
+src/locales/              # zh-CN / en-US 国际化资源
 src/router/               # 路由表、守卫、权限过滤工具
 src/stores/               # 按领域拆分的 Pinia stores
 src/types/                # API、路由、Pro 组件等共享类型
@@ -116,7 +116,7 @@ tests/e2e/                # Playwright starter，依赖未安装
 | 路由系统 | 静态路由、基础登录路由、权限动态路由、404 动态路由恢复 |
 | 布局系统 | 垂直/水平布局、响应式侧边栏、面包屑、多标签页、右键菜单、全局搜索 |
 | 主题系统 | 亮色、暗色、跟随系统、6 种主题色、灰色模式、色弱模式、CSS Variables 驱动 |
-| 国际化 | 支持 `zh-CN`、`en-US`、`ja-JP`、`ko-KR`，非默认语言按需异步加载 |
+| 国际化 | 支持 `zh-CN`、`en-US`，非默认语言按需异步加载 |
 | Mock 数据 | 覆盖认证、用户、角色、权限、部门、字典、配置、文件、日志、Dashboard 等模块 |
 | 内容编辑 | TipTap 富文本、Milkdown Markdown、CodeMirror 代码编辑器 |
 | 示例体系 | ProTable、复杂表单、主从表、虚拟表格、JSON 输入、i18n 输入、高级筛选、导入导出、请求鉴权、RBAC、可观测性、测试示例等 |

@@ -1,12 +1,11 @@
 import dayjs from 'dayjs';
 import { createI18n } from 'vue-i18n';
 import 'dayjs/locale/en';
-import 'dayjs/locale/ja';
-import 'dayjs/locale/ko';
 import 'dayjs/locale/zh-cn';
+
 import zhCN from './zh-CN';
 
-type SupportedLocale = 'zh-CN' | 'en-US' | 'ja-JP' | 'ko-KR';
+type SupportedLocale = 'zh-CN' | 'en-US';
 type AppLocaleMessages = typeof zhCN;
 type LocaleRefLike = { value: string };
 
@@ -14,15 +13,13 @@ export const LOCALE_MESSAGES = {
   'zh-CN': zhCN,
 };
 
-const SUPPORTED_LOCALE_VALUES: SupportedLocale[] = ['zh-CN', 'en-US', 'ja-JP', 'ko-KR'];
+const SUPPORTED_LOCALE_VALUES: SupportedLocale[] = ['zh-CN', 'en-US'];
 
 export const SUPPORTED_LOCALES: string[] = [...SUPPORTED_LOCALE_VALUES];
 
 export const LOCALE_NATIVE_LABELS: Record<string, string> = {
   'zh-CN': '简体中文',
   'en-US': 'English',
-  'ja-JP': '日本語',
-  'ko-KR': '한국어',
 };
 
 function normalizeLocale(locale: string | null): SupportedLocale {
@@ -37,8 +34,6 @@ const savedLocale = normalizeLocale(localStorage.getItem('app-locale'));
 const localeLoaders: Record<SupportedLocale, () => Promise<AppLocaleMessages>> = {
   'zh-CN': () => Promise.resolve(zhCN),
   'en-US': () => import('./en-US').then((module) => module.default as unknown as AppLocaleMessages),
-  'ja-JP': () => import('./ja-JP').then((module) => module.default as unknown as AppLocaleMessages),
-  'ko-KR': () => import('./ko-KR').then((module) => module.default as unknown as AppLocaleMessages),
 };
 
 const loadedLocales = new Set<SupportedLocale>(['zh-CN']);
@@ -46,8 +41,6 @@ const loadedLocales = new Set<SupportedLocale>(['zh-CN']);
 const DAYJS_LOCALE_MAP: Record<SupportedLocale, string> = {
   'zh-CN': 'zh-cn',
   'en-US': 'en',
-  'ja-JP': 'ja',
-  'ko-KR': 'ko',
 };
 
 const i18n = createI18n({
@@ -88,7 +81,7 @@ export async function loadLocaleMessages(locale: string): Promise<SupportedLocal
   return targetLocale;
 }
 
-void loadLocaleMessages(savedLocale);
+export const i18nReady = loadLocaleMessages(savedLocale);
 
 type TranslateLike = (key: string, ...args: unknown[]) => unknown;
 

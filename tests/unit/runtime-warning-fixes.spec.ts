@@ -10,8 +10,6 @@ import { createI18n } from 'vue-i18n';
 
 import FormItemRest from '@/components/IconPicker/FormItemRest.vue';
 import en from '@/locales/en-US';
-import ja from '@/locales/ja-JP';
-import ko from '@/locales/ko-KR';
 import zh from '@/locales/zh-CN';
 import CachePanel from '@/views/examples/scaffold/state-cache/CachePanel.vue';
 
@@ -162,8 +160,6 @@ describe('runtime warning fixes', () => {
   it.each([
     ['zh-CN', zh],
     ['en-US', en],
-    ['ja-JP', ja],
-    ['ko-KR', ko],
   ] as const)(
     'renders the SVG example as interpolated text without HTML message warnings in %s',
     (locale, messages) => {

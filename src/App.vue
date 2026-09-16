@@ -25,8 +25,6 @@ import {
   type ThemeConfig,
 } from 'antdv-next';
 import enUS from 'antdv-next/dist/locale/en_US';
-import jaJP from 'antdv-next/dist/locale/ja_JP';
-import koKR from 'antdv-next/dist/locale/ko_KR';
 import zhCN from 'antdv-next/dist/locale/zh_CN';
 import { computed, h, onMounted, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -46,8 +44,6 @@ const { locale } = useI18n();
 const antdLocaleMap = {
   'zh-CN': zhCN,
   'en-US': enUS,
-  'ja-JP': jaJP,
-  'ko-KR': koKR,
 };
 
 const antdThemeConfig = computed<ThemeConfig>(() => ({

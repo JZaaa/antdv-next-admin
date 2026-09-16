@@ -128,8 +128,6 @@ export async function verifySchemaFormExample(send, sessionId, username, options
   });
   for (const [language, submitLabel, nameLabel] of [
     ['English', 'Submit', 'Username'],
-    ['日本語', '送信', 'ユーザー名'],
-    ['한국어', '제출', '사용자 이름'],
     ['简体中文', '提交', '用户名'],
   ]) {
     await evaluate(
@@ -147,10 +145,10 @@ export async function verifySchemaFormExample(send, sessionId, username, options
   }
   results.push({
     id: 'schema-example-locale',
-    title: '同一入口四语言切换',
+    title: '同一入口中英文切换',
     expected: '切换宿主语言后表单标签与操作按钮同步更新',
     status: 'pass',
-    observed: { languages: ['en-US', 'ja-JP', 'ko-KR', 'zh-CN'] },
+    observed: { languages: ['en-US', 'zh-CN'] },
   });
   await send(
     'Emulation.setDeviceMetricsOverride',

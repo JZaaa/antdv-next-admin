@@ -188,8 +188,6 @@ function createLocalizedName(value = ''): string | LocalizedText {
   return {
     'zh-CN': value,
     'en-US': value,
-    'ja-JP': value,
-    'ko-KR': value,
   };
 }
 

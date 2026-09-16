@@ -1,6 +1,6 @@
 # Antdv Next Admin - Agent Guidelines
 
-A Vue 3 + TypeScript + Ant Design Vue admin scaffold with RBAC, theming, i18n (zh-CN/en-US/ja-JP/ko-KR), Tailwind CSS 3.4, Codemirror 6, and mock APIs.
+A Vue 3 + TypeScript + Ant Design Vue admin scaffold with RBAC, theming, i18n (zh-CN/en-US), Tailwind CSS 3.4, Codemirror 6, and mock APIs.
 
 ## Project Structure
 

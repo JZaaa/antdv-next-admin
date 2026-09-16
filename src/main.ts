@@ -4,7 +4,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { registerDefaultComponentProps } from './components/Global/defaultComponentProps';
 import { setupDirectives } from './directives';
-import i18n from './locales';
+import i18n, { i18nReady } from './locales';
 import router from './router';
 import { useMenuPreferencesStore } from './stores/menuPreferences';
 import { service } from './utils/request';
@@ -31,6 +31,9 @@ function restoreGitHubPagesRedirect() {
 }
 
 async function bootstrap() {
+  // Router installation starts navigation and translates titles immediately.
+  await i18nReady;
+
   if (import.meta.env.VITE_DEMO_MODE === 'true') {
     const { setupBrowserMock } = await import('./mock/browser');
     setupBrowserMock(service);

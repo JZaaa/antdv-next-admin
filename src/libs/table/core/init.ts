@@ -24,8 +24,6 @@ import {
   VxeUpload,
 } from 'vxe-pc-ui';
 import enUS from 'vxe-pc-ui/es/language/en-US';
-import jaJP from 'vxe-pc-ui/es/language/ja-JP';
-import koKR from 'vxe-pc-ui/es/language/ko-KR';
 import zhCN from 'vxe-pc-ui/es/language/zh-CN';
 import { VxeTable, VxeColumn, VxeColgroup, VxeGrid, VxeToolbar } from 'vxe-table';
 
@@ -64,18 +62,6 @@ export const tableMessages = {
     show: 'Show search panel',
     hide: 'Hide search panel',
   },
-  'ja-JP': {
-    empty: 'データなし',
-    search: '検索',
-    show: '検索パネルを表示',
-    hide: '検索パネルを非表示',
-  },
-  'ko-KR': {
-    empty: '데이터 없음',
-    search: '검색',
-    show: '검색 패널 표시',
-    hide: '검색 패널 숨기기',
-  },
 };
 export function initVxeTable(): void {
   if (initialized) return;
@@ -105,7 +91,7 @@ export function initVxeTable(): void {
     VxeTooltip,
     VxeUpload,
   ].forEach((component) => VxeUI.component(component));
-  const locales = { 'zh-CN': zhCN, 'en-US': enUS, 'ja-JP': jaJP, 'ko-KR': koKR };
+  const locales = { 'zh-CN': zhCN, 'en-US': enUS };
   for (const name of Object.keys(locales) as TableLocale[]) VxeUI.setI18n(name, locales[name]);
   VxeUI.setLanguage(tableLocale.value);
   // VXE supplies pager defaults even when the consumer has not requested a pager.

@@ -4,7 +4,7 @@
 
 ## 本项目使用
 
-业务从 `@/adapters/table` 导入，自动接入 SchemaForm、四语言和主题。原有 ProTable 独立保留。
+业务从 `@/adapters/table` 导入，自动接入 SchemaForm、中英文和主题。原有 ProTable 独立保留。
 
 ```vue
 <template><Grid /></template>
@@ -59,7 +59,7 @@ npm install vue@3.5.42 antdv-next@1.5.4 dayjs@1.11.23 vxe-table@4.21.10 vxe-pc-u
 
 ```ts
 import { setupVxeTable, useVxeGrid } from './table';
-const dispose = setupVxeTable({ locale: 'ja-JP', theme: 'dark' });
+const dispose = setupVxeTable({ locale: 'en-US', theme: 'dark' });
 const [Grid, api] = useVxeGrid({
   gridOptions: {
     height: 300,
@@ -70,7 +70,7 @@ const [Grid, api] = useVxeGrid({
 // 宿主应用卸载/HMR 时调用 dispose。重复 setup 会移除上一组全局监听。
 ```
 
-`locale`、`theme` 接受值或 Ref。支持 zh-CN/en-US/ja-JP/ko-KR，包括 VXE 原生浮层。库无业务主题 store；宿主在适配器维护全局同步。一次覆盖升级以整个目录为单位，保留目录外的 adapter/业务代码，核对 compatibility.json、CHANGELOG，并重跑消费项目验收。
+`locale`、`theme` 接受值或 Ref。支持 zh-CN/en-US，包括 VXE 原生浮层。库无业务主题 store；宿主在适配器维护全局同步。一次覆盖升级以整个目录为单位，保留目录外的 adapter/业务代码，核对 compatibility.json、CHANGELOG，并重跑消费项目验收。
 
 ## API 和状态
 

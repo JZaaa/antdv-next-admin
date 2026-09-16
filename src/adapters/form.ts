@@ -9,7 +9,7 @@ import type {
 import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { enUS, jaJP, koKR, useSchemaForm as useCoreSchemaForm, zhCN } from '@/libs/form';
+import { enUS, useSchemaForm as useCoreSchemaForm, zhCN } from '@/libs/form';
 export { setupSchemaForm, useFormContext, z } from '@/libs/form';
 export type {
   FormSchema,
@@ -45,8 +45,6 @@ export function useSchemaForm<
   const locales: Record<string, FormLocale> = {
     'zh-CN': zhCN,
     'en-US': enUS,
-    'ja-JP': jaJP,
-    'ko-KR': koKR,
   };
   const result = useCoreSchemaForm<T, C, P, S>(options);
   watch(

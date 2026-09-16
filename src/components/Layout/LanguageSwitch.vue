@@ -16,8 +16,6 @@ const currentLocale = computed(() => String(getLocale()));
 const localeOptions = computed(() => [
   { label: LOCALE_NATIVE_LABELS['zh-CN'], value: 'zh-CN' },
   { label: LOCALE_NATIVE_LABELS['en-US'], value: 'en-US' },
-  { label: LOCALE_NATIVE_LABELS['ja-JP'], value: 'ja-JP' },
-  { label: LOCALE_NATIVE_LABELS['ko-KR'], value: 'ko-KR' },
 ]);
 
 const handleLanguageChange = async ({ key }: { key: string | number }) => {

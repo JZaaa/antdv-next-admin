@@ -10,7 +10,7 @@ import type {
 
 export type TableRow = Record<string, unknown>;
 export type ClassType = string | Record<string, boolean> | ClassType[];
-export type TableLocale = 'zh-CN' | 'en-US' | 'ja-JP' | 'ko-KR';
+export type TableLocale = 'zh-CN' | 'en-US';
 export interface VxeTableGridOptions<T = TableRow> extends VxeGridProps<T> {
   toolbarConfig?: VxeGridPropTypes.ToolbarConfig & { search?: boolean };
 }

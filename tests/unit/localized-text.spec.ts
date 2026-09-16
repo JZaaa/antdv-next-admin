@@ -6,7 +6,6 @@ describe('resolveLocalizedText', () => {
   const localizedName = {
     'zh-CN': '角色管理',
     'en-US': 'Role Management',
-    'ja-JP': 'ロール管理',
   };
 
   it('returns plain strings without modification', () => {
@@ -21,9 +20,11 @@ describe('resolveLocalizedText', () => {
   });
 
   it('falls back to Chinese, English, and then the first available value', () => {
-    expect(resolveLocalizedText(localizedName, 'ko-KR')).toBe('角色管理');
-    expect(resolveLocalizedText({ 'en-US': 'Role Management' }, 'ko-KR')).toBe('Role Management');
-    expect(resolveLocalizedText({ custom: 'Custom role' }, 'ko-KR')).toBe('Custom role');
+    expect(resolveLocalizedText(localizedName, 'unknown-locale')).toBe('角色管理');
+    expect(resolveLocalizedText({ 'en-US': 'Role Management' }, 'unknown-locale')).toBe(
+      'Role Management',
+    );
+    expect(resolveLocalizedText({ custom: 'Custom role' }, 'unknown-locale')).toBe('Custom role');
   });
 
   it('returns an empty string for empty values', () => {

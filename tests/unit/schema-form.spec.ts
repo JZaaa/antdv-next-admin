@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { FormApi } from '@/libs/form/core/api';
 import { FormCancelledError } from '@/libs/form/internal/errors';
-import { enUS, jaJP, koKR, zhCN } from '@/libs/form/locales';
+import { enUS, zhCN } from '@/libs/form/locales';
 const cleanups: (() => void)[] = [];
 function mount(options: ConstructorParameters<typeof FormApi>[0]) {
   const api = new FormApi(options);
@@ -99,24 +99,21 @@ describe('unified SchemaForm data and submission contracts', () => {
 });
 
 describe('per-form language configuration', () => {
-  it.each([enUS, jaJP, koKR, zhCN])(
-    'localizes named rules without changing another form',
-    async (locale) => {
-      const localized = mount({
-        locale,
-        schema: [
-          { fieldName: 'name', label: 'Name', component: 'Input', rules: 'required' },
-          { fieldName: 'choice', label: 'Choice', component: 'Select', rules: 'selectRequired' },
-        ],
-      });
-      const chinese = mount({
-        schema: [{ fieldName: 'name', label: 'Name', component: 'Input', rules: 'required' }],
-      });
-      expect((await localized.validate()).errors).toEqual({
-        name: locale.required('Name'),
-        choice: locale.selectRequired?.('Choice'),
-      });
-      expect((await chinese.validate()).errors.name).toBe(zhCN.required('Name'));
-    },
-  );
+  it.each([enUS, zhCN])('localizes named rules without changing another form', async (locale) => {
+    const localized = mount({
+      locale,
+      schema: [
+        { fieldName: 'name', label: 'Name', component: 'Input', rules: 'required' },
+        { fieldName: 'choice', label: 'Choice', component: 'Select', rules: 'selectRequired' },
+      ],
+    });
+    const chinese = mount({
+      schema: [{ fieldName: 'name', label: 'Name', component: 'Input', rules: 'required' }],
+    });
+    expect((await localized.validate()).errors).toEqual({
+      name: locale.required('Name'),
+      choice: locale.selectRequired?.('Choice'),
+    });
+    expect((await chinese.validate()).errors.name).toBe(zhCN.required('Name'));
+  });
 });

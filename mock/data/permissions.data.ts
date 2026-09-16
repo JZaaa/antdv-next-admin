@@ -1,22 +1,15 @@
 import type { Permission } from '@/types/auth';
 
-const localizedName = (
-  zhCN: string,
-  enUS: string,
-  jaJP: string,
-  koKR: string,
-) => ({
+const localizedName = (zhCN: string, enUS: string) => ({
   'zh-CN': zhCN,
   'en-US': enUS,
-  'ja-JP': jaJP,
-  'ko-KR': koKR,
 });
 
 export const mockPermissions: Permission[] = [
   // Dashboard Menu
   {
     id: '1',
-    name: localizedName('仪表盘', 'Dashboard', 'ダッシュボード', '대시보드'),
+    name: localizedName('仪表盘', 'Dashboard'),
     code: 'dashboard.view',
     description: 'Dashboard menu',
     resource: '/dashboard',
@@ -33,7 +26,7 @@ export const mockPermissions: Permission[] = [
   // Organization & Permissions Menu
   {
     id: '60',
-    name: localizedName('组织与权限', 'Organization & Permissions', '組織と権限', '조직 및 권한'),
+    name: localizedName('组织与权限', 'Organization & Permissions'),
     code: 'organization.menu',
     description: 'Organization and permissions root menu',
     resource: '/organization',
@@ -48,7 +41,7 @@ export const mockPermissions: Permission[] = [
     children: [
       {
         id: '50',
-        name: localizedName('部门管理', 'Department Management', '部門管理', '부서 관리'),
+        name: localizedName('部门管理', 'Department Management'),
         code: 'system.dept.view',
         description: 'Department management menu',
         resource: '/organization/dept',
@@ -64,7 +57,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '51',
-            name: localizedName('新增部门', 'Create Department', '部門を作成', '부서 생성'),
+            name: localizedName('新增部门', 'Create Department'),
             code: 'system.dept.create',
             description: 'Can create department',
             resource: 'system.dept',
@@ -76,7 +69,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '52',
-            name: localizedName('编辑部门', 'Edit Department', '部門を編集', '부서 편집'),
+            name: localizedName('编辑部门', 'Edit Department'),
             code: 'system.dept.edit',
             description: 'Can edit department',
             resource: 'system.dept',
@@ -88,7 +81,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '53',
-            name: localizedName('删除部门', 'Delete Department', '部門を削除', '부서 삭제'),
+            name: localizedName('删除部门', 'Delete Department'),
             code: 'system.dept.delete',
             description: 'Can delete department',
             resource: 'system.dept',
@@ -102,7 +95,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '11',
-        name: localizedName('用户管理', 'User Management', 'ユーザー管理', '사용자 관리'),
+        name: localizedName('用户管理', 'User Management'),
         code: 'system.user.view',
         description: 'User management menu',
         resource: '/organization/user',
@@ -118,7 +111,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '12',
-            name: localizedName('新增用户', 'Create User', 'ユーザーを作成', '사용자 생성'),
+            name: localizedName('新增用户', 'Create User'),
             code: 'system.user.create',
             description: 'Can create users',
             resource: 'system.user',
@@ -130,7 +123,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '13',
-            name: localizedName('编辑用户', 'Edit User', 'ユーザーを編集', '사용자 편집'),
+            name: localizedName('编辑用户', 'Edit User'),
             code: 'system.user.edit',
             description: 'Can edit users',
             resource: 'system.user',
@@ -142,7 +135,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '14',
-            name: localizedName('删除用户', 'Delete User', 'ユーザーを削除', '사용자 삭제'),
+            name: localizedName('删除用户', 'Delete User'),
             code: 'system.user.delete',
             description: 'Can delete users',
             resource: 'system.user',
@@ -156,7 +149,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '20',
-        name: localizedName('角色管理', 'Role Management', 'ロール管理', '역할 관리'),
+        name: localizedName('角色管理', 'Role Management'),
         code: 'system.role.view',
         description: 'Role management menu',
         resource: '/organization/role',
@@ -172,7 +165,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '21',
-            name: localizedName('新增角色', 'Create Role', 'ロールを作成', '역할 생성'),
+            name: localizedName('新增角色', 'Create Role'),
             code: 'system.role.create',
             description: 'Can create roles',
             resource: 'system.role',
@@ -184,7 +177,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '22',
-            name: localizedName('编辑角色', 'Edit Role', 'ロールを編集', '역할 편집'),
+            name: localizedName('编辑角色', 'Edit Role'),
             code: 'system.role.edit',
             description: 'Can edit roles',
             resource: 'system.role',
@@ -196,7 +189,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '23',
-            name: localizedName('删除角色', 'Delete Role', 'ロールを削除', '역할 삭제'),
+            name: localizedName('删除角色', 'Delete Role'),
             code: 'system.role.delete',
             description: 'Can delete roles',
             resource: 'system.role',
@@ -210,7 +203,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '30',
-        name: localizedName('菜单管理', 'Menu Management', 'メニュー管理', '메뉴 관리'),
+        name: localizedName('菜单管理', 'Menu Management'),
         code: 'system.permission.view',
         description: 'Menu management menu',
         resource: '/organization/permission',
@@ -226,7 +219,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '31',
-            name: localizedName('新增菜单', 'Create Menu', 'メニューを作成', '메뉴 생성'),
+            name: localizedName('新增菜单', 'Create Menu'),
             code: 'system.permission.create',
             description: 'Can create menu',
             resource: 'system.permission',
@@ -238,7 +231,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '32',
-            name: localizedName('编辑菜单', 'Edit Menu', 'メニューを編集', '메뉴 편집'),
+            name: localizedName('编辑菜单', 'Edit Menu'),
             code: 'system.permission.edit',
             description: 'Can edit menu',
             resource: 'system.permission',
@@ -250,7 +243,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '33',
-            name: localizedName('删除菜单', 'Delete Menu', 'メニューを削除', '메뉴 삭제'),
+            name: localizedName('删除菜单', 'Delete Menu'),
             code: 'system.permission.delete',
             description: 'Can delete menu',
             resource: 'system.permission',
@@ -268,7 +261,7 @@ export const mockPermissions: Permission[] = [
   // System Management Menu
   {
     id: '10',
-    name: localizedName('系统管理', 'System Management', 'システム管理', '시스템 관리'),
+    name: localizedName('系统管理', 'System Management'),
     code: 'system.menu',
     description: 'System management root menu',
     resource: '/system',
@@ -283,7 +276,7 @@ export const mockPermissions: Permission[] = [
     children: [
       {
         id: '54',
-        name: localizedName('系统配置', 'System Config', 'システム設定', '시스템 설정'),
+        name: localizedName('系统配置', 'System Config'),
         code: 'system.config.view',
         description: 'System config menu',
         resource: '/system/config',
@@ -299,7 +292,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '55',
-            name: localizedName('新增配置', 'Create Config', '設定を作成', '설정 생성'),
+            name: localizedName('新增配置', 'Create Config'),
             code: 'system.config.create',
             description: 'Can create config',
             resource: 'system.config',
@@ -311,7 +304,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '56',
-            name: localizedName('编辑配置', 'Edit Config', '設定を編集', '설정 편집'),
+            name: localizedName('编辑配置', 'Edit Config'),
             code: 'system.config.edit',
             description: 'Can edit config',
             resource: 'system.config',
@@ -323,7 +316,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '57',
-            name: localizedName('删除配置', 'Delete Config', '設定を削除', '설정 삭제'),
+            name: localizedName('删除配置', 'Delete Config'),
             code: 'system.config.delete',
             description: 'Can delete config',
             resource: 'system.config',
@@ -337,7 +330,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '34',
-        name: localizedName('字典管理', 'Dictionary Management', '辞書管理', '사전 관리'),
+        name: localizedName('字典管理', 'Dictionary Management'),
         code: 'system.dict.view',
         description: 'Dictionary management menu',
         resource: '/system/dict',
@@ -353,7 +346,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '35',
-            name: localizedName('新增字典', 'Create Dictionary', '辞書を作成', '사전 생성'),
+            name: localizedName('新增字典', 'Create Dictionary'),
             code: 'system.dict.create',
             description: 'Can create dictionary',
             resource: 'system.dict',
@@ -365,7 +358,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '36',
-            name: localizedName('编辑字典', 'Edit Dictionary', '辞書を編集', '사전 편집'),
+            name: localizedName('编辑字典', 'Edit Dictionary'),
             code: 'system.dict.edit',
             description: 'Can edit dictionary',
             resource: 'system.dict',
@@ -377,7 +370,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '37',
-            name: localizedName('删除字典', 'Delete Dictionary', '辞書を削除', '사전 삭제'),
+            name: localizedName('删除字典', 'Delete Dictionary'),
             code: 'system.dict.delete',
             description: 'Can delete dictionary',
             resource: 'system.dict',
@@ -391,7 +384,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '58',
-        name: localizedName('文件管理', 'File Management', 'ファイル管理', '파일 관리'),
+        name: localizedName('文件管理', 'File Management'),
         code: 'system.file.view',
         description: 'File management menu',
         resource: '/system/file',
@@ -407,7 +400,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '59',
-            name: localizedName('删除文件', 'Delete File', 'ファイルを削除', '파일 삭제'),
+            name: localizedName('删除文件', 'Delete File'),
             code: 'system.file.delete',
             description: 'Can delete file',
             resource: 'system.file',
@@ -421,7 +414,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '38',
-        name: localizedName('系统日志', 'System Log', 'システムログ', '시스템 로그'),
+        name: localizedName('系统日志', 'System Log'),
         code: 'system.log.view',
         description: 'System log menu',
         resource: '/system/log',
@@ -437,7 +430,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '39',
-            name: localizedName('清空日志', 'Clear Log', 'ログをクリア', '로그 지우기'),
+            name: localizedName('清空日志', 'Clear Log'),
             code: 'system.log.clear',
             description: 'Can clear logs',
             resource: 'system.log',
@@ -455,7 +448,7 @@ export const mockPermissions: Permission[] = [
   // Examples Menu
   {
     id: '40',
-    name: localizedName('示例', 'Examples', 'サンプル', '예제'),
+    name: localizedName('示例', 'Examples'),
     code: 'examples.menu',
     description: 'Examples root menu',
     resource: '/examples',
@@ -470,7 +463,7 @@ export const mockPermissions: Permission[] = [
     children: [
       {
         id: '41',
-        name: localizedName('表格示例', 'Table Example', 'テーブルサンプル', '테이블 예제'),
+        name: localizedName('表格示例', 'Table Example'),
         code: 'examples.table.view',
         description: 'Table example menu',
         resource: '/examples/table',
@@ -486,7 +479,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '42',
-        name: localizedName('图标示例', 'Icon Example', 'アイコンサンプル', '아이콘 예제'),
+        name: localizedName('图标示例', 'Icon Example'),
         code: 'examples.icon.view',
         description: 'Icon example menu',
         resource: '/examples/icon',
@@ -502,7 +495,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '43',
-        name: localizedName('表单示例', 'Form Example', 'フォームサンプル', '폼 예제'),
+        name: localizedName('表单示例', 'Form Example'),
         code: 'examples.form.view',
         description: 'Form example menu',
         resource: '/examples/form',
@@ -518,7 +511,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '44',
-        name: localizedName('弹窗示例', 'Modal Example', 'モーダルサンプル', '모달 예제'),
+        name: localizedName('弹窗示例', 'Modal Example'),
         code: 'examples.modal.view',
         description: 'Modal example menu',
         resource: '/examples/modal',
@@ -534,7 +527,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '45',
-        name: localizedName('水印示例', 'Watermark Example', '透かしサンプル', '워터마크 예제'),
+        name: localizedName('水印示例', 'Watermark Example'),
         code: 'examples.watermark.view',
         description: 'Watermark example menu',
         resource: '/examples/watermark',
@@ -550,7 +543,7 @@ export const mockPermissions: Permission[] = [
       },
       {
         id: '46',
-        name: localizedName('异常页面', 'Exception Page', '例外ページ', '예외 페이지'),
+        name: localizedName('异常页面', 'Exception Page'),
         code: 'examples.exception.menu',
         description: 'Exception root menu',
         resource: '/examples/exception',
@@ -566,7 +559,7 @@ export const mockPermissions: Permission[] = [
         children: [
           {
             id: '47',
-            name: localizedName('403', '403', '403', '403'),
+            name: localizedName('403', '403'),
             code: 'examples.exception.403.view',
             description: '403 exception page menu',
             resource: '/examples/exception/403',
@@ -582,7 +575,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '48',
-            name: localizedName('404', '404', '404', '404'),
+            name: localizedName('404', '404'),
             code: 'examples.exception.404.view',
             description: '404 exception page menu',
             resource: '/examples/exception/404',
@@ -598,7 +591,7 @@ export const mockPermissions: Permission[] = [
           },
           {
             id: '49',
-            name: localizedName('500', '500', '500', '500'),
+            name: localizedName('500', '500'),
             code: 'examples.exception.500.view',
             description: '500 exception page menu',
             resource: '/examples/exception/500',

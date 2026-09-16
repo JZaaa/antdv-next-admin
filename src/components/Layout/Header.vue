@@ -208,12 +208,6 @@ const handleMoreMenuClick = async ({ key }: { key: string }) => {
     case 'lang-en':
       await setLocale('en-US');
       break;
-    case 'lang-ja':
-      await setLocale('ja-JP');
-      break;
-    case 'lang-ko':
-      await setLocale('ko-KR');
-      break;
     case 'settings':
       await openSettings();
       break;
@@ -278,14 +272,6 @@ const moreMenuProps = computed(() => {
           {
             key: 'lang-en',
             label: LOCALE_NATIVE_LABELS['en-US'],
-          },
-          {
-            key: 'lang-ja',
-            label: LOCALE_NATIVE_LABELS['ja-JP'],
-          },
-          {
-            key: 'lang-ko',
-            label: LOCALE_NATIVE_LABELS['ko-KR'],
           },
         ],
       },

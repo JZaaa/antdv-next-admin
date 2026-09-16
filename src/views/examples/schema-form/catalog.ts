@@ -112,7 +112,7 @@ export const demos = [
   {
     id: 'integration',
     title: '业务综合示例',
-    description: '账号编辑、动态字段、远程部门、附件与 Modal 保存/重开。使用项目四语言适配器。',
+    description: '账号编辑、动态字段、远程部门、附件与 Modal 保存/重开。使用项目中英文适配器。',
     related: 'useSchemaForm · handleSubmit · locale',
     component: defineAsyncComponent(() => import('./demos/IntegrationDemo.vue')),
     files: [
