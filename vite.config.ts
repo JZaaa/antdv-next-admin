@@ -8,6 +8,7 @@ import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
 
 import pkg from "./package.json" with { type: "json" };
 import { localIconAssetsPlugin } from "./build/local-icon-assets.ts";
+import { storageNamespacePlugin } from "./build/storage-namespace.ts";
 
 // Read installed versions so the About page describes this build, including pnpm symlinks.
 const dependencyVersions = Object.fromEntries(
@@ -29,6 +30,7 @@ export default defineConfig({
     APP_DEPENDENCY_VERSIONS: JSON.stringify(dependencyVersions),
   },
   plugins: [
+    storageNamespacePlugin(),
     localIconAssetsPlugin(),
     vue(),
     Components({
@@ -59,6 +61,13 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+  optimizeDeps: {
+    // Scan the app's route graph, not lab/reference HTML with their own aliases.
+    entries: ["index.html"],
+    // Template/virtual imports may not be visible to the initial dependency scan.
+    // The icon assets plugin also adds the configured lazy icon subpaths.
+    include: ["antdv-next", "@antdv-next/icons", "@iconify/vue"],
   },
   server: {
     port: 3000,
