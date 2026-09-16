@@ -215,6 +215,11 @@ export default {
   },
 
   settings: {
+    description: 'Make this workspace yours. Changes apply instantly.',
+    appearance: 'Appearance & Layout',
+    pagePreferences: 'Pages & Tabs',
+    toolbar: 'Toolbar',
+    customColor: 'Custom theme color',
     title: 'Preferences',
     themeColor: 'Theme Color',
     sidebarTheme: 'Sidebar Theme',
@@ -238,7 +243,7 @@ export default {
     rememberTabStateHint: 'Automatically restore previously opened tabs after refresh',
     maxTabCount: 'Maximum Tabs',
     maxTabCountHint:
-      'Limit for ordinary tabs (1–50, default 10), excluding affixed and pinned tabs. New pages replace the rightmost closable tab and clear its page state. Lowering the limit closes tabs from the right while keeping the active page.',
+      'Limit for ordinary tabs (1–50, default {defaultCount}), excluding affixed and pinned tabs. New pages replace the rightmost closable tab and clear its page state. Lowering the limit closes tabs from the right while keeping the active page.',
     aiCollab: 'AI Chat Split View',
     aiCollabHint: 'Show AI chat entry icon in the top navigation bar',
     aiCollabHintMobile: 'AI chat split view is not available on mobile',

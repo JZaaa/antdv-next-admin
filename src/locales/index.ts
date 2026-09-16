@@ -1,7 +1,10 @@
 import dayjs from 'dayjs';
+import { getActivePinia } from 'pinia';
 import { createI18n } from 'vue-i18n';
 
-import { appLocalStorage } from '@/utils/cache';
+import { appDefaultSettings } from '@/settings';
+import { usePreferencesStore } from '@/stores/preferences';
+import { readPreferences, persistPreference } from '@/utils/preferences';
 import 'dayjs/locale/en';
 import 'dayjs/locale/zh-cn';
 
@@ -31,7 +34,7 @@ function normalizeLocale(locale: string | null): SupportedLocale {
 }
 
 // Get saved locale or use default
-const savedLocale = normalizeLocale(appLocalStorage.getItem('app-locale'));
+const savedLocale = readPreferences().locale;
 
 const localeLoaders: Record<SupportedLocale, () => Promise<AppLocaleMessages>> = {
   'zh-CN': () => Promise.resolve(zhCN),
@@ -102,13 +105,26 @@ export function $t(key: string, ...args: unknown[]): string {
 export default i18n;
 
 // Helper function to change locale
-export async function setLocale(locale: string) {
-  const targetLocale = await loadLocaleMessages(locale);
+let localeRequest = 0;
+export async function applyLocalePreference(locale: string): Promise<void> {
+  const request = ++localeRequest;
+  const desiredLocale = appDefaultSettings.features.personalization
+    ? locale
+    : appDefaultSettings.preferences.locale;
+  const targetLocale = await loadLocaleMessages(desiredLocale);
+  if (request !== localeRequest) return;
   setCurrentLocale(targetLocale);
-  appLocalStorage.setItem('app-locale', targetLocale);
-
   // Update HTML lang attribute
   document.documentElement.lang = targetLocale;
+}
+
+export async function setLocale(locale: string): Promise<void> {
+  const targetLocale = appDefaultSettings.features.personalization
+    ? normalizeLocale(locale)
+    : appDefaultSettings.preferences.locale;
+  if (getActivePinia()) usePreferencesStore().update({ locale: targetLocale });
+  else persistPreference('locale', targetLocale);
+  await applyLocalePreference(targetLocale);
 }
 
 export function getLocale() {

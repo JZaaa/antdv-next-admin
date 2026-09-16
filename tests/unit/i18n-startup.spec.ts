@@ -11,7 +11,10 @@ vi.mock('vue', async (importOriginal) => ({
   ...(await importOriginal<typeof import('vue')>()),
   createApp: mocks.createApp,
 }));
-vi.mock('pinia', () => ({ createPinia: () => ({}) }));
+vi.mock('pinia', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('pinia')>()),
+  createPinia: () => ({}),
+}));
 vi.mock('@/App.vue', () => ({ default: {} }));
 vi.mock('@/router', () => ({ default: mocks.router }));
 vi.mock('@/components/Global/defaultComponentProps', () => ({

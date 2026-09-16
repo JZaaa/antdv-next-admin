@@ -214,6 +214,11 @@ export default {
   },
 
   settings: {
+    description: '调整界面外观与使用习惯，设置即时生效。',
+    appearance: '外观与布局',
+    pagePreferences: '页面与标签',
+    toolbar: '工具栏',
+    customColor: '自定义主题色',
     title: '偏好设置',
     themeColor: '主题色',
     sidebarTheme: '左侧菜单栏样式',
@@ -237,7 +242,7 @@ export default {
     rememberTabStateHint: '刷新页面后自动恢复之前打开的标签页',
     maxTabCount: '最大标签页数量',
     maxTabCountHint:
-      '普通标签页上限（1–50，默认 10），不含固定和已钉住的标签。超限时新页面替换最右侧可关闭的标签，并清除被替换页面的状态；调低上限时从右侧清理，保留当前页。',
+      '普通标签页上限（1–50，默认 {defaultCount}），不含固定和已钉住的标签。超限时新页面替换最右侧可关闭的标签，并清除被替换页面的状态；调低上限时从右侧清理，保留当前页。',
     aiCollab: 'AI 对话分屏',
     aiCollabHint: '在顶部导航栏显示 AI 对话入口图标',
     aiCollabHintMobile: '移动端暂不支持 AI 对话分屏',

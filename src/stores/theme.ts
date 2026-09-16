@@ -1,9 +1,10 @@
 import type { ThemeMode } from '@/types/layout';
 
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onScopeDispose } from 'vue';
 
-import { appLocalStorage } from '@/utils/cache';
+import { appDefaultSettings } from '@/settings';
+import { usePreferencesStore } from '@/stores/preferences';
 
 const THEME_TRANSITION_CLASS = 'theme-transition';
 const THEME_VIEW_TRANSITION_CLASS = 'theme-view-transition';
@@ -29,7 +30,8 @@ type StartViewTransition = (callback: () => void) => ViewTransitionLike;
 
 export const useThemeStore = defineStore('theme', () => {
   // State
-  const mode = ref<ThemeMode>('system');
+  const preferenceStore = usePreferencesStore();
+  const mode = computed(() => preferenceStore.preferences.themeMode);
   const systemPrefersDark = ref(false);
   let transitionTimer: number | null = null;
 
@@ -129,13 +131,9 @@ export const useThemeStore = defineStore('theme', () => {
   const applyTheme = (themeMode = mode.value) => {
     const root = document.documentElement;
     root.classList.toggle('dark', resolveIsDark(themeMode));
-    appLocalStorage.setItem('theme-mode', themeMode);
   };
 
-  const updateTheme = (
-    options: ThemeUpdateOptions = {},
-    applyThemeCallback = applyTheme,
-  ) => {
+  const updateTheme = (options: ThemeUpdateOptions = {}, applyThemeCallback = applyTheme) => {
     const { withTransition = false, origin, direction } = options;
     if (!withTransition) {
       applyThemeCallback();
@@ -143,11 +141,7 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     if (origin && supportsCircularRevealTransition()) {
-      const success = runCircularRevealTransition(
-        origin,
-        direction,
-        applyThemeCallback,
-      );
+      const success = runCircularRevealTransition(origin, direction, applyThemeCallback);
       if (success) {
         return;
       }
@@ -158,14 +152,14 @@ export const useThemeStore = defineStore('theme', () => {
   };
 
   const setTheme = (newMode: ThemeMode, options: ThemeUpdateOptions = {}) => {
-    if (mode.value === newMode) {
+    if (!appDefaultSettings.features.personalization || mode.value === newMode) {
       return;
     }
 
     const wasDark = isDark.value;
     const willBeDark = resolveIsDark(newMode);
     const applyNewTheme = () => {
-      mode.value = newMode;
+      preferenceStore.update({ themeMode: newMode });
       applyTheme(newMode);
     };
 
@@ -186,18 +180,17 @@ export const useThemeStore = defineStore('theme', () => {
     setTheme(modes[nextIndex], options);
   };
 
-  const initTheme = () => {
-    // Get saved theme mode
-    const savedMode = appLocalStorage.getItem('theme-mode') as ThemeMode;
-    if (savedMode && ['light', 'dark', 'system'].includes(savedMode)) {
-      mode.value = savedMode;
-    }
+  let cleanupSystemTheme: (() => void) | undefined;
+  watch(mode, () => applyTheme(), { flush: 'sync' });
+  onScopeDispose(() => cleanupSystemTheme?.());
 
+  const initTheme = () => {
+    cleanupSystemTheme?.();
     // Listen to system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     systemPrefersDark.value = mediaQuery.matches;
 
-    mediaQuery.addEventListener('change', (e) => {
+    const handleSystemTheme = (e: MediaQueryListEvent): void => {
       if (mode.value === 'system') {
         const wasDark = systemPrefersDark.value;
         const willBeDark = e.matches;
@@ -215,7 +208,9 @@ export const useThemeStore = defineStore('theme', () => {
       }
 
       systemPrefersDark.value = e.matches;
-    });
+    };
+    mediaQuery.addEventListener('change', handleSystemTheme);
+    cleanupSystemTheme = () => mediaQuery.removeEventListener('change', handleSystemTheme);
 
     // Apply initial theme
     updateTheme({ withTransition: false });

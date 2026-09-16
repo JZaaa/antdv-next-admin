@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Antdv Next Admin</title>
     <meta name="app-storage-namespace" content="%APP_STORAGE_NAMESPACE%" />
+    <meta name="app-preference-defaults" content="%APP_PREFERENCE_DEFAULTS%" />
     <!-- Keep the first paint independent of the application bundle and styles. -->
     <style id="app-loading-style">
       #app-loading {
@@ -168,11 +169,24 @@
         var retry = document.getElementById('app-loading-retry');
         var locale = 'zh-CN';
         var theme = 'system';
+        var personalized = true;
         var finished = false;
         try {
+          var defaults = JSON.parse(document.querySelector('meta[name="app-preference-defaults"]').content);
+          locale = defaults.locale === 'en-US' ? 'en-US' : 'zh-CN';
+          theme = ['light', 'dark', 'system'].indexOf(defaults.theme) >= 0 ? defaults.theme : 'system';
+          personalized = defaults.personalization !== false;
+        } catch (_) {
+          // Keep safe defaults when viewing an untransformed HTML file.
+        }
+        try {
           var namespace = document.querySelector('meta[name="app-storage-namespace"]').content;
-          locale = localStorage.getItem(namespace + 'app-locale') || locale;
-          theme = localStorage.getItem(namespace + 'theme-mode') || theme;
+          if (personalized) {
+            var savedLocale = localStorage.getItem(namespace + 'app-locale');
+            var savedTheme = localStorage.getItem(namespace + 'theme-mode');
+            if (savedLocale === 'zh-CN' || savedLocale === 'en-US') locale = savedLocale;
+            if (['light', 'dark', 'system'].indexOf(savedTheme) >= 0) theme = savedTheme;
+          }
         } catch (_) {
           // Storage may be unavailable; the loading screen must still work.
         }

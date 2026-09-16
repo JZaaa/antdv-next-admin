@@ -64,8 +64,12 @@
 
       <div class="pane-right-head">
         <div class="login-tools">
-          <LanguageSwitch v-if="settingsStore.showLanguageSwitch" />
-          <ThemeToggle />
+          <LanguageSwitch
+            v-if="settingsStore.features.personalization && settingsStore.showLanguageSwitch"
+          />
+          <ThemeToggle
+            v-if="settingsStore.features.personalization && settingsStore.features.themeSwitch"
+          />
         </div>
       </div>
 

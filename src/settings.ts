@@ -1,4 +1,5 @@
-import type { ProTableSearch } from '@/types/pro';
+import type { AppFeatures, UserPreferences } from './types/preferences.ts';
+import type { ProTableSearch } from './types/pro.ts';
 
 export type ProTableDensity = 'large' | 'middle' | 'small' | 'smal';
 export type ProTableHeight = '100%' | 'auto' | string | number;
@@ -35,6 +36,12 @@ export interface ButtonDefaultSettings {
 }
 
 export interface AppDefaultSettings {
+  features: AppFeatures;
+  preferences: UserPreferences;
+  layout: {
+    sidebarWidth: number;
+    collapsedWidth: number;
+  };
   proTable: ProTableDefaultSettings;
   input: InputDefaultSettings;
   select: SelectDefaultSettings;
@@ -43,6 +50,40 @@ export interface AppDefaultSettings {
 }
 
 export const appDefaultSettings: AppDefaultSettings = {
+  // System switches are code-only. Cache and the preferences drawer cannot override them.
+  features: {
+    personalization: true,
+    search: true,
+    notifications: true,
+    fullscreen: true,
+    themeSwitch: true,
+    languageSwitch: true,
+    aiChat: true,
+    tabs: true,
+    breadcrumb: true,
+  },
+  // Defaults are merged with validated user overrides in the current cache namespace.
+  preferences: {
+    primaryColor: 'blue',
+    customPrimaryColor: '',
+    sidebarTheme: 'light',
+    layoutMode: 'vertical',
+    pageAnimation: 'slide-left',
+    grayMode: false,
+    rememberTabState: true,
+    maxTabCount: 10,
+    showLanguageSwitch: true,
+    themeMode: 'system',
+    locale: 'zh-CN',
+    sidebarCollapsed: false,
+    aiEntryVisible: true,
+    aiCollabEnabled: false,
+    aiPanelWidth: 420,
+  },
+  layout: {
+    sidebarWidth: 240,
+    collapsedWidth: 80,
+  },
   proTable: {
     size: 'smal',
     height: 'auto',

@@ -15,7 +15,12 @@ vi.mock('vue-router', () => ({
   useRoute: () => mocks.route,
 }));
 vi.mock('@/stores/auth', () => ({ useAuthStore: () => ({ login: mocks.login }) }));
-vi.mock('@/stores/settings', () => ({ useSettingsStore: () => ({ showLanguageSwitch: false }) }));
+vi.mock('@/stores/settings', () => ({
+  useSettingsStore: () => ({
+    showLanguageSwitch: false,
+    features: { personalization: true, themeSwitch: true },
+  }),
+}));
 vi.mock('@/utils/session', () => ({ clearSessionState: vi.fn() }));
 vi.mock('@/locales', () => ({ $t: (key: string) => key }));
 vi.mock('antdv-next', () => ({ message: { error: mocks.error } }));

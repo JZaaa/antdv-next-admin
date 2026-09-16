@@ -14,12 +14,13 @@
       </a-button>
 
       <!-- Breadcrumb -->
-      <Breadcrumb v-if="showBreadcrumb" />
+      <Breadcrumb v-if="showBreadcrumb && settingsStore.features.breadcrumb" />
     </div>
 
     <div class="header-right">
       <!-- Global Search Trigger -->
       <a-button
+        v-if="settingsStore.features.search"
         type="text"
         class="header-action search-btn"
         :aria-label="$t('layout.menuSearchDialog')"
@@ -28,6 +29,7 @@
         <SearchOutlined />
       </a-button>
       <button
+        v-if="settingsStore.features.search"
         type="button"
         class="search-trigger desktop-only"
         :aria-label="$t('layout.menuSearchDialog')"
@@ -60,19 +62,23 @@
         </a-tooltip>
 
         <!-- Fullscreen Toggle -->
-        <FullscreenToggle />
+        <FullscreenToggle v-if="settingsStore.features.fullscreen" />
 
         <!-- Notifications -->
-        <NotificationPanel v-if="!layoutStore.isMobile" />
+        <NotificationPanel v-if="settingsStore.features.notifications" />
 
         <!-- Theme Toggle -->
-        <ThemeToggle />
+        <ThemeToggle
+          v-if="settingsStore.features.personalization && settingsStore.features.themeSwitch"
+        />
 
         <!-- Language Switch -->
-        <LanguageSwitch v-if="settingsStore.showLanguageSwitch" />
+        <LanguageSwitch
+          v-if="settingsStore.features.personalization && settingsStore.showLanguageSwitch"
+        />
 
         <!-- Settings -->
-        <a-tooltip :title="$t('settings.title')">
+        <a-tooltip v-if="settingsStore.features.personalization" :title="$t('settings.title')">
           <a-button type="text" class="header-action" @click="openSettings">
             <SettingOutlined />
           </a-button>
@@ -83,7 +89,12 @@
       </template>
 
       <!-- Mobile: More menu (three dots) -->
-      <a-dropdown v-else :trigger="['click']" placement="bottomRight" :menu="moreMenuProps">
+      <a-dropdown
+        v-else-if="moreMenuProps.items.length"
+        :trigger="['click']"
+        placement="bottomRight"
+        :menu="moreMenuProps"
+      >
         <a-button type="text" class="header-action">
           <MoreOutlined />
         </a-button>
@@ -94,10 +105,16 @@
     </div>
 
     <!-- Global Search Modal -->
-    <GlobalSearch v-if="globalSearchLoaded" v-model:open="globalSearchOpen" />
+    <GlobalSearch
+      v-if="settingsStore.features.search && globalSearchLoaded"
+      v-model:open="globalSearchOpen"
+    />
 
     <!-- Settings Drawer -->
-    <SettingsDrawer v-if="settingsDrawerLoaded" v-model:open="settingsDrawerOpen" />
+    <SettingsDrawer
+      v-if="settingsStore.features.personalization && settingsDrawerLoaded"
+      v-model:open="settingsDrawerOpen"
+    />
   </a-layout-header>
 </template>
 
@@ -166,11 +183,13 @@ const settingsDrawerOpen = ref(false);
 const isMac = ref(false);
 
 const openGlobalSearch = () => {
+  if (!settingsStore.features.search) return;
   globalSearchLoaded.value = true;
   globalSearchOpen.value = true;
 };
 
 const openSettings = () => {
+  if (!settingsStore.features.personalization) return;
   settingsDrawerLoaded.value = true;
   settingsDrawerOpen.value = true;
 };
@@ -215,85 +234,38 @@ const handleMoreMenuClick = async ({ key }: { key: string }) => {
 };
 
 const moreMenuProps = computed(() => {
-  const items: MenuItem[] = [
-    {
-      key: 'fullscreen',
-      label: $t('layout.fullscreen'),
-      icon: h(FullscreenOutlined),
-    },
-  ];
-
-  if (layoutStore.aiEntryVisible) {
+  const items: MenuItem[] = [];
+  const features = settingsStore.features;
+  if (features.fullscreen)
+    items.push({ key: 'fullscreen', label: $t('layout.fullscreen'), icon: h(FullscreenOutlined) });
+  if (features.personalization && features.themeSwitch)
     items.push({
-      key: 'ai-collab',
-      label: layoutStore.aiCollabEnabled
-        ? $t('layout.aiCollabDisable')
-        : $t('layout.aiCollabEnable'),
-      icon: h(MessageOutlined),
-    });
-  }
-
-  items.push(
-    {
-      type: 'divider',
-    },
-    {
       key: 'theme',
       label: $t('layout.theme'),
       icon: h(BulbOutlined),
       children: [
-        {
-          key: 'theme-light',
-          label: $t('layout.themeLight'),
-        },
-        {
-          key: 'theme-dark',
-          label: $t('layout.themeDark'),
-        },
-        {
-          key: 'theme-auto',
-          label: $t('layout.themeAuto'),
-        },
+        { key: 'theme-light', label: $t('layout.themeLight') },
+        { key: 'theme-dark', label: $t('layout.themeDark') },
+        { key: 'theme-auto', label: $t('layout.themeAuto') },
       ],
-    },
-  );
-
-  if (settingsStore.showLanguageSwitch) {
-    items.push(
-      {
-        key: 'language',
-        label: $t('layout.language'),
-        icon: h(GlobalOutlined),
-        children: [
-          {
-            key: 'lang-zh',
-            label: LOCALE_NATIVE_LABELS['zh-CN'],
-          },
-          {
-            key: 'lang-en',
-            label: LOCALE_NATIVE_LABELS['en-US'],
-          },
-        ],
-      },
-      {
-        type: 'divider',
-      },
-    );
-  }
-
-  items.push(
-    {
-      key: 'settings',
-      label: $t('settings.title'),
-      icon: h(SettingOutlined),
-    },
-  );
-
+    });
+  if (features.personalization && settingsStore.showLanguageSwitch)
+    items.push({
+      key: 'language',
+      label: $t('layout.language'),
+      icon: h(GlobalOutlined),
+      children: [
+        { key: 'lang-zh', label: LOCALE_NATIVE_LABELS['zh-CN'] },
+        { key: 'lang-en', label: LOCALE_NATIVE_LABELS['en-US'] },
+      ],
+    });
+  if (features.personalization)
+    items.push({ key: 'settings', label: $t('settings.title'), icon: h(SettingOutlined) });
   return { items, onClick: handleMoreMenuClick };
 });
 
 const handleKeydown = (e: KeyboardEvent) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+  if (settingsStore.features.search && (e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault();
     openGlobalSearch();
   }

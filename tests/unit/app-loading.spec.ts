@@ -16,7 +16,13 @@ class LoadingElement extends EventTarget {
 }
 
 function setup(
-  options: { locale?: string; theme?: string; dark?: boolean; blockedStorage?: boolean } = {},
+  options: {
+    locale?: string;
+    theme?: string;
+    dark?: boolean;
+    blockedStorage?: boolean;
+    defaults?: { locale: string; theme: string; personalization: boolean };
+  } = {},
 ) {
   vi.useFakeTimers();
   const loader = new LoadingElement();
@@ -39,7 +45,13 @@ function setup(
     window,
     document: {
       getElementById: (id: string) => elements[id],
-      querySelector: () => ({ content: 'test-project:development:1.0.0:1:' }),
+      querySelector: (selector: string) => ({
+        content: selector.includes('app-preference-defaults')
+          ? JSON.stringify(
+              options.defaults ?? { locale: 'zh-CN', theme: 'system', personalization: true },
+            )
+          : 'test-project:development:1.0.0:1:',
+      }),
     },
     localStorage: {
       getItem(key: string) {
@@ -56,6 +68,33 @@ function setup(
 afterEach(() => vi.useRealTimers());
 
 describe('standalone startup loading screen', () => {
+  it('uses code defaults with no saved preference', () => {
+    const { loader, description } = setup({
+      defaults: { locale: 'en-US', theme: 'dark', personalization: true },
+    });
+    expect(loader.dataset.theme).toBe('dark');
+    expect(description.textContent).toContain('Loading the application');
+  });
+
+  it('ignores old preferences when personalization is disabled', () => {
+    const { loader } = setup({
+      locale: 'zh-CN',
+      theme: 'light',
+      defaults: { locale: 'en-US', theme: 'dark', personalization: false },
+    });
+    expect(loader.lang).toBe('en-US');
+    expect(loader.dataset.theme).toBe('dark');
+  });
+
+  it('falls back to code defaults for invalid cache values', () => {
+    const { loader } = setup({
+      locale: 'invalid',
+      theme: 'invalid',
+      defaults: { locale: 'en-US', theme: 'light', personalization: true },
+    });
+    expect(loader.lang).toBe('en-US');
+    expect(loader.dataset.theme).toBe('light');
+  });
   it('works without the application bundle or storage access', () => {
     const { loader, description, retry } = setup({ blockedStorage: true, dark: true });
     expect(loader.dataset.theme).toBe('dark');

@@ -1,116 +1,100 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref, watch, onScopeDispose } from 'vue';
 
-import { appLocalStorage } from '@/utils/cache';
-
-const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed';
-const AI_COLLAB_ENABLED_KEY = 'layout-ai-collab-enabled';
-const AI_ENTRY_VISIBLE_KEY = 'layout-ai-entry-visible';
-const AI_PANEL_WIDTH_KEY = 'layout-ai-panel-width';
-const AI_PANEL_MIN_WIDTH = 320;
-const AI_PANEL_MAX_WIDTH = 560;
+import { appDefaultSettings } from '@/settings';
+import { usePreferencesStore } from '@/stores/preferences';
+import { AI_PANEL_MIN_WIDTH, AI_PANEL_MAX_WIDTH } from '@/utils/preferences';
 
 export const useLayoutStore = defineStore('layout', () => {
-  // State
-  const collapsed = ref(false);
-  const sidebarWidth = ref(240);
-  const collapsedWidth = ref(80);
+  const preferenceStore = usePreferencesStore();
+  const collapsed = ref(preferenceStore.preferences.sidebarCollapsed);
+  const sidebarWidth = ref(appDefaultSettings.layout.sidebarWidth);
+  const collapsedWidth = ref(appDefaultSettings.layout.collapsedWidth);
   const isMobile = ref(false);
   const pageFullscreen = ref(false);
-  const aiEntryVisible = ref(true);
-  const aiCollabEnabled = ref(false);
-  const aiPanelWidth = ref(420);
+  const aiEntryVisible = computed(() => preferenceStore.preferences.aiEntryVisible);
+  const aiOpen = ref(preferenceStore.preferences.aiCollabEnabled);
+  const aiCollabEnabled = computed(
+    () => appDefaultSettings.features.aiChat && aiEntryVisible.value && aiOpen.value,
+  );
+  const aiPanelWidth = ref(preferenceStore.preferences.aiPanelWidth);
 
-  // Actions
-  const toggleSidebar = () => {
-    collapsed.value = !collapsed.value;
-    appLocalStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed.value.toString());
-  };
-
-  const setSidebarCollapsed = (value: boolean) => {
+  function setSidebarCollapsed(value: boolean): void {
+    preferenceStore.update({ sidebarCollapsed: value });
     collapsed.value = value;
-    appLocalStorage.setItem(SIDEBAR_COLLAPSED_KEY, value.toString());
-  };
-
-  const setIsMobile = (value: boolean) => {
+  }
+  function toggleSidebar(): void {
+    setSidebarCollapsed(!collapsed.value);
+  }
+  function setIsMobile(value: boolean): void {
     isMobile.value = value;
-    // Auto collapse sidebar on mobile
-    if (value) {
-      collapsed.value = true;
-    }
-  };
-
-  const togglePageFullscreen = () => {
+    if (value) collapsed.value = true;
+  }
+  function togglePageFullscreen(): void {
     pageFullscreen.value = !pageFullscreen.value;
-  };
-
-  const setPageFullscreen = (value: boolean) => {
+  }
+  function setPageFullscreen(value: boolean): void {
     pageFullscreen.value = value;
-  };
-
-  const toggleAiCollab = () => {
-    aiCollabEnabled.value = !aiCollabEnabled.value;
-    appLocalStorage.setItem(AI_COLLAB_ENABLED_KEY, aiCollabEnabled.value.toString());
-  };
-
-  const setAiCollabEnabled = (value: boolean) => {
-    aiCollabEnabled.value = value;
-    appLocalStorage.setItem(AI_COLLAB_ENABLED_KEY, value.toString());
-  };
-
-  const setAiEntryVisible = (value: boolean) => {
-    aiEntryVisible.value = value;
-    appLocalStorage.setItem(AI_ENTRY_VISIBLE_KEY, value.toString());
-    if (!value) {
-      setAiCollabEnabled(false);
-    }
-  };
-
-  const setAiPanelWidth = (value: number) => {
-    const nextWidth = Math.max(AI_PANEL_MIN_WIDTH, Math.min(AI_PANEL_MAX_WIDTH, Math.round(value)));
-    aiPanelWidth.value = nextWidth;
-    appLocalStorage.setItem(AI_PANEL_WIDTH_KEY, String(nextWidth));
-  };
-
-  const getCurrentSidebarWidth = () => {
+  }
+  function setAiCollabEnabled(value: boolean): void {
+    const enabled = value && appDefaultSettings.features.aiChat && aiEntryVisible.value;
+    preferenceStore.update({ aiCollabEnabled: enabled });
+    aiOpen.value = enabled;
+  }
+  function toggleAiCollab(): void {
+    setAiCollabEnabled(!aiCollabEnabled.value);
+  }
+  function setAiEntryVisible(value: boolean): void {
+    preferenceStore.update({
+      aiEntryVisible: value,
+      ...(!value ? { aiCollabEnabled: false } : {}),
+    });
+    if (!value) aiOpen.value = false;
+  }
+  function setAiPanelWidth(value: number): void {
+    if (!Number.isFinite(value)) return;
+    const width = Math.max(AI_PANEL_MIN_WIDTH, Math.min(AI_PANEL_MAX_WIDTH, Math.round(value)));
+    preferenceStore.update({ aiPanelWidth: width });
+    aiPanelWidth.value = width;
+  }
+  function getCurrentSidebarWidth(): number {
     return collapsed.value ? collapsedWidth.value : sidebarWidth.value;
-  };
+  }
 
-  // Initialize from localStorage
-  const initLayout = () => {
-    const savedCollapsed = appLocalStorage.getItem(SIDEBAR_COLLAPSED_KEY);
-    if (savedCollapsed !== null) {
-      collapsed.value = savedCollapsed === 'true';
-    }
+  watch(
+    () => preferenceStore.preferences.sidebarCollapsed,
+    (value) => {
+      collapsed.value = isMobile.value || value;
+    },
+    { flush: 'sync' },
+  );
+  watch(
+    () => preferenceStore.preferences.aiCollabEnabled,
+    (value) => {
+      aiOpen.value = value;
+    },
+    { flush: 'sync' },
+  );
+  watch(
+    () => preferenceStore.preferences.aiPanelWidth,
+    (value) => {
+      aiPanelWidth.value = value;
+    },
+    { flush: 'sync' },
+  );
 
-    const savedAiCollabEnabled = appLocalStorage.getItem(AI_COLLAB_ENABLED_KEY);
-    if (savedAiCollabEnabled !== null) {
-      aiCollabEnabled.value = savedAiCollabEnabled === 'true';
-    }
-
-    const savedAiEntryVisible = appLocalStorage.getItem(AI_ENTRY_VISIBLE_KEY);
-    if (savedAiEntryVisible !== null) {
-      aiEntryVisible.value = savedAiEntryVisible === 'true';
-    }
-
-    const savedAiPanelWidth = appLocalStorage.getItem(AI_PANEL_WIDTH_KEY);
-    if (savedAiPanelWidth !== null) {
-      const parsedWidth = Number(savedAiPanelWidth);
-      if (!Number.isNaN(parsedWidth)) {
-        setAiPanelWidth(parsedWidth);
-      }
-    }
-
-    // Check if mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+  function checkMobile(): void {
+    setIsMobile(window.innerWidth < 768);
+  }
+  function initLayout(): void {
     checkMobile();
     window.addEventListener('resize', checkMobile);
-  };
+  }
+  onScopeDispose(() => {
+    if (typeof window !== 'undefined') window.removeEventListener('resize', checkMobile);
+  });
 
   return {
-    // State
     collapsed,
     sidebarWidth,
     collapsedWidth,
@@ -119,7 +103,6 @@ export const useLayoutStore = defineStore('layout', () => {
     aiEntryVisible,
     aiCollabEnabled,
     aiPanelWidth,
-    // Actions
     toggleSidebar,
     setSidebarCollapsed,
     setIsMobile,

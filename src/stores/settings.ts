@@ -2,42 +2,15 @@ import type { PrimaryColor, SidebarTheme, LayoutMode, PageAnimation } from '@/ty
 
 import { generate } from '@ant-design/colors';
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, watch } from 'vue';
 
-import { appLocalStorage } from '@/utils/cache';
+import { appDefaultSettings } from '@/settings';
+import { usePreferencesStore } from '@/stores/preferences';
 import { hexColorVariables, isHexColor } from '@/utils/color';
+import { MAX_TAB_COUNT } from '@/utils/preferences';
 
-export const DEFAULT_MAX_TAB_COUNT = 10;
-export const MAX_TAB_COUNT = 50;
-const MAX_TAB_COUNT_STORAGE_KEY = 'app-max-tab-count';
-
-function normalizeMaxTabCount(value: number): number {
-  return Number.isFinite(value)
-    ? Math.min(MAX_TAB_COUNT, Math.max(1, Math.floor(value)))
-    : DEFAULT_MAX_TAB_COUNT;
-}
-
-function readMaxTabCount(): number {
-  try {
-    const saved = appLocalStorage.getItem(MAX_TAB_COUNT_STORAGE_KEY);
-    return saved === null || saved.trim() === ''
-      ? DEFAULT_MAX_TAB_COUNT
-      : normalizeMaxTabCount(Number(saved));
-  } catch {
-    return DEFAULT_MAX_TAB_COUNT;
-  }
-}
-
-const PAGE_ANIMATION_VALUES: Set<string> = new Set([
-  'fade',
-  'slide-left',
-  'slide-right',
-  'slide-up',
-  'slide-down',
-  'zoom',
-  'zoom-big',
-  'none',
-]);
+export { MAX_TAB_COUNT };
+export const DEFAULT_MAX_TAB_COUNT = appDefaultSettings.preferences.maxTabCount;
 
 const PRIMARY_COLOR_HEX_MAP: Record<PrimaryColor, string> = {
   blue: '#1890ff',
@@ -47,8 +20,6 @@ const PRIMARY_COLOR_HEX_MAP: Record<PrimaryColor, string> = {
   orange: '#fa8c16',
   cyan: '#13c2c2',
 };
-
-const isPrimaryColor = (color: string): color is PrimaryColor => color in PRIMARY_COLOR_HEX_MAP;
 
 const clearCustomPrimaryColorStyles = () => {
   const rootStyle = document.documentElement.style;
@@ -64,139 +35,93 @@ const clearCustomPrimaryColorStyles = () => {
 };
 
 export const useSettingsStore = defineStore('settings', () => {
-  // State
-  const primaryColor = ref<PrimaryColor>('blue');
-  const customPrimaryColor = ref<string>('');
+  const preferenceStore = usePreferencesStore();
+  const primaryColor = computed(() => preferenceStore.preferences.primaryColor);
+  const customPrimaryColor = computed(() => preferenceStore.preferences.customPrimaryColor);
   const primaryColorHex = computed(
     () => customPrimaryColor.value || PRIMARY_COLOR_HEX_MAP[primaryColor.value],
   );
-  const sidebarTheme = ref<SidebarTheme>('light');
-  const layoutMode = ref<LayoutMode>('vertical');
-  const pageAnimation = ref<PageAnimation>('slide-left');
-  const grayMode = ref(false);
-  const rememberTabState = ref(true);
-  // Router guards restore tabs before App.onMounted initializes visual settings.
-  const maxTabCount = ref(readMaxTabCount());
-  const showLanguageSwitch = ref(true);
+  const sidebarTheme = computed(() => preferenceStore.preferences.sidebarTheme);
+  const layoutMode = computed(() => preferenceStore.preferences.layoutMode);
+  const pageAnimation = computed(() => preferenceStore.preferences.pageAnimation);
+  const grayMode = computed(() => preferenceStore.preferences.grayMode);
+  const rememberTabState = computed(() => preferenceStore.preferences.rememberTabState);
+  const maxTabCount = computed(() => preferenceStore.preferences.maxTabCount);
+  const showLanguageSwitch = computed(() => preferenceStore.preferences.showLanguageSwitch);
+  const features = appDefaultSettings.features;
 
-  // Actions
-  const setPrimaryColor = (color: PrimaryColor) => {
-    primaryColor.value = color;
-    customPrimaryColor.value = '';
-    const hex = PRIMARY_COLOR_HEX_MAP[color];
-    clearCustomPrimaryColorStyles();
-    document.documentElement.setAttribute('data-primary-color', color);
-    document.documentElement.style.setProperty('--ant-primary-color', hex);
-    appLocalStorage.setItem('app-primary-color', color);
-    appLocalStorage.removeItem('app-custom-primary-color');
-  };
-
-  const setCustomPrimaryColor = (hex: string) => {
-    if (!isHexColor(hex)) return;
-    customPrimaryColor.value = hex;
-    document.documentElement.removeAttribute('data-primary-color');
-
-    // Generate color scales from the custom color
+  function applyPrimaryColor(): void {
+    if (typeof document === 'undefined') return;
+    const hex = primaryColorHex.value;
+    const root = document.documentElement;
+    if (!customPrimaryColor.value) {
+      clearCustomPrimaryColorStyles();
+      root.setAttribute('data-primary-color', primaryColor.value);
+      root.style.setProperty('--ant-primary-color', hex);
+      return;
+    }
+    root.removeAttribute('data-primary-color');
     const colors = generate(hex);
-
-    // Set base color
-    document.documentElement.style.setProperty('--color-primary', hex);
-    document.documentElement.style.setProperty('--ant-primary-color', hex);
-
-    // Set color scales (1-10)
-    colors.forEach((color, index) => {
-      document.documentElement.style.setProperty(`--color-primary-${index + 1}`, color);
-    });
-
+    root.style.setProperty('--color-primary', hex);
+    root.style.setProperty('--ant-primary-color', hex);
+    colors.forEach((color, index) =>
+      root.style.setProperty('--color-primary-' + (index + 1), color),
+    );
     for (const [name, value] of Object.entries({
       ...hexColorVariables('color-primary', hex),
       ...hexColorVariables('color-primary-5', colors[4]!),
-    })) {
-      document.documentElement.style.setProperty(name, value);
-    }
-
-    appLocalStorage.setItem('app-custom-primary-color', hex);
-  };
-
-  const setSidebarTheme = (theme: SidebarTheme) => {
-    sidebarTheme.value = theme;
-    appLocalStorage.setItem('app-sidebar-theme', theme);
-  };
-
-  const setLayoutMode = (mode: LayoutMode) => {
-    layoutMode.value = mode;
-    appLocalStorage.setItem('app-layout-mode', mode);
-  };
-
-  const setPageAnimation = (animation: PageAnimation) => {
-    pageAnimation.value = animation;
-    appLocalStorage.setItem('app-page-animation', animation);
-  };
-
-  const setGrayMode = (enabled: boolean) => {
-    grayMode.value = enabled;
-    document.documentElement.classList.toggle('gray-mode', enabled);
-    appLocalStorage.setItem('app-gray-mode', enabled.toString());
-  };
-
-  const setRememberTabState = (enabled: boolean) => {
-    rememberTabState.value = enabled;
-    appLocalStorage.setItem('app-remember-tab-state', enabled.toString());
-  };
-
-  function setMaxTabCount(value: number | string | null): void {
-    if (value === null || value === '') return;
-    maxTabCount.value = normalizeMaxTabCount(Number(value));
-    appLocalStorage.setItem(MAX_TAB_COUNT_STORAGE_KEY, String(maxTabCount.value));
+    }))
+      root.style.setProperty(name, value);
   }
 
-  const setShowLanguageSwitch = (enabled: boolean) => {
-    showLanguageSwitch.value = enabled;
-    appLocalStorage.setItem('app-show-language-switch', enabled.toString());
-  };
+  function applyGrayMode(): void {
+    if (typeof document !== 'undefined')
+      document.documentElement.classList.toggle('gray-mode', grayMode.value);
+  }
 
-  const resetSettings = () => {
-    setPrimaryColor('blue');
-    setSidebarTheme('dark');
-    setLayoutMode('vertical');
-    setPageAnimation('slide-left');
-    setGrayMode(false);
-    setRememberTabState(true);
-    setMaxTabCount(DEFAULT_MAX_TAB_COUNT);
-    setShowLanguageSwitch(true);
-  };
+  function setPrimaryColor(color: PrimaryColor): void {
+    preferenceStore.update({ primaryColor: color, customPrimaryColor: '' });
+  }
+  function setCustomPrimaryColor(hex: string): void {
+    if (isHexColor(hex)) preferenceStore.update({ customPrimaryColor: hex });
+  }
+  function setSidebarTheme(value: SidebarTheme): void {
+    preferenceStore.update({ sidebarTheme: value });
+  }
+  function setLayoutMode(value: LayoutMode): void {
+    preferenceStore.update({ layoutMode: value });
+  }
+  function setPageAnimation(value: PageAnimation): void {
+    preferenceStore.update({ pageAnimation: value });
+  }
+  function setGrayMode(value: boolean): void {
+    preferenceStore.update({ grayMode: value });
+  }
+  function setRememberTabState(value: boolean): void {
+    preferenceStore.update({ rememberTabState: value });
+  }
+  function setShowLanguageSwitch(value: boolean): void {
+    preferenceStore.update({ showLanguageSwitch: value });
+  }
+  function setMaxTabCount(value: number | string | null): void {
+    if (value === null || value === '') return;
+    preferenceStore.update({
+      maxTabCount: Number.isFinite(Number(value)) ? Number(value) : DEFAULT_MAX_TAB_COUNT,
+    });
+  }
+  function resetSettings(): void {
+    preferenceStore.reset();
+  }
+  function initSettings(): void {
+    applyPrimaryColor();
+    applyGrayMode();
+  }
 
-  const initSettings = () => {
-    // Restore from localStorage
-    const savedPrimaryColor = appLocalStorage.getItem('app-primary-color');
-    const savedCustomPrimaryColor = appLocalStorage.getItem('app-custom-primary-color');
-    const savedSidebarTheme = appLocalStorage.getItem('app-sidebar-theme') as SidebarTheme;
-    const savedLayoutMode = appLocalStorage.getItem('app-layout-mode') as LayoutMode;
-    const savedPageAnimation = appLocalStorage.getItem('app-page-animation') as PageAnimation;
-    const savedGrayMode = appLocalStorage.getItem('app-gray-mode');
-    const savedRememberTabState = appLocalStorage.getItem('app-remember-tab-state');
-    const savedShowLanguageSwitch = appLocalStorage.getItem('app-show-language-switch');
-
-    if (savedCustomPrimaryColor) {
-      setCustomPrimaryColor(savedCustomPrimaryColor);
-    } else if (savedPrimaryColor && isPrimaryColor(savedPrimaryColor)) {
-      setPrimaryColor(savedPrimaryColor);
-    }
-    if (savedSidebarTheme) setSidebarTheme(savedSidebarTheme);
-    if (savedLayoutMode) setLayoutMode(savedLayoutMode);
-    if (savedPageAnimation && PAGE_ANIMATION_VALUES.has(savedPageAnimation)) {
-      setPageAnimation(savedPageAnimation);
-    }
-    if (savedGrayMode) setGrayMode(savedGrayMode === 'true');
-    rememberTabState.value = savedRememberTabState !== 'false';
-    maxTabCount.value = readMaxTabCount();
-    if (savedShowLanguageSwitch !== null) {
-      showLanguageSwitch.value = savedShowLanguageSwitch !== 'false';
-    }
-  };
+  watch([primaryColor, customPrimaryColor], applyPrimaryColor, { flush: 'sync' });
+  watch(grayMode, applyGrayMode, { flush: 'sync' });
 
   return {
-    // State
+    features,
     primaryColor,
     customPrimaryColor,
     primaryColorHex,
@@ -207,7 +132,6 @@ export const useSettingsStore = defineStore('settings', () => {
     rememberTabState,
     maxTabCount,
     showLanguageSwitch,
-    // Actions
     setPrimaryColor,
     setCustomPrimaryColor,
     setSidebarTheme,

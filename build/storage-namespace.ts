@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import pkg from '../package.json' with { type: 'json' };
+import { appDefaultSettings } from '../src/settings.ts';
 import { createStorageNamespace } from '../src/utils/storageNamespace.ts';
 
 const PLACEHOLDER = '%APP_STORAGE_NAMESPACE%';
@@ -13,13 +14,22 @@ export function storageNamespacePlugin(): Plugin {
   let fallbackHtml = '';
   function transform(html: string): string {
     // The value is inserted into an HTML attribute, never JavaScript source.
-    return html.replaceAll(
-      PLACEHOLDER,
-      namespace
+    function escapeAttribute(value: string): string {
+      return value
         .replaceAll('&', '&amp;')
         .replaceAll('"', '&quot;')
         .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;'),
+        .replaceAll('>', '&gt;');
+    }
+    return html.replaceAll(PLACEHOLDER, escapeAttribute(namespace)).replaceAll(
+      '%APP_PREFERENCE_DEFAULTS%',
+      escapeAttribute(
+        JSON.stringify({
+          personalization: appDefaultSettings.features.personalization,
+          locale: appDefaultSettings.preferences.locale,
+          theme: appDefaultSettings.preferences.themeMode,
+        }),
+      ),
     );
   }
   return {

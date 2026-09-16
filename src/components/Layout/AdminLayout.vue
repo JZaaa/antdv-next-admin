@@ -26,7 +26,7 @@
           <Header v-if="!layoutStore.pageFullscreen" />
 
           <!-- Tabs -->
-          <TabBar />
+          <TabBar v-if="settingsStore.features.tabs" />
 
           <!-- Page Content -->
           <a-layout-content
@@ -125,7 +125,7 @@
         <a-layout>
           <a-layout-content class="horizontal-content">
             <!-- Tabs -->
-            <TabBar />
+            <TabBar v-if="settingsStore.features.tabs" />
 
             <!-- Page Content -->
             <div id="main-content" class="page-content" :class="{ 'is-iframe-page': isIframePage }">
