@@ -455,6 +455,17 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             },
           },
           {
+            path: "/examples/vxe-table",
+            name: "ExamplesVxeTable",
+            component: () => import("@/views/examples/vxe-table/index.vue"),
+            meta: {
+              title: "menu.vxeTable",
+              icon: "TableOutlined",
+              requiresAuth: true,
+              order: 1.5,
+            },
+          },
+          {
             path: "/examples/modal",
             name: "ExamplesModal",
             component: () => import("@/views/examples/modal/index.vue"),

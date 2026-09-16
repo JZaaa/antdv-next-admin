@@ -109,6 +109,7 @@ export default {
     icon: 'Icon Example',
     form: 'Form Example',
     schemaForm: 'SchemaForm',
+    vxeTable: 'VXE Table',
     jsonInput: 'JSON Input',
     i18nInput: 'I18n Input',
     advancedFilter: 'Advanced Filter Builder',

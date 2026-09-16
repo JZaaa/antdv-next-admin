@@ -93,3 +93,25 @@ node scripts/form/summarize-schema-form.mjs docs/spec/schema-form-performance-re
 - 静态 JS 体积是当前独立宿主入口及其静态依赖闭包，包含 Vue、antdv-next、TanStack 和示例启动代码，排除动态加载块及 CSS。它不是表单库增量体积；单独记录体积测量时间、manifest 和文件哈希，不能冒充性能测试时的构建产物。
 
 手动执行 `npm run test:unit:run` 仍运行全部单测（含表单）；现有 `check:ci` 本地命令保持不变。不要手工修改生成报告来替代重新验收。
+
+## VXE Table 专项验收
+
+```sh
+npm run check:table:project
+npm run lab:table:reference:build
+npm run lab:table:check
+npm run lab:table:check -- --standalone
+npm run lab:table:check -- --standalone-form
+npm run lab:table:check -- --example
+npm run lab:table:check -- --example --user
+npm run lab:table:check -- --reference
+npm run lab:table:check -- --performance
+npm run lab:table:check -- --performance-controls
+npm run check:table:report
+```
+
+`check:table:project` 串行执行类型、Lint、全部单测、生产/Demo 构建及兼容检查，最后构建 Table lab 和独立复制宿主。主项目构建会清空 dist，必须先运行；完成后不要在浏览器验收中途重新构建主项目。性能两组应独占运行，避免与构建或其他浏览器检查争用资源。
+
+默认浏览器为 `E:/chrome-history/chrome-100/chrome.exe`，可通过 `TABLE_LAB_CHROME` 指定。参考源码默认相邻 `vue-vben-admin`，可用 `VBEN_SOURCE` 指定。参考构建直接导入真实 Vben wrapper，使用相同目标 VXE 版本，输出在 node_modules/.cache/table-reference。源码原有 Tailwind 指令的警告仅来自参考对照，不属于目标生产 CSS。
+
+报告写入 docs/spec/vxe-table-*，含检查日志、浏览器版本、场景、截图、逐轮性能样本、依赖和源码哈希。汇总要求所有项目检查及 Chrome 100 浏览器报告通过；能力映射为维护的用例索引，不等同于验证任意业务组合。上述专项流程手动执行，不修改现有 CI。

@@ -109,6 +109,7 @@ export default {
     icon: '图标示例',
     form: '表单示例',
     schemaForm: 'SchemaForm 独立表单',
+    vxeTable: 'VXE 表格',
     jsonInput: 'JSON输入',
     i18nInput: '国际化输入',
     advancedFilter: '高级筛选构建器',
