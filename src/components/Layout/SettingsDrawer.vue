@@ -138,15 +138,17 @@
           <AppstoreOutlined aria-hidden="true" />{{ $t('settings.pagePreferences') }}
         </h3>
         <div class="settings-card">
-          <div class="setting-row">
+          <div class="setting-block">
             <h4 id="page-animation-label">{{ $t('settings.pageAnimation') }}</h4>
-            <a-select
-              :value="settingsStore.pageAnimation"
-              @change="settingsStore.setPageAnimation"
-              :options="pageAnimationOptions"
-              class="animation-select"
-              aria-labelledby="page-animation-label"
-            />
+            <div class="animation-select">
+              <a-select
+                :value="settingsStore.pageAnimation"
+                @change="settingsStore.setPageAnimation"
+                :options="pageAnimationOptions"
+                style="width: 100%"
+                aria-labelledby="page-animation-label"
+              />
+            </div>
           </div>
           <div class="setting-row">
             <div class="setting-copy">
@@ -583,8 +585,8 @@ const handleLanguageSwitchChange = (checked: boolean) => {
 }
 
 .animation-select {
-  flex: 0 0 132px;
-  min-width: 0;
+  width: 100%;
+  margin-top: 12px;
 }
 
 .tab-count-input {
@@ -613,10 +615,6 @@ const handleLanguageSwitchChange = (checked: boolean) => {
   .color-item {
     width: 28px;
     height: 28px;
-  }
-
-  .animation-select {
-    flex-basis: 112px;
   }
 }
 

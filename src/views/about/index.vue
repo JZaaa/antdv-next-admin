@@ -36,7 +36,7 @@
 
     <a-row :gutter="[16, 16]" class="info-section">
       <!-- Project Info -->
-      <a-col :xs="24" :lg="12">
+      <a-col :span="24">
         <a-card variant="borderless" class="info-card">
           <template #title>
             <div class="card-title-row">
@@ -113,7 +113,7 @@
       </a-col>
 
       <!-- Tech Stack -->
-      <a-col :xs="24" :lg="12">
+      <a-col :span="24">
         <a-card variant="borderless" class="info-card">
           <template #title>
             <div class="card-title-row">
@@ -206,20 +206,137 @@ const heroBadges = [
 
 const techList = [
   { name: 'Vue', packageName: 'vue', color: '#42b883', url: 'https://vuejs.org' },
-  { name: 'TypeScript', packageName: 'typescript', color: '#3178c6', url: 'https://www.typescriptlang.org' },
+  {
+    name: 'TypeScript',
+    packageName: 'typescript',
+    color: '#3178c6',
+    url: 'https://www.typescriptlang.org',
+  },
   { name: 'Vite', packageName: 'vite', color: '#646cff', url: 'https://vite.dev' },
-  { name: 'Antdv Next', packageName: 'antdv-next', color: '#1677ff', url: 'https://antdv-next.com' },
+  {
+    name: 'Antdv Next',
+    packageName: 'antdv-next',
+    color: '#1677ff',
+    url: 'https://antdv-next.com',
+  },
+  {
+    name: 'Antdv Next Icons',
+    packageName: '@antdv-next/icons',
+    color: '#1677ff',
+    url: 'https://antdv-next.com',
+  },
   { name: 'Pinia', packageName: 'pinia', color: '#ffd859', url: 'https://pinia.vuejs.org' },
-  { name: 'Vue Router', packageName: 'vue-router', color: '#42b883', url: 'https://router.vuejs.org' },
-  { name: 'Vue I18n', packageName: 'vue-i18n', color: '#42b883', url: 'https://vue-i18n.intlify.dev' },
+  {
+    name: 'Vue Router',
+    packageName: 'vue-router',
+    color: '#42b883',
+    url: 'https://router.vuejs.org',
+  },
+  {
+    name: 'Vue I18n',
+    packageName: 'vue-i18n',
+    color: '#42b883',
+    url: 'https://vue-i18n.intlify.dev',
+  },
   { name: 'Axios', packageName: 'axios', color: '#5a29e4', url: 'https://axios-http.com' },
   { name: 'ECharts', packageName: 'echarts', color: '#e43961', url: 'https://echarts.apache.org' },
-  { name: 'Tailwind CSS', packageName: 'tailwindcss', color: '#06b6d4', url: 'https://tailwindcss.com' },
+  {
+    name: 'Vue ECharts',
+    packageName: 'vue-echarts',
+    color: '#e43961',
+    url: 'https://github.com/ecomfe/vue-echarts',
+  },
+  { name: 'VXE Table', packageName: 'vxe-table', color: '#409eff', url: 'https://vxetable.cn' },
+  { name: 'VXE UI', packageName: 'vxe-pc-ui', color: '#409eff', url: 'https://vxeui.com' },
+  {
+    name: 'TanStack Form',
+    packageName: '@tanstack/vue-form',
+    color: '#ff4154',
+    url: 'https://tanstack.com/form',
+  },
+  {
+    name: 'TanStack Store',
+    packageName: '@tanstack/store',
+    color: '#ff4154',
+    url: 'https://tanstack.com/store',
+  },
+  { name: 'Zod', packageName: 'zod', color: '#3e67b1', url: 'https://zod.dev' },
+  {
+    name: 'Zod Defaults',
+    packageName: 'zod-defaults',
+    color: '#3e67b1',
+    url: 'https://www.npmjs.com/package/zod-defaults',
+  },
+  {
+    name: 'Tailwind CSS',
+    packageName: 'tailwindcss',
+    color: '#06b6d4',
+    url: 'https://tailwindcss.com',
+  },
   { name: 'Iconify', packageName: '@iconify/vue', color: '#1769aa', url: 'https://iconify.design' },
   { name: 'Tiptap', packageName: '@tiptap/vue-3', color: '#68cef8', url: 'https://tiptap.dev' },
   { name: 'Milkdown', packageName: '@milkdown/vue', color: '#7e57c2', url: 'https://milkdown.dev' },
-  { name: 'CodeMirror', packageName: '@codemirror/view', color: '#d30707', url: 'https://codemirror.net' },
+  {
+    name: 'CodeMirror',
+    packageName: '@codemirror/view',
+    color: '#d30707',
+    url: 'https://codemirror.net',
+  },
+  {
+    name: 'Vue CodeMirror',
+    packageName: 'vue-codemirror',
+    color: '#d30707',
+    url: 'https://github.com/surmon-china/vue-codemirror',
+  },
+  {
+    name: 'Vue Draggable',
+    packageName: 'vuedraggable',
+    color: '#42b883',
+    url: 'https://github.com/SortableJS/vue.draggable.next',
+  },
   { name: 'Day.js', packageName: 'dayjs', color: '#ff6f61', url: 'https://day.js.org' },
+  { name: 'Lodash ES', packageName: 'lodash-es', color: '#3492ff', url: 'https://lodash.com' },
+  {
+    name: 'XE Utils',
+    packageName: 'xe-utils',
+    color: '#409eff',
+    url: 'https://github.com/x-extends/xe-utils',
+  },
+  { name: 'Pinyin Pro', packageName: 'pinyin-pro', color: '#13c2c2', url: 'https://pinyin-pro.cn' },
+  { name: 'Sass', packageName: 'sass', color: '#cc6699', url: 'https://sass-lang.com' },
+  { name: 'PostCSS', packageName: 'postcss', color: '#dd3a0a', url: 'https://postcss.org' },
+  {
+    name: 'Autoprefixer',
+    packageName: 'autoprefixer',
+    color: '#dd3a0a',
+    url: 'https://github.com/postcss/autoprefixer',
+  },
+  { name: 'Faker', packageName: '@faker-js/faker', color: '#00a4a2', url: 'https://fakerjs.dev' },
+  {
+    name: 'Mock Dev Server',
+    packageName: 'vite-plugin-mock-dev-server',
+    color: '#646cff',
+    url: 'https://vite-plugin-mock-dev-server.netlify.app',
+  },
+  {
+    name: 'Axios Mock Adapter',
+    packageName: 'axios-mock-adapter',
+    color: '#5a29e4',
+    url: 'https://github.com/ctimmerm/axios-mock-adapter',
+  },
+  { name: 'Vitest', packageName: 'vitest', color: '#729b1b', url: 'https://vitest.dev' },
+  {
+    name: 'Oxlint',
+    packageName: 'oxlint',
+    color: '#f0a000',
+    url: 'https://oxc.rs/docs/guide/usage/linter',
+  },
+  {
+    name: 'Oxfmt',
+    packageName: 'oxfmt',
+    color: '#f0a000',
+    url: 'https://oxc.rs/docs/guide/usage/formatter',
+  },
 ]
   .filter((tech) => Object.hasOwn(dependencyVersions, tech.packageName))
   .map((tech) => ({ ...tech, version: dependencyVersions[tech.packageName] }));
