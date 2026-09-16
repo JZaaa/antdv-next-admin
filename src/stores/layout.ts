@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+import { appLocalStorage } from '@/utils/cache';
+
 const SIDEBAR_COLLAPSED_KEY = 'sidebar-collapsed';
 const AI_COLLAB_ENABLED_KEY = 'layout-ai-collab-enabled';
 const AI_ENTRY_VISIBLE_KEY = 'layout-ai-entry-visible';
@@ -22,12 +24,12 @@ export const useLayoutStore = defineStore('layout', () => {
   // Actions
   const toggleSidebar = () => {
     collapsed.value = !collapsed.value;
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed.value.toString());
+    appLocalStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed.value.toString());
   };
 
   const setSidebarCollapsed = (value: boolean) => {
     collapsed.value = value;
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, value.toString());
+    appLocalStorage.setItem(SIDEBAR_COLLAPSED_KEY, value.toString());
   };
 
   const setIsMobile = (value: boolean) => {
@@ -48,17 +50,17 @@ export const useLayoutStore = defineStore('layout', () => {
 
   const toggleAiCollab = () => {
     aiCollabEnabled.value = !aiCollabEnabled.value;
-    localStorage.setItem(AI_COLLAB_ENABLED_KEY, aiCollabEnabled.value.toString());
+    appLocalStorage.setItem(AI_COLLAB_ENABLED_KEY, aiCollabEnabled.value.toString());
   };
 
   const setAiCollabEnabled = (value: boolean) => {
     aiCollabEnabled.value = value;
-    localStorage.setItem(AI_COLLAB_ENABLED_KEY, value.toString());
+    appLocalStorage.setItem(AI_COLLAB_ENABLED_KEY, value.toString());
   };
 
   const setAiEntryVisible = (value: boolean) => {
     aiEntryVisible.value = value;
-    localStorage.setItem(AI_ENTRY_VISIBLE_KEY, value.toString());
+    appLocalStorage.setItem(AI_ENTRY_VISIBLE_KEY, value.toString());
     if (!value) {
       setAiCollabEnabled(false);
     }
@@ -67,7 +69,7 @@ export const useLayoutStore = defineStore('layout', () => {
   const setAiPanelWidth = (value: number) => {
     const nextWidth = Math.max(AI_PANEL_MIN_WIDTH, Math.min(AI_PANEL_MAX_WIDTH, Math.round(value)));
     aiPanelWidth.value = nextWidth;
-    localStorage.setItem(AI_PANEL_WIDTH_KEY, String(nextWidth));
+    appLocalStorage.setItem(AI_PANEL_WIDTH_KEY, String(nextWidth));
   };
 
   const getCurrentSidebarWidth = () => {
@@ -76,22 +78,22 @@ export const useLayoutStore = defineStore('layout', () => {
 
   // Initialize from localStorage
   const initLayout = () => {
-    const savedCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
+    const savedCollapsed = appLocalStorage.getItem(SIDEBAR_COLLAPSED_KEY);
     if (savedCollapsed !== null) {
       collapsed.value = savedCollapsed === 'true';
     }
 
-    const savedAiCollabEnabled = localStorage.getItem(AI_COLLAB_ENABLED_KEY);
+    const savedAiCollabEnabled = appLocalStorage.getItem(AI_COLLAB_ENABLED_KEY);
     if (savedAiCollabEnabled !== null) {
       aiCollabEnabled.value = savedAiCollabEnabled === 'true';
     }
 
-    const savedAiEntryVisible = localStorage.getItem(AI_ENTRY_VISIBLE_KEY);
+    const savedAiEntryVisible = appLocalStorage.getItem(AI_ENTRY_VISIBLE_KEY);
     if (savedAiEntryVisible !== null) {
       aiEntryVisible.value = savedAiEntryVisible === 'true';
     }
 
-    const savedAiPanelWidth = localStorage.getItem(AI_PANEL_WIDTH_KEY);
+    const savedAiPanelWidth = appLocalStorage.getItem(AI_PANEL_WIDTH_KEY);
     if (savedAiPanelWidth !== null) {
       const parsedWidth = Number(savedAiPanelWidth);
       if (!Number.isNaN(parsedWidth)) {

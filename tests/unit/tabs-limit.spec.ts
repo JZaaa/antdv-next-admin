@@ -5,6 +5,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 
 import { DEFAULT_MAX_TAB_COUNT, useSettingsStore } from '@/stores/settings';
 import { useTabsStore } from '@/stores/tabs';
+import { getStorageKey } from '@/utils/cache';
 
 vi.mock('@/router', () => ({ default: { replace: vi.fn() } }));
 
@@ -76,7 +77,7 @@ describe('tab limit settings', () => {
   it('defaults to ten and loads the saved limit before router restoration', () => {
     expect(useSettingsStore().maxTabCount).toBe(DEFAULT_MAX_TAB_COUNT);
     useSettingsStore().setMaxTabCount(3);
-    expect(values.get('app-max-tab-count')).toBe('3');
+    expect(values.get(getStorageKey('app-max-tab-count'))).toBe('3');
     disposePinia(pinia);
     pinia = createPinia();
     setActivePinia(pinia);
@@ -92,7 +93,7 @@ describe('tab limit settings', () => {
     ['999', 50],
     ['Infinity', 10],
   ])('normalizes persisted value %s to %s', (saved, expected) => {
-    values.set('app-max-tab-count', saved);
+    values.set(getStorageKey('app-max-tab-count'), saved);
     expect(useSettingsStore().maxTabCount).toBe(expected);
   });
 
@@ -208,9 +209,9 @@ describe('bounded tabs and cache inclusion', () => {
   });
 
   it('trims old persisted sessions from the right and saves only retained tabs', async () => {
-    values.set('app-max-tab-count', '2');
+    values.set(getStorageKey('app-max-tab-count'), '2');
     values.set(
-      'app-tabs-state',
+      getStorageKey('app-tabs-state'),
       JSON.stringify({
         tabs: routes.map((route) => ({
           id: route.path,
@@ -229,14 +230,14 @@ describe('bounded tabs and cache inclusion', () => {
     expect(store.activeTabPath).toBe('/a');
     expect(store.cachedTabs).toEqual(['Home', 'a', 'b']);
     await nextTick();
-    const saved = JSON.parse(values.get('app-tabs-state')!);
+    const saved = JSON.parse(values.get(getStorageKey('app-tabs-state'))!);
     expect(saved.tabs.map((tab: { path: string }) => tab.path)).toEqual(paths());
   });
 
   it('supports legacy saved tabs and continued navigation after reset', () => {
-    values.set('app-max-tab-count', '1');
+    values.set(getStorageKey('app-max-tab-count'), '1');
     values.set(
-      'app-tabs-state',
+      getStorageKey('app-tabs-state'),
       JSON.stringify({
         tabs: ['a', 'b'].map((name) => ({
           id: `/${name}`,

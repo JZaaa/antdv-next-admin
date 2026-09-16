@@ -6,6 +6,7 @@ import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
 import router from '@/router';
+import { appLocalStorage } from '@/utils/cache';
 
 import { useSettingsStore } from './settings';
 
@@ -274,14 +275,14 @@ export const useTabsStore = defineStore('tabs', () => {
       tabs: tabs.value,
       activeTabPath: activeTabPath.value,
     };
-    localStorage.setItem(TABS_STORAGE_KEY, JSON.stringify(state));
+    appLocalStorage.setItem(TABS_STORAGE_KEY, JSON.stringify(state));
   };
 
   // Restore tabs state from localStorage
   const restoreTabsState = (routes: AppRouteRecordRaw[]) => {
     if (!settingsStore.rememberTabState || isRestored.value) return;
 
-    const savedState = localStorage.getItem(TABS_STORAGE_KEY);
+    const savedState = appLocalStorage.getItem(TABS_STORAGE_KEY);
     if (!savedState) return;
 
     try {
@@ -330,7 +331,7 @@ export const useTabsStore = defineStore('tabs', () => {
 
   // Clear saved tabs state
   const clearTabsState = () => {
-    localStorage.removeItem(TABS_STORAGE_KEY);
+    appLocalStorage.removeItem(TABS_STORAGE_KEY);
   };
 
   const resetTabs = () => {

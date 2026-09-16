@@ -1,4 +1,5 @@
 // Storage utility with encryption support
+import { appLocalStorage, appSessionStorage } from './cache';
 
 interface StorageData<T> {
   value: T;
@@ -23,7 +24,7 @@ class Storage {
       value,
     };
 
-    if (expire) {
+    if (expire !== undefined) {
       data.expire = Date.now() + expire * 1000;
     }
 
@@ -50,7 +51,7 @@ class Storage {
         const wrappedData = data as StorageData<T>;
 
         // Check if expired
-        if (wrappedData.expire && Date.now() > wrappedData.expire) {
+        if (wrappedData.expire !== undefined && Date.now() >= wrappedData.expire) {
           this.remove(key);
           return defaultValue ?? null;
         }
@@ -85,7 +86,9 @@ class Storage {
    * Get all keys
    */
   keys(): string[] {
-    return Object.keys(this.storage);
+    return Array.from({ length: this.storage.length }, (_, index) =>
+      this.storage.key(index),
+    ).filter((key): key is string => key !== null);
   }
 
   /**
@@ -98,8 +101,8 @@ class Storage {
 }
 
 // Export localStorage and sessionStorage instances
-export const localStorage = new Storage(window.localStorage);
-export const sessionStorage = new Storage(window.sessionStorage);
+export const localStorage = new Storage(appLocalStorage);
+export const sessionStorage = new Storage(appSessionStorage);
 
 // Simple encryption/decryption (for basic obfuscation)
 class EncryptedStorage extends Storage {
@@ -142,7 +145,7 @@ class EncryptedStorage extends Storage {
       value,
     };
 
-    if (expire) {
+    if (expire !== undefined) {
       data.expire = Date.now() + expire * 1000;
     }
 
@@ -162,7 +165,7 @@ class EncryptedStorage extends Storage {
       const data: StorageData<T> = JSON.parse(decrypted);
 
       // Check if expired
-      if (data.expire && Date.now() > data.expire) {
+      if (data.expire !== undefined && Date.now() >= data.expire) {
         this.remove(key);
         return defaultValue ?? null;
       }
@@ -176,5 +179,5 @@ class EncryptedStorage extends Storage {
 }
 
 // Export encrypted storage
-export const encryptedLocalStorage = new EncryptedStorage(window.localStorage);
-export const encryptedSessionStorage = new EncryptedStorage(window.sessionStorage);
+export const encryptedLocalStorage = new EncryptedStorage(appLocalStorage);
+export const encryptedSessionStorage = new EncryptedStorage(appSessionStorage);

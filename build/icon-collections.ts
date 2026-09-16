@@ -1,4 +1,4 @@
-import type { IconsJson } from '../src/utils/iconify.ts';
+import type { IconsJson } from '../src/types/icon.ts';
 
 import { getIconShard, ICON_SHARD_COUNT } from '../src/utils/iconShard.ts';
 

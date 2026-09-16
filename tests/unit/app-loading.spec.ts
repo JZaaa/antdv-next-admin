@@ -37,11 +37,16 @@ function setup(
   });
   runInNewContext(script!, {
     window,
-    document: { getElementById: (id: string) => elements[id] },
+    document: {
+      getElementById: (id: string) => elements[id],
+      querySelector: () => ({ content: 'test-project:development:1.0.0:1:' }),
+    },
     localStorage: {
       getItem(key: string) {
         if (options.blockedStorage) throw new Error('Storage is disabled');
-        return key === 'app-locale' ? options.locale : options.theme;
+        return key === 'test-project:development:1.0.0:1:app-locale'
+          ? options.locale
+          : options.theme;
       },
     },
   });

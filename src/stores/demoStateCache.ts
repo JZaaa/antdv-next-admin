@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 
+import { appLocalStorage } from '@/utils/cache';
+
 const STORAGE_KEY = 'demo-state-cache';
 
 type PersistedState = {
@@ -12,7 +14,7 @@ type PersistedState = {
 
 const loadPersistedState = (): PersistedState => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = appLocalStorage.getItem(STORAGE_KEY);
     if (!raw) {
       return {
         keyword: '',
@@ -55,7 +57,7 @@ export const useDemoStateCacheStore = defineStore('demoStateCache', () => {
       notes: notes.value,
       updatedAt: updatedAt.value,
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    appLocalStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
   };
 
   watch([keyword, counter, notes], persist, { deep: true });

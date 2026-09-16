@@ -1,3 +1,5 @@
+import type { IconsJson } from '../types/icon';
+
 import { addCollection } from '@iconify/vue';
 import { localIconAssets, localIconAliases } from 'virtual:local-icon-assets';
 
@@ -5,12 +7,7 @@ import { getIconShard } from './iconShard';
 
 export type LocalIconifyPrefix = 'ri' | 'mdi' | 'ion';
 
-export interface IconsJson {
-  prefix: string;
-  icons: Record<string, unknown>;
-  aliases?: Record<string, unknown>;
-  [key: string]: unknown;
-}
+export type { IconsJson } from '../types/icon';
 
 const localPrefixes = new Set<string>(['ri', 'mdi', 'ion']);
 const localIconifyLoadPromises = new Map<LocalIconifyPrefix, Promise<IconsJson>>();

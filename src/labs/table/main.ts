@@ -8,6 +8,7 @@ import { createTableSearch } from '../../adapters/table-form';
 import { registerTableRenderers } from '../../adapters/table-renderers';
 import { useVxeGrid, setupVxeTable, VxeUI } from '../../libs/table';
 import { createViewedRows } from '../../libs/table/viewed-row/viewed';
+import { getStorageKey } from '../../utils/cache';
 
 type Row = { id: number; name: string; age: number; parentId?: number; children?: Row[] };
 type Values = { name: string };
@@ -552,7 +553,7 @@ async function run(): Promise<void> {
   });
   await test('web-storage-ttl', async () => {
     const helper = createViewedRows<Row>({
-      persist: { type: 'localStorage', key: 'table-lab-ttl', ttl: 50 },
+      persist: { type: 'localStorage', key: getStorageKey('table-lab-ttl'), ttl: 50 },
     });
     await helper.ready;
     helper.mark([1]);
@@ -560,7 +561,7 @@ async function run(): Promise<void> {
     helper.dispose();
     await pause(70);
     const restored = createViewedRows<Row>({
-      persist: { type: 'localStorage', key: 'table-lab-ttl', ttl: 50 },
+      persist: { type: 'localStorage', key: getStorageKey('table-lab-ttl'), ttl: 50 },
     });
     await restored.ready;
     assert(!restored.keys.value.size, 'ttl');
@@ -569,11 +570,23 @@ async function run(): Promise<void> {
     restored.dispose();
   });
   await test('indexedDB-namespace', async () => {
-    const helper = createViewedRows<Row>({ persist: { type: 'indexedDB', key: 'lab' } });
+    const helper = createViewedRows<Row>({
+      persist: {
+        type: 'indexedDB',
+        dbName: getStorageKey('viewed-table-lab-db'),
+        key: getStorageKey('lab'),
+      },
+    });
     await helper.ready;
     helper.mark([2, '2']);
     await helper.flush();
-    const restored = createViewedRows<Row>({ persist: { type: 'indexedDB', key: 'lab' } });
+    const restored = createViewedRows<Row>({
+      persist: {
+        type: 'indexedDB',
+        dbName: getStorageKey('viewed-table-lab-db'),
+        key: getStorageKey('lab'),
+      },
+    });
     await restored.ready;
     assert(restored.keys.value.size === 2, 'IDB key types');
     restored.clear();
@@ -583,16 +596,16 @@ async function run(): Promise<void> {
   });
   await test('session-storage-restore-isolation', async () => {
     const helper = createViewedRows<Row>({
-      persist: { type: 'sessionStorage', key: 'session-lab' },
+      persist: { type: 'sessionStorage', key: getStorageKey('session-lab') },
     });
     await helper.ready;
     helper.mark([8]);
     await helper.flush();
     const restored = createViewedRows<Row>({
-      persist: { type: 'sessionStorage', key: 'session-lab' },
+      persist: { type: 'sessionStorage', key: getStorageKey('session-lab') },
     });
     const isolated = createViewedRows<Row>({
-      persist: { type: 'sessionStorage', key: 'session-other' },
+      persist: { type: 'sessionStorage', key: getStorageKey('session-other') },
     });
     await Promise.all([restored.ready, isolated.ready]);
     assert(restored.keys.value.has(8) && !isolated.keys.value.size, 'session namespace');

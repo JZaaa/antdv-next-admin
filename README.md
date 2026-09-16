@@ -34,7 +34,7 @@ npm run dev
 ```bash
 npm run lint             # oxlint src mock
 npm run format:check     # oxfmt --check src mock
-npm run type-check       # vue-tsc --noEmit
+npm run type-check       # 检查 Vue 应用和 Node 构建配置
 npm run test:unit:run    # Vitest one-shot
 npm run build            # 仅生产构建
 npm run build:demo       # 在线 Demo 构建，启用浏览器端 Mock
@@ -222,6 +222,8 @@ if (hasRole("admin")) {
 ```
 
 ## 环境变量与后端接入
+
+缓存通过 `VITE_APP_NAMESPACE` 隔离项目，并自动加入应用版本、运行模式及 `VITE_APP_CACHE_VERSION`。配置方式、升级行为和业务使用示例见 [缓存与多项目隔离](docs/cache-storage.md)。
 
 开发环境默认启用 Vite Mock 服务:
 

@@ -2,9 +2,12 @@ import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { useMenuPreferencesStore } from '@/stores/menuPreferences';
+import { getStorageKey } from '@/utils/cache';
 
 function createMemoryStorage(initialValues: Record<string, string> = {}): Storage {
-  const values = new Map(Object.entries(initialValues));
+  const values = new Map(
+    Object.entries(initialValues).map(([key, value]) => [getStorageKey(key), value]),
+  );
 
   return {
     get length() {
@@ -20,6 +23,7 @@ function createMemoryStorage(initialValues: Record<string, string> = {}): Storag
 
 function installStorage(storage: Storage): void {
   vi.stubGlobal('window', { localStorage: storage });
+  vi.stubGlobal('localStorage', storage);
   setActivePinia(createPinia());
 }
 
@@ -43,7 +47,7 @@ describe('menu preferences store', () => {
     const store = useMenuPreferencesStore();
 
     expect(store.favoritePaths).toEqual(['/dashboard', '/examples/form']);
-    expect(storage.getItem('app-menu-favorites')).toBe(
+    expect(storage.getItem(getStorageKey('app-menu-favorites'))).toBe(
       JSON.stringify(['/dashboard', '/examples/form']),
     );
   });
@@ -60,8 +64,8 @@ describe('menu preferences store', () => {
     store.toggleFavorite('/dashboard');
     store.setSearchView('favorites');
 
-    expect(storage.getItem('app-menu-favorites')).toBe('[]');
-    expect(storage.getItem('app-menu-search-view')).toBe('favorites');
+    expect(storage.getItem(getStorageKey('app-menu-favorites'))).toBe('[]');
+    expect(storage.getItem(getStorageKey('app-menu-search-view'))).toBe('favorites');
 
     setActivePinia(createPinia());
     const restoredStore = useMenuPreferencesStore();

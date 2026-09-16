@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import { createI18n } from 'vue-i18n';
+
+import { appLocalStorage } from '@/utils/cache';
 import 'dayjs/locale/en';
 import 'dayjs/locale/zh-cn';
 
@@ -29,7 +31,7 @@ function normalizeLocale(locale: string | null): SupportedLocale {
 }
 
 // Get saved locale or use default
-const savedLocale = normalizeLocale(localStorage.getItem('app-locale'));
+const savedLocale = normalizeLocale(appLocalStorage.getItem('app-locale'));
 
 const localeLoaders: Record<SupportedLocale, () => Promise<AppLocaleMessages>> = {
   'zh-CN': () => Promise.resolve(zhCN),
@@ -103,7 +105,7 @@ export default i18n;
 export async function setLocale(locale: string) {
   const targetLocale = await loadLocaleMessages(locale);
   setCurrentLocale(targetLocale);
-  localStorage.setItem('app-locale', targetLocale);
+  appLocalStorage.setItem('app-locale', targetLocale);
 
   // Update HTML lang attribute
   document.documentElement.lang = targetLocale;

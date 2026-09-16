@@ -161,6 +161,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 
 import ProStepForm from '@/components/Pro/ProStepForm/index.vue';
 import { $t } from '@/locales';
+import { appLocalStorage } from '@/utils/cache';
 
 interface PolicyRule {
   id: string;
@@ -349,12 +350,12 @@ const resetForm = () => {
 };
 
 const saveDraft = () => {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(formState));
+  appLocalStorage.setItem(DRAFT_KEY, JSON.stringify(formState));
   message.success($t('examples.scaffold.complexForm.draftSaved'));
 };
 
 const loadDraft = () => {
-  const draft = localStorage.getItem(DRAFT_KEY);
+  const draft = appLocalStorage.getItem(DRAFT_KEY);
   if (!draft) {
     return;
   }
@@ -363,7 +364,7 @@ const loadDraft = () => {
     const parsed = JSON.parse(draft);
     Object.assign(formState, parsed);
   } catch {
-    localStorage.removeItem(DRAFT_KEY);
+    appLocalStorage.removeItem(DRAFT_KEY);
   }
 };
 
@@ -389,7 +390,7 @@ const submitForm = async () => {
   }
 
   await new Promise((resolve) => setTimeout(resolve, 600));
-  localStorage.removeItem(DRAFT_KEY);
+  appLocalStorage.removeItem(DRAFT_KEY);
   message.success($t('examples.scaffold.complexForm.submitSuccess'));
 };
 

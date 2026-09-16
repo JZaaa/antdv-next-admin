@@ -10,6 +10,7 @@ import { Button } from 'antdv-next';
 
 import { useVxeGrid } from '@/adapters/table';
 import { useAuthStore } from '@/stores/auth';
+import { getStorageKey } from '@/utils/cache';
 const auth = useAuthStore();
 const [Grid, api] = useVxeGrid({
   tableTitle: '已读 / 持久化 / 导入导出与打印',
@@ -17,7 +18,7 @@ const [Grid, api] = useVxeGrid({
     actionCodes: ['detail'],
     persist: {
       type: 'localStorage',
-      key: `vxe-example:${auth.user?.id ?? 'anonymous'}`,
+      key: getStorageKey(`vxe-example:${auth.user?.id ?? 'anonymous'}`),
       maxSize: 100,
       ttl: 86400000,
     },

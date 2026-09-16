@@ -5,6 +5,7 @@ import { ref, computed } from 'vue';
 
 import avatarImg from '@/assets/images/avatar-256.png';
 import { ALL_PERMISSION } from '@/constants/permissions';
+import { appLocalStorage } from '@/utils/cache';
 
 const TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
@@ -25,7 +26,7 @@ const LEGACY_ASSET_AVATAR_PATTERN = /^\/assets\/avatar-[\w-]+\.png$/;
 /**
  * Additional legacy patterns that should be migrated to DiceBear.
  * Covers common faker.image.avatar() output formats and old
- * asset paths that may be cached in localStorage.
+ * asset paths that may be cached in appLocalStorage.
  */
 const LEGACY_AVATAR_PATTERNS = [
   // Old static asset paths
@@ -78,14 +79,14 @@ function normalizeUserInfo(userInfo: User): User {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(localStorage.getItem(TOKEN_KEY));
-  const refreshTokenValue = ref<string | null>(localStorage.getItem(REFRESH_TOKEN_KEY));
+  const token = ref<string | null>(appLocalStorage.getItem(TOKEN_KEY));
+  const refreshTokenValue = ref<string | null>(appLocalStorage.getItem(REFRESH_TOKEN_KEY));
   const tokenExpiresAt = ref<number | null>(null);
   const user = ref<User | null>(null);
   const roles = ref<Role[]>([]);
   const permissions = ref<Permission[]>([]);
 
-  const savedExpires = localStorage.getItem(TOKEN_EXPIRES_KEY);
+  const savedExpires = appLocalStorage.getItem(TOKEN_EXPIRES_KEY);
   if (savedExpires) {
     tokenExpiresAt.value = parseInt(savedExpires, 10);
   }
@@ -107,7 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
   ) => {
     token.value = newToken;
     if (newToken) {
-      localStorage.setItem(TOKEN_KEY, newToken);
+      appLocalStorage.setItem(TOKEN_KEY, newToken);
 
       let expiresAt: number;
       if (expiresIn !== undefined && expiresIn > 0) {
@@ -121,19 +122,19 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
       tokenExpiresAt.value = expiresAt;
-      localStorage.setItem(TOKEN_EXPIRES_KEY, expiresAt.toString());
+      appLocalStorage.setItem(TOKEN_EXPIRES_KEY, expiresAt.toString());
     } else {
-      localStorage.removeItem(TOKEN_KEY);
+      appLocalStorage.removeItem(TOKEN_KEY);
       tokenExpiresAt.value = null;
-      localStorage.removeItem(TOKEN_EXPIRES_KEY);
+      appLocalStorage.removeItem(TOKEN_EXPIRES_KEY);
     }
 
     if (newRefreshToken !== undefined) {
       refreshTokenValue.value = newRefreshToken;
       if (newRefreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
+        appLocalStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
       } else {
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        appLocalStorage.removeItem(REFRESH_TOKEN_KEY);
       }
     }
   };
@@ -144,13 +145,13 @@ export const useAuthStore = defineStore('auth', () => {
     if (normalizedUserInfo) {
       roles.value = normalizedUserInfo.roles || [];
       permissions.value = normalizedUserInfo.permissions || [];
-      localStorage.setItem(USER_KEY, JSON.stringify(normalizedUserInfo));
-      localStorage.setItem(USER_DATA_VERSION_KEY, String(CURRENT_USER_DATA_VERSION));
+      appLocalStorage.setItem(USER_KEY, JSON.stringify(normalizedUserInfo));
+      appLocalStorage.setItem(USER_DATA_VERSION_KEY, String(CURRENT_USER_DATA_VERSION));
     } else {
       roles.value = [];
       permissions.value = [];
-      localStorage.removeItem(USER_KEY);
-      localStorage.removeItem(USER_DATA_VERSION_KEY);
+      appLocalStorage.removeItem(USER_KEY);
+      appLocalStorage.removeItem(USER_DATA_VERSION_KEY);
     }
   };
 
@@ -218,13 +219,13 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     // Discard cached user data written by an older version of the app
-    const cachedVersion = localStorage.getItem(USER_DATA_VERSION_KEY);
+    const cachedVersion = appLocalStorage.getItem(USER_DATA_VERSION_KEY);
     if (cachedVersion !== null && parseInt(cachedVersion, 10) !== CURRENT_USER_DATA_VERSION) {
-      localStorage.removeItem(USER_KEY);
-      localStorage.removeItem(USER_DATA_VERSION_KEY);
+      appLocalStorage.removeItem(USER_KEY);
+      appLocalStorage.removeItem(USER_DATA_VERSION_KEY);
     }
 
-    const savedUser = localStorage.getItem(USER_KEY);
+    const savedUser = appLocalStorage.getItem(USER_KEY);
     if (savedUser) {
       try {
         const userInfo = JSON.parse(savedUser);
@@ -233,8 +234,8 @@ export const useAuthStore = defineStore('auth', () => {
         setUserInfo(userInfo);
       } catch (error) {
         console.error('Failed to parse saved user info:', error);
-        localStorage.removeItem(USER_KEY);
-        localStorage.removeItem(USER_DATA_VERSION_KEY);
+        appLocalStorage.removeItem(USER_KEY);
+        appLocalStorage.removeItem(USER_DATA_VERSION_KEY);
       }
     }
   };

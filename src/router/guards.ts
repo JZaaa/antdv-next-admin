@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useDictStore } from '@/stores/dict';
 import { usePermissionStore } from '@/stores/permission';
 import { useTabsStore } from '@/stores/tabs';
+import { appLocalStorage } from '@/utils/cache';
 import { resolveLocaleText } from '@/utils/i18n';
 import { normalizeMenuHistoryItems } from '@/utils/menuPreferences';
 
@@ -138,7 +139,7 @@ function shouldAddTab(route: RouteLocationNormalized) {
 function recordMenuHistory(route: RouteLocationNormalized) {
   let history: MenuHistoryItem[] = [];
   try {
-    const persistedHistory: unknown = JSON.parse(localStorage.getItem(MENU_HISTORY_KEY) || '[]');
+    const persistedHistory: unknown = JSON.parse(appLocalStorage.getItem(MENU_HISTORY_KEY) || '[]');
     history = normalizeMenuHistoryItems(persistedHistory);
   } catch {
     // Replace malformed persisted history with the current valid navigation below.
@@ -158,7 +159,7 @@ function recordMenuHistory(route: RouteLocationNormalized) {
   const trimmed = filtered.slice(0, MAX_HISTORY_ITEMS);
 
   try {
-    localStorage.setItem(MENU_HISTORY_KEY, JSON.stringify(trimmed));
+    appLocalStorage.setItem(MENU_HISTORY_KEY, JSON.stringify(trimmed));
   } catch {
     // History persistence is optional when storage is unavailable.
   }

@@ -3,6 +3,8 @@ import type { ThemeMode } from '@/types/layout';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
+import { appLocalStorage } from '@/utils/cache';
+
 const THEME_TRANSITION_CLASS = 'theme-transition';
 const THEME_VIEW_TRANSITION_CLASS = 'theme-view-transition';
 const THEME_TRANSITION_DURATION_MS = 520;
@@ -127,7 +129,7 @@ export const useThemeStore = defineStore('theme', () => {
   const applyTheme = (themeMode = mode.value) => {
     const root = document.documentElement;
     root.classList.toggle('dark', resolveIsDark(themeMode));
-    localStorage.setItem('theme-mode', themeMode);
+    appLocalStorage.setItem('theme-mode', themeMode);
   };
 
   const updateTheme = (
@@ -186,7 +188,7 @@ export const useThemeStore = defineStore('theme', () => {
 
   const initTheme = () => {
     // Get saved theme mode
-    const savedMode = localStorage.getItem('theme-mode') as ThemeMode;
+    const savedMode = appLocalStorage.getItem('theme-mode') as ThemeMode;
     if (savedMode && ['light', 'dark', 'system'].includes(savedMode)) {
       mode.value = savedMode;
     }

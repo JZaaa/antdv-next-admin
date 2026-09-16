@@ -4,6 +4,7 @@ import { generate } from '@ant-design/colors';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
+import { appLocalStorage } from '@/utils/cache';
 import { hexColorVariables, isHexColor } from '@/utils/color';
 
 export const DEFAULT_MAX_TAB_COUNT = 10;
@@ -18,7 +19,7 @@ function normalizeMaxTabCount(value: number): number {
 
 function readMaxTabCount(): number {
   try {
-    const saved = localStorage.getItem(MAX_TAB_COUNT_STORAGE_KEY);
+    const saved = appLocalStorage.getItem(MAX_TAB_COUNT_STORAGE_KEY);
     return saved === null || saved.trim() === ''
       ? DEFAULT_MAX_TAB_COUNT
       : normalizeMaxTabCount(Number(saved));
@@ -86,8 +87,8 @@ export const useSettingsStore = defineStore('settings', () => {
     clearCustomPrimaryColorStyles();
     document.documentElement.setAttribute('data-primary-color', color);
     document.documentElement.style.setProperty('--ant-primary-color', hex);
-    localStorage.setItem('app-primary-color', color);
-    localStorage.removeItem('app-custom-primary-color');
+    appLocalStorage.setItem('app-primary-color', color);
+    appLocalStorage.removeItem('app-custom-primary-color');
   };
 
   const setCustomPrimaryColor = (hex: string) => {
@@ -114,44 +115,44 @@ export const useSettingsStore = defineStore('settings', () => {
       document.documentElement.style.setProperty(name, value);
     }
 
-    localStorage.setItem('app-custom-primary-color', hex);
+    appLocalStorage.setItem('app-custom-primary-color', hex);
   };
 
   const setSidebarTheme = (theme: SidebarTheme) => {
     sidebarTheme.value = theme;
-    localStorage.setItem('app-sidebar-theme', theme);
+    appLocalStorage.setItem('app-sidebar-theme', theme);
   };
 
   const setLayoutMode = (mode: LayoutMode) => {
     layoutMode.value = mode;
-    localStorage.setItem('app-layout-mode', mode);
+    appLocalStorage.setItem('app-layout-mode', mode);
   };
 
   const setPageAnimation = (animation: PageAnimation) => {
     pageAnimation.value = animation;
-    localStorage.setItem('app-page-animation', animation);
+    appLocalStorage.setItem('app-page-animation', animation);
   };
 
   const setGrayMode = (enabled: boolean) => {
     grayMode.value = enabled;
     document.documentElement.classList.toggle('gray-mode', enabled);
-    localStorage.setItem('app-gray-mode', enabled.toString());
+    appLocalStorage.setItem('app-gray-mode', enabled.toString());
   };
 
   const setRememberTabState = (enabled: boolean) => {
     rememberTabState.value = enabled;
-    localStorage.setItem('app-remember-tab-state', enabled.toString());
+    appLocalStorage.setItem('app-remember-tab-state', enabled.toString());
   };
 
   function setMaxTabCount(value: number | string | null): void {
     if (value === null || value === '') return;
     maxTabCount.value = normalizeMaxTabCount(Number(value));
-    localStorage.setItem(MAX_TAB_COUNT_STORAGE_KEY, String(maxTabCount.value));
+    appLocalStorage.setItem(MAX_TAB_COUNT_STORAGE_KEY, String(maxTabCount.value));
   }
 
   const setShowLanguageSwitch = (enabled: boolean) => {
     showLanguageSwitch.value = enabled;
-    localStorage.setItem('app-show-language-switch', enabled.toString());
+    appLocalStorage.setItem('app-show-language-switch', enabled.toString());
   };
 
   const resetSettings = () => {
@@ -167,14 +168,14 @@ export const useSettingsStore = defineStore('settings', () => {
 
   const initSettings = () => {
     // Restore from localStorage
-    const savedPrimaryColor = localStorage.getItem('app-primary-color');
-    const savedCustomPrimaryColor = localStorage.getItem('app-custom-primary-color');
-    const savedSidebarTheme = localStorage.getItem('app-sidebar-theme') as SidebarTheme;
-    const savedLayoutMode = localStorage.getItem('app-layout-mode') as LayoutMode;
-    const savedPageAnimation = localStorage.getItem('app-page-animation') as PageAnimation;
-    const savedGrayMode = localStorage.getItem('app-gray-mode');
-    const savedRememberTabState = localStorage.getItem('app-remember-tab-state');
-    const savedShowLanguageSwitch = localStorage.getItem('app-show-language-switch');
+    const savedPrimaryColor = appLocalStorage.getItem('app-primary-color');
+    const savedCustomPrimaryColor = appLocalStorage.getItem('app-custom-primary-color');
+    const savedSidebarTheme = appLocalStorage.getItem('app-sidebar-theme') as SidebarTheme;
+    const savedLayoutMode = appLocalStorage.getItem('app-layout-mode') as LayoutMode;
+    const savedPageAnimation = appLocalStorage.getItem('app-page-animation') as PageAnimation;
+    const savedGrayMode = appLocalStorage.getItem('app-gray-mode');
+    const savedRememberTabState = appLocalStorage.getItem('app-remember-tab-state');
+    const savedShowLanguageSwitch = appLocalStorage.getItem('app-show-language-switch');
 
     if (savedCustomPrimaryColor) {
       setCustomPrimaryColor(savedCustomPrimaryColor);

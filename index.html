@@ -5,6 +5,7 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Antdv Next Admin</title>
+    <meta name="app-storage-namespace" content="%APP_STORAGE_NAMESPACE%" />
     <!-- Keep the first paint independent of the application bundle and styles. -->
     <style id="app-loading-style">
       #app-loading {
@@ -126,10 +127,20 @@
     <!-- GitHub Pages SPA 路由重定向处理 -->
     <script>
       (function () {
-        var redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
-        if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect);
+        try {
+          var namespace = document.querySelector('meta[name="app-storage-namespace"]').content;
+          var key = namespace + 'redirect';
+          var redirect = sessionStorage.getItem(key);
+          sessionStorage.removeItem(key);
+          if (
+            redirect &&
+            redirect !== location.href &&
+            new URL(redirect).origin === location.origin
+          ) {
+            history.replaceState(null, '', redirect);
+          }
+        } catch (_) {
+          // Redirect persistence is optional when browser storage is unavailable.
         }
       })();
     </script>
@@ -159,8 +170,9 @@
         var theme = 'system';
         var finished = false;
         try {
-          locale = localStorage.getItem('app-locale') || locale;
-          theme = localStorage.getItem('theme-mode') || theme;
+          var namespace = document.querySelector('meta[name="app-storage-namespace"]').content;
+          locale = localStorage.getItem(namespace + 'app-locale') || locale;
+          theme = localStorage.getItem(namespace + 'theme-mode') || theme;
         } catch (_) {
           // Storage may be unavailable; the loading screen must still work.
         }

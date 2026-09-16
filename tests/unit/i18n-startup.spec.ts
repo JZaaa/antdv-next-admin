@@ -4,7 +4,7 @@ const mocks = vi.hoisted(() => ({
   createApp: vi.fn(),
   mount: vi.fn(),
   use: vi.fn(),
-  router: {},
+  router: { isReady: vi.fn(() => Promise.resolve()) },
 }));
 
 vi.mock('vue', async (importOriginal) => ({
@@ -34,6 +34,7 @@ describe('saved English locale startup', () => {
     vi.stubEnv('VITE_DEMO_MODE', 'false');
     vi.stubGlobal('localStorage', { getItem: () => 'en-US' });
     vi.stubGlobal('sessionStorage', { getItem: () => null });
+    vi.stubGlobal('window', { dispatchEvent: vi.fn() });
     vi.stubGlobal('document', { documentElement: { lang: '' }, createElement: vi.fn() });
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 

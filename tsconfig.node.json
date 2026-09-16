@@ -1,11 +1,26 @@
 {
   "compilerOptions": {
-    "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.node.tsbuildinfo",
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM"],
+    "types": ["node"],
     "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "rewriteRelativeImportExtensions": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "build/**/*.ts",
+    "icon.config.ts",
+    "package.json",
+    "src/types/icon.ts",
+    "src/utils/iconShard.ts",
+    "src/utils/storageNamespace.ts"
+  ]
 }

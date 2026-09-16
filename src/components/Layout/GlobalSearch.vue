@@ -246,6 +246,7 @@ import { basicRoutes } from '@/router/routes';
 import { routesToMenuTree } from '@/router/utils';
 import { useMenuPreferencesStore } from '@/stores/menuPreferences';
 import { usePermissionStore } from '@/stores/permission';
+import { appLocalStorage } from '@/utils/cache';
 import { resolveLocaleText } from '@/utils/i18n';
 import {
   normalizeMenuHistoryItems,
@@ -539,7 +540,7 @@ const handleKeydown = (event: KeyboardEvent): void => {
 
 const loadMenuHistory = (): void => {
   try {
-    const saved = window.localStorage.getItem(MENU_HISTORY_KEY);
+    const saved = appLocalStorage.getItem(MENU_HISTORY_KEY);
     if (!saved) {
       menuHistory.value = [];
       return;
@@ -549,12 +550,12 @@ const loadMenuHistory = (): void => {
     const normalizedHistory = normalizeMenuHistoryItems(parsed);
     menuHistory.value = normalizedHistory;
     if (!Array.isArray(parsed) || normalizedHistory.length !== parsed.length) {
-      window.localStorage.setItem(MENU_HISTORY_KEY, JSON.stringify(normalizedHistory));
+      appLocalStorage.setItem(MENU_HISTORY_KEY, JSON.stringify(normalizedHistory));
     }
   } catch {
     menuHistory.value = [];
     try {
-      window.localStorage.removeItem(MENU_HISTORY_KEY);
+      appLocalStorage.removeItem(MENU_HISTORY_KEY);
     } catch {
       // Ignore storage failures after restoring an empty in-memory history.
     }
@@ -565,7 +566,7 @@ const clearHistory = (): void => {
   menuHistory.value = [];
   activeIndex.value = 0;
   try {
-    window.localStorage.removeItem(MENU_HISTORY_KEY);
+    appLocalStorage.removeItem(MENU_HISTORY_KEY);
   } catch {
     // The visible history is still cleared when storage is unavailable.
   }

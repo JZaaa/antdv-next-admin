@@ -3,6 +3,7 @@ import type { MenuSearchView } from '@/types/navigation';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+import { appLocalStorage } from '@/utils/cache';
 import { resolveStoredFavoritePaths, resolveStoredMenuSearchView } from '@/utils/menuPreferences';
 
 const MENU_FAVORITES_STORAGE_KEY = 'app-menu-favorites';
@@ -10,20 +11,16 @@ const MENU_SEARCH_VIEW_STORAGE_KEY = 'app-menu-search-view';
 const LEGACY_TABS_STORAGE_KEY = 'app-tabs-state';
 
 function readStorageItem(key: string): string | null {
-  if (typeof window === 'undefined') return null;
-
   try {
-    return window.localStorage.getItem(key);
+    return appLocalStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
 function writeStorageItem(key: string, value: string): void {
-  if (typeof window === 'undefined') return;
-
   try {
-    window.localStorage.setItem(key, value);
+    appLocalStorage.setItem(key, value);
   } catch {
     // Keep the in-memory preference usable when storage is unavailable.
   }
