@@ -1,13 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Antdv Next Admin</title>
+    <!-- Keep the first paint independent of the application bundle and styles. -->
+    <style id="app-loading-style">
+      #app-loading {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 24px;
+        background: #f8fafc;
+        color: #1e293b;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        text-align: center;
+        transition: opacity 240ms ease;
+      }
+      #app-loading[data-theme='dark'] {
+        background: #141414;
+        color: #f1f5f9;
+        color-scheme: dark;
+      }
+      #app-loading .app-loading-logo {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 24px;
+      }
+      #app-loading .app-loading-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 1.5;
+        letter-spacing: 0.5px;
+      }
+      #app-loading .app-loading-spinner {
+        display: grid;
+        grid-template-columns: repeat(2, 10px);
+        gap: 6px;
+        margin: 32px 0 24px;
+        transform: rotate(45deg);
+      }
+      #app-loading .app-loading-spinner span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #1677ff;
+        animation: app-loading-pulse 1.2s ease-in-out infinite;
+      }
+      #app-loading .app-loading-spinner span:nth-child(2) {
+        animation-delay: 150ms;
+      }
+      #app-loading .app-loading-spinner span:nth-child(4) {
+        animation-delay: 300ms;
+      }
+      #app-loading .app-loading-spinner span:nth-child(3) {
+        animation-delay: 450ms;
+      }
+      #app-loading .app-loading-description {
+        margin: 0;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      #app-loading[data-theme='dark'] .app-loading-description {
+        color: #a3a3a3;
+      }
+      #app-loading .app-loading-retry {
+        margin-top: 24px;
+        padding: 8px 20px;
+        border: 0;
+        border-radius: 6px;
+        background: #1677ff;
+        color: #fff;
+        font: inherit;
+        font-size: 14px;
+        line-height: 1.5;
+        cursor: pointer;
+      }
+      #app-loading .app-loading-retry:hover {
+        background: #4096ff;
+      }
+      #app-loading .app-loading-retry:focus-visible {
+        outline: 2px solid #1677ff;
+        outline-offset: 4px;
+      }
+      #app-loading [hidden] {
+        display: none;
+      }
+      #app-loading[data-state='error'] .app-loading-spinner span {
+        animation: none;
+        background: #ff7875;
+        opacity: 0.8;
+      }
+      #app-loading[data-state='ready'] {
+        opacity: 0;
+        pointer-events: none;
+      }
+      @keyframes app-loading-pulse {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #app-loading {
+          transition: none;
+        }
+        #app-loading .app-loading-spinner span {
+          animation: none;
+        }
+      }
+    </style>
     <!-- GitHub Pages SPA 路由重定向处理 -->
     <script>
-      (function() {
+      (function () {
         var redirect = sessionStorage.redirect;
         delete sessionStorage.redirect;
         if (redirect && redirect !== location.href) {
@@ -17,6 +135,109 @@
     </script>
   </head>
   <body>
+    <div id="app-loading" role="status" aria-live="polite" aria-busy="true">
+      <img class="app-loading-logo" src="/logo.png" width="64" height="64" alt="" />
+      <h1 class="app-loading-title">Antdv Next Admin</h1>
+      <div class="app-loading-spinner" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <p id="app-loading-description" class="app-loading-description">正在加载系统，请稍候…</p>
+      <button id="app-loading-retry" class="app-loading-retry" type="button" hidden>
+        刷新重试
+      </button>
+      <noscript>
+        <p>请启用 JavaScript 后刷新页面。Please enable JavaScript and reload this page.</p>
+      </noscript>
+    </div>
+    <!-- A classic inline script still runs if the module entry cannot be downloaded. -->
+    <script id="app-loading-script">
+      (function () {
+        var loader = document.getElementById('app-loading');
+        var description = document.getElementById('app-loading-description');
+        var retry = document.getElementById('app-loading-retry');
+        var locale = 'zh-CN';
+        var theme = 'system';
+        var finished = false;
+        try {
+          locale = localStorage.getItem('app-locale') || locale;
+          theme = localStorage.getItem('theme-mode') || theme;
+        } catch (_) {
+          // Storage may be unavailable; the loading screen must still work.
+        }
+        var isDark =
+          theme === 'dark' ||
+          (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        loader.dataset.theme = isDark ? 'dark' : 'light';
+        var messages =
+          locale === 'en-US'
+            ? {
+                loading: 'Loading the application, please wait…',
+                slow: 'Loading is taking longer than expected. Please check your connection or retry.',
+                error:
+                  'Unable to load the application. Please check your connection and try again.',
+                retry: 'Reload and retry',
+              }
+            : {
+                loading: '正在加载系统，请稍候…',
+                slow: '加载时间较长，请检查网络连接，或刷新重试。',
+                error: '系统加载失败，请检查网络连接后刷新重试。',
+                retry: '刷新重试',
+              };
+        loader.lang = locale === 'en-US' ? 'en-US' : 'zh-CN';
+        description.textContent = messages.loading;
+        retry.textContent = messages.retry;
+        retry.addEventListener('click', function () {
+          window.location.reload();
+        });
+
+        var slowTimer = window.setTimeout(function () {
+          if (finished) return;
+          description.textContent = messages.slow;
+          retry.hidden = false;
+        }, 15000);
+
+        function showError() {
+          if (finished) return;
+          window.clearTimeout(slowTimer);
+          loader.dataset.state = 'error';
+          loader.setAttribute('aria-busy', 'false');
+          description.textContent = messages.error;
+          retry.hidden = false;
+        }
+
+        function onError(event) {
+          var target = event.target;
+          // A missing logo should not prevent the application from starting.
+          if (
+            target === window ||
+            (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK'))
+          ) {
+            showError();
+          }
+        }
+
+        function onReady() {
+          if (finished) return;
+          finished = true;
+          window.clearTimeout(slowTimer);
+          window.removeEventListener('error', onError, true);
+          window.removeEventListener('unhandledrejection', showError);
+          window.removeEventListener('app:bootstrap-error', showError);
+          window.removeEventListener('app:ready', onReady);
+          loader.setAttribute('aria-busy', 'false');
+          loader.dataset.state = 'ready';
+          window.setTimeout(function () {
+            loader.remove();
+            document.getElementById('app-loading-style').remove();
+          }, 240);
+        }
+
+        window.addEventListener('error', onError, true);
+        window.addEventListener('unhandledrejection', showError);
+        window.addEventListener('app:bootstrap-error', showError);
+        window.addEventListener('app:ready', onReady);
+      })();
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -1,5 +1,5 @@
 import { createPinia } from 'pinia';
-import { createApp } from 'vue';
+import { createApp, nextTick } from 'vue';
 
 import App from './App.vue';
 import { registerDefaultComponentProps } from './components/Global/defaultComponentProps';
@@ -55,7 +55,14 @@ async function bootstrap() {
   // Register custom directives
   setupDirectives(app);
 
+  // Keep the HTML loading screen visible until the initial route chunk is ready.
+  await router.isReady();
   app.mount('#app');
+  await nextTick();
+  window.dispatchEvent(new Event('app:ready'));
 }
 
-void bootstrap();
+void bootstrap().catch((error: unknown) => {
+  console.error('Failed to start application:', error);
+  window.dispatchEvent(new Event('app:bootstrap-error'));
+});
