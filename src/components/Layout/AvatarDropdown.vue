@@ -32,6 +32,11 @@ const currentRouter = useRouter();
 const authStore = useAuthStore();
 const { modal } = App.useApp();
 
+/**
+ * 处理账号菜单；主动退出立即清除页面状态，后台通知服务端。
+ * @param event 菜单项标识。
+ * @returns 无返回值。
+ */
 const handleMenuClick = ({ key }: { key: string }) => {
   switch (key) {
     case 'profile':
@@ -49,9 +54,14 @@ const handleMenuClick = ({ key }: { key: string }) => {
         content: $t('layout.logoutConfirm'),
         okText: $t('common.confirm'),
         cancelText: $t('common.cancel'),
+        /**
+         * 后台通知退出后立即清理会话并返回登录页，不等待服务端响应。
+         * @returns 登录页导航结果。
+         */
         onOk: () => {
+          void authStore.signOut();
           clearSessionState(currentRouter);
-          currentRouter.push('/login');
+          return currentRouter.replace('/login');
         },
       });
       break;

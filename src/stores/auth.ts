@@ -198,6 +198,21 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   /**
+   * 主动退出立即清除本地凭据和身份，后台通知服务端，失败不影响本地退出。
+   * @returns 后台通知处理完成，错误已静默捕获；交互层无需等待。
+   */
+  async function signOut(): Promise<void> {
+    const currentToken = token.value;
+    logout();
+    try {
+      const api = await import('@/api/auth');
+      await api.logout(currentToken);
+    } catch {
+      // 服务端不可用或凭据失效时，本地退出仍已完成。
+    }
+  }
+
+  /**
    * 双令牌模式合并并发刷新，并阻止退出或切换账号后的旧响应恢复会话。
    * @returns 更新后的访问令牌；刷新响应省略刷新令牌时保留旧值。
    * @throws 单令牌模式、缺少刷新令牌、会话已变更或刷新请求失败。
@@ -310,6 +325,7 @@ export const useAuthStore = defineStore('auth', () => {
     setUserInfo,
     login,
     logout,
+    signOut,
     refreshToken,
     hasRole,
     hasAnyRole,

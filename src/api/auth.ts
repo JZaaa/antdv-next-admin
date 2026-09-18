@@ -61,10 +61,21 @@ export async function login(data: LoginParams): Promise<ApiResponse<LoginResult>
 }
 
 /**
- * Logout
+ * 使用退出时的访问令牌通知服务端，不刷新凭据、不弹错或触发认证跳转。
+ * @param token 退出前保存的访问令牌；缺失时仍发送 Logout，由后端决定如何处理。
+ * @returns 服务端退出结果，不代表本地退出的完成状态。
+ * @throws 请求失败时交由主动退出流程静默捕获。
  */
-export function logout(): Promise<ApiResponse<null>> {
-  return request.post('/auth/logout');
+export function logout(token: string | null): Promise<ApiResponse<null>> {
+  const { headerName, tokenPrefix } = appDefaultSettings.auth;
+  return request.post('/auth/logout', undefined, {
+    headers: token ? { [headerName]: tokenPrefix ? `${tokenPrefix} ${token}` : token } : {},
+    // 显式携带旧凭据，避免本地清理后丢失令牌或误用重新登录后的凭据。
+    skipAuth: true,
+    skipAuthRefresh: true,
+    skipErrorMessage: true,
+    skipRedirect: true,
+  });
 }
 
 /**

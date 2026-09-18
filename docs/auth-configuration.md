@@ -27,7 +27,15 @@ auth: {
 
 经营分析项目默认 `enableRefreshToken: false`，适配当前固定有效期后端；原框架默认 `true`，保持既有 Mock 双令牌行为。启用双令牌前，后端需要实现相应刷新接口；修改前端配置不会新增后端能力。协议切换后建议重新登录。自动刷新以 HTTP 401 为触发条件；HTTP 200 中的业务错误码仍遵循原有业务错误处理。
 
-请求配置 `skipAuth` 用于公开接口；`skipAuthRefresh` 只跳过本次刷新，认证请求返回 401 仍会清理会话。`skipErrorMessage`、`skipRedirect` 分别控制提示和跳转。
+请求配置 `skipAuth` 跳过自动注入当前访问令牌及 401 会话处理，可用于公开接口或显式携带旧凭据的 Logout；`skipAuthRefresh` 只跳过本次刷新，认证请求返回 401 仍会清理会话。`skipErrorMessage`、`skipRedirect` 分别控制提示和跳转。
+
+## 主动退出
+
+- 账号菜单确认退出后调用 `authStore.signOut()`，立即清除访问令牌、刷新令牌、用户资料和角色权限；菜单同时清理动态路由与标签页，使用 `replace('/login')` 返回登录页，不等待服务端响应。
+- `signOut()` 保存退出时的访问令牌，后台仅发送一次 `POST /auth/logout`。请求按配置的认证头和前缀显式携带旧令牌，避免本地清理后丢失凭据或误用重新登录后的令牌。
+- 访问令牌缺失、过期或刷新令牌失效时，仍只调用 Logout，不触发刷新或重试。令牌缺失时不附加认证头，服务端决定是否以及如何撤销关联的刷新令牌；前端不额外调用刷新接口。
+- Logout 使用 `skipAuth`、`skipAuthRefresh`、`skipErrorMessage`、`skipRedirect`，请求失败由 `signOut()` 静默捕获，不弹错、不跳转错误页，也不让迟到的响应清除新会话。本地退出成功不代表服务端已成功撤销凭据。
+- `authStore.logout()` 仍仅清理本地认证状态，供会话失效等内部流程使用；主动退出使用 `signOut()`，页面无需等待其 Promise。
 
 ## 本次框架同步记录（2026-09-18）
 
