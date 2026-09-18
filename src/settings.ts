@@ -65,6 +65,8 @@ export const appDefaultSettings: AppDefaultSettings = {
   },
   // System switches are code-only. Cache and the preferences drawer cannot override them.
   features: {
+    // 页面 Logo 图片显隐，仅由源码控制。
+    logo: true,
     personalization: true,
     search: true,
     notifications: true,

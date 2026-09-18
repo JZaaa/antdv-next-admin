@@ -96,7 +96,7 @@
         <a-layout-header v-if="!layoutStore.pageFullscreen" class="horizontal-header">
           <div class="header-left">
             <div class="logo">
-              <img :src="logoImg" alt="Logo" />
+              <img v-if="settingsStore.features.logo" src="/logo.png" alt="Logo" />
               <span class="logo-title">{{ APP_TITLE }}</span>
             </div>
 
@@ -221,7 +221,6 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import logoImg from '@/assets/images/logo.png';
 import { APP_TITLE } from '@/constants/app';
 import { basicRoutes } from '@/router/routes';
 import { routesToMenuTree } from '@/router/utils';

@@ -35,6 +35,9 @@
         height: 64px;
         margin-bottom: 24px;
       }
+      #app-loading[data-logo='false'] .app-loading-logo {
+        display: none;
+      }
       #app-loading .app-loading-title {
         margin: 0;
         font-size: 24px;
@@ -147,7 +150,13 @@
     </script>
   </head>
   <body>
-    <div id="app-loading" role="status" aria-live="polite" aria-busy="true">
+    <div
+      id="app-loading"
+      data-logo="%APP_LOGO_VISIBLE%"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
       <img class="app-loading-logo" src="/logo.png" width="64" height="64" alt="" />
       <h1 class="app-loading-title">%VITE_APP_TITLE%</h1>
       <div class="app-loading-spinner" aria-hidden="true">

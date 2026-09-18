@@ -21,6 +21,8 @@ export interface UserPreferences {
 
 /** Deployment policy: only editable in source, never restored from browser storage. */
 export interface AppFeatures {
+  /** 控制页面 Logo 图片，保留系统名称与浏览器标签页图标。 */
+  logo: boolean;
   personalization: boolean;
   search: boolean;
   notifications: boolean;

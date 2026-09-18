@@ -9,9 +9,18 @@ import { createStorageNamespace } from '../src/utils/storageNamespace.ts';
 
 const PLACEHOLDER = '%APP_STORAGE_NAMESPACE%';
 
+/**
+ * 将存储命名空间、首屏偏好和 Logo 开关注入入口与回退 HTML。
+ * @returns 同时支持开发服务和构建产物的 Vite 插件。
+ */
 export function storageNamespacePlugin(): Plugin {
   let namespace = '';
   let fallbackHtml = '';
+  /**
+   * 将源码配置写入 HTML，占位符在浏览器首次绘制前完成替换。
+   * @param html 包含配置占位符的原始 HTML。
+   * @returns 注入配置后的 HTML。
+   */
   function transform(html: string): string {
     // The value is inserted into an HTML attribute, never JavaScript source.
     function escapeAttribute(value: string): string {
@@ -21,16 +30,19 @@ export function storageNamespacePlugin(): Plugin {
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;');
     }
-    return html.replaceAll(PLACEHOLDER, escapeAttribute(namespace)).replaceAll(
-      '%APP_PREFERENCE_DEFAULTS%',
-      escapeAttribute(
-        JSON.stringify({
-          personalization: appDefaultSettings.features.personalization,
-          locale: appDefaultSettings.preferences.locale,
-          theme: appDefaultSettings.preferences.themeMode,
-        }),
-      ),
-    );
+    return html
+      .replaceAll('%APP_LOGO_VISIBLE%', String(appDefaultSettings.features.logo))
+      .replaceAll(PLACEHOLDER, escapeAttribute(namespace))
+      .replaceAll(
+        '%APP_PREFERENCE_DEFAULTS%',
+        escapeAttribute(
+          JSON.stringify({
+            personalization: appDefaultSettings.features.personalization,
+            locale: appDefaultSettings.preferences.locale,
+            theme: appDefaultSettings.preferences.themeMode,
+          }),
+        ),
+      );
   }
   return {
     name: 'app-storage-namespace',

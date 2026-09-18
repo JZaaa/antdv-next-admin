@@ -12,7 +12,7 @@
 
       <div class="pane-left-content">
         <div class="logo-mark">
-          <img :src="logoImg" alt="Logo" class="logo-glyph" />
+          <img v-if="settingsStore.features.logo" src="/logo.png" alt="Logo" class="logo-glyph" />
           <span>{{ APP_TITLE }}</span>
         </div>
 
@@ -56,7 +56,7 @@
     <section class="pane-right" aria-labelledby="login-form-title">
       <div class="mobile-brand">
         <div class="logo-mark">
-          <img :src="logoImg" alt="Logo" class="logo-glyph" />
+          <img v-if="settingsStore.features.logo" src="/logo.png" alt="Logo" class="logo-glyph" />
           <span>{{ APP_TITLE }}</span>
         </div>
         <p>{{ $t('login.gridSubtitle') }}</p>
@@ -202,7 +202,6 @@ import { message } from 'antdv-next';
 import { nextTick, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import logoImg from '@/assets/images/logo.png';
 import { SliderCaptcha } from '@/components/Captcha';
 import LanguageSwitch from '@/components/Layout/LanguageSwitch.vue';
 import ThemeToggle from '@/components/Layout/ThemeToggle.vue';
