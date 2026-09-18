@@ -102,7 +102,10 @@ export function filterRoutesByRole(
 }
 
 /**
- * Convert routes to menu tree
+ * 将路由转换为菜单树，读取标题 getter 以保留显式翻译的响应性。
+ * @param routes 待转换的路由树。
+ * @param basePath 父级路径，默认从根路径开始。
+ * @returns 按路由顺序排列的菜单树。
  */
 export function routesToMenuTree(routes: AppRouteRecordRaw[], basePath = ''): MenuItem[] {
   return routes
@@ -111,7 +114,10 @@ export function routesToMenuTree(routes: AppRouteRecordRaw[], basePath = ''): Me
       const fullPath = resolveRoutePath(route.path, basePath);
       const menu: MenuItem = {
         id: (route.name as string) || route.path,
-        label: route.meta?.title || (route.name as string),
+        /** @returns 路由当前的显示标题，不再进行隐式翻译。 */
+        get label() {
+          return route.meta?.title || (route.name as string);
+        },
         icon: route.meta?.icon,
         // Allow routes to render as external links in the sidebar menu.
         // Sidebar click handler will open these in a new browser tab.

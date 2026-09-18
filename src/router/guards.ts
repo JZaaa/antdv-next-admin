@@ -1,6 +1,13 @@
 import type { MenuHistoryItem } from '@/types/navigation';
 import type { AppRouteRecordRaw } from '@/types/router';
-import type { Router, RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
+import type {
+  Router,
+  RouteLocationNormalized,
+  RouteLocationResolved,
+  RouteRecordRaw,
+} from 'vue-router';
+
+import { watchEffect } from 'vue';
 
 import { APP_TITLE } from '@/constants/app';
 import { useAuthStore } from '@/stores/auth';
@@ -23,7 +30,7 @@ const MAX_HISTORY_ITEMS = 10;
  * @param route 当前路由。
  * @returns 无返回值。
  */
-function setDocumentTitle(route: RouteLocationNormalized) {
+function setDocumentTitle(route: RouteLocationNormalized | RouteLocationResolved) {
   if (!route.meta.title) return;
 
   const title = resolveLocaleText(
@@ -200,6 +207,14 @@ export function resetRouter(router: Router) {
  * @returns 无返回值。
  */
 export function setupRouterGuards(router: Router) {
+  /** @returns 同步当前路由的显示标题，并跟踪标题 getter 的语言依赖。 */
+  watchEffect(() => {
+    const current = router.currentRoute.value;
+    if (current.matched.length > 0) {
+      setDocumentTitle(router.resolve(current.fullPath));
+    }
+  });
+
   // Before each route navigation
   router.beforeEach(async (to) => {
     const authStore = useAuthStore();

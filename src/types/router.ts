@@ -2,6 +2,7 @@ import type { RouteRecordRaw } from 'vue-router';
 
 // Route Meta Custom Types
 export interface RouteMeta {
+  /** 直接显示的标题；需要翻译时在路由中显式调用 $t，动态语言可使用 getter。 */
   title: string;
   icon?: string;
   requiresAuth?: boolean;

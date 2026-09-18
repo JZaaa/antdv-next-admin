@@ -7,10 +7,17 @@ import { ref } from 'vue';
 import { basicRoutes, asyncRoutes } from '@/router/routes';
 import { filterRoutesByPermission, filterRoutesByRole, routesToMenuTree } from '@/router/utils';
 
+/**
+ * 复制路由配置并保留 meta getter，避免显式翻译在权限过滤时被冻结。
+ * @param routes 待复制的路由树。
+ * @returns 独立的路由树，保留动态标题的属性描述符。
+ */
 function cloneRoutes(routes: AppRouteRecordRaw[]): AppRouteRecordRaw[] {
   return routes.map((route) => ({
     ...route,
-    meta: route.meta ? { ...route.meta } : undefined,
+    meta: route.meta
+      ? Object.defineProperties({ title: '' }, Object.getOwnPropertyDescriptors(route.meta))
+      : undefined,
     children: route.children ? cloneRoutes(route.children) : undefined,
   }));
 }

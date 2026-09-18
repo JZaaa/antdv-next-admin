@@ -56,7 +56,9 @@ const i18n = createI18n({
   globalInjection: true,
 });
 
-document.documentElement.lang = savedLocale;
+if (typeof document !== 'undefined') {
+  document.documentElement.lang = savedLocale;
+}
 dayjs.locale(DAYJS_LOCALE_MAP[savedLocale]);
 
 function setCurrentLocale(locale: SupportedLocale) {

@@ -4,7 +4,7 @@ export interface Tab {
   id: string;
   // Route name, used by keep-alive include
   name: string;
-  // i18n message key or plain title text for display
+  // 已求值的标题文案，不作为翻译键再次转换
   title?: string;
   // Route meta icon key for tab display
   icon?: string;

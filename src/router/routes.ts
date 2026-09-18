@@ -1,6 +1,7 @@
 import type { AppRouteRecordRaw } from "@/types/router";
 
 import { PERMISSIONS } from "@/constants/permissions";
+import { $t } from "@/locales";
 
 /**
  * Static routes that don't require authentication
@@ -11,7 +12,10 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     name: "Login",
     component: () => import("@/views/login/index.vue"),
     meta: {
-      title: "login.title",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("login.title");
+      },
       requiresAuth: false,
       hidden: true,
     },
@@ -21,7 +25,10 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     name: "NotFound",
     component: () => import("@/views/error/404.vue"),
     meta: {
-      title: "error.404",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("error.404");
+      },
       requiresAuth: false,
       hidden: true,
     },
@@ -31,7 +38,10 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     name: "Forbidden",
     component: () => import("@/views/error/403.vue"),
     meta: {
-      title: "error.403",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("error.403");
+      },
       requiresAuth: false,
       hidden: true,
     },
@@ -41,7 +51,10 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     name: "ServerError",
     component: () => import("@/views/error/500.vue"),
     meta: {
-      title: "error.500",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("error.500");
+      },
       requiresAuth: false,
       hidden: true,
     },
@@ -58,7 +71,10 @@ export const basicRoutes: AppRouteRecordRaw[] = [
     redirect: "/dashboard",
     component: () => import("@/components/Layout/AdminLayout.vue"),
     meta: {
-      title: "menu.dashboard",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("menu.dashboard");
+      },
       requiresAuth: true,
     },
     children: [
@@ -67,7 +83,10 @@ export const basicRoutes: AppRouteRecordRaw[] = [
         name: "Redirect",
         component: () => import("@/views/redirect/index.vue"),
         meta: {
-          title: "common.redirecting",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("common.redirecting");
+          },
           hidden: true,
         },
       },
@@ -76,7 +95,10 @@ export const basicRoutes: AppRouteRecordRaw[] = [
         name: "Dashboard",
         component: () => import("@/views/dashboard/index.vue"),
         meta: {
-          title: "menu.dashboard",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.dashboard");
+          },
           icon: "DashboardOutlined",
           requiresAuth: true,
           affix: true,
@@ -88,7 +110,10 @@ export const basicRoutes: AppRouteRecordRaw[] = [
         name: "Profile",
         component: () => import("@/views/profile/index.vue"),
         meta: {
-          title: "menu.profile",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.profile");
+          },
           icon: "UserOutlined",
           requiresAuth: true,
           hidden: true,
@@ -99,7 +124,10 @@ export const basicRoutes: AppRouteRecordRaw[] = [
         name: "Notifications",
         component: () => import("@/views/notification/index.vue"),
         meta: {
-          title: "layout.notifications",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("layout.notifications");
+          },
           icon: "BellOutlined",
           requiresAuth: true,
           hidden: true,
@@ -110,7 +138,10 @@ export const basicRoutes: AppRouteRecordRaw[] = [
         name: "About",
         component: () => import("@/views/about/index.vue"),
         meta: {
-          title: "menu.about",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.about");
+          },
           icon: "InfoCircleOutlined",
           requiresAuth: true,
           order: 5,
@@ -130,7 +161,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
     redirect: "/organization/dept",
     component: () => import("@/components/Layout/AdminLayout.vue"),
     meta: {
-      title: "menu.organization",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("menu.organization");
+      },
       icon: "TeamOutlined",
       requiresAuth: true,
       order: 3,
@@ -141,7 +175,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "OrganizationDept",
         component: () => import("@/views/system/dept/index.vue"),
         meta: {
-          title: "menu.dept",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.dept");
+          },
           icon: "ApartmentOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_DEPT_VIEW],
@@ -152,7 +189,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "OrganizationUser",
         component: () => import("@/views/system/user/index.vue"),
         meta: {
-          title: "menu.user",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.user");
+          },
           icon: "UserOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_USER_VIEW],
@@ -163,7 +203,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "OrganizationRole",
         component: () => import("@/views/system/role/index.vue"),
         meta: {
-          title: "menu.role",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.role");
+          },
           icon: "TeamOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_ROLE_VIEW],
@@ -174,7 +217,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "OrganizationPermission",
         component: () => import("@/views/system/permission/index.vue"),
         meta: {
-          title: "menu.permission",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.permission");
+          },
           icon: "SafetyOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_PERMISSION_VIEW],
@@ -188,7 +234,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
     redirect: "/system/config",
     component: () => import("@/components/Layout/AdminLayout.vue"),
     meta: {
-      title: "menu.system",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("menu.system");
+      },
       icon: "SettingOutlined",
       requiresAuth: true,
       order: 4,
@@ -199,7 +248,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "SystemConfig",
         component: () => import("@/views/system/config/index.vue"),
         meta: {
-          title: "menu.config",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.config");
+          },
           icon: "ControlOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_CONFIG_VIEW],
@@ -210,7 +262,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "SystemDict",
         component: () => import("@/views/system/dict/index.vue"),
         meta: {
-          title: "menu.dict",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.dict");
+          },
           icon: "BookOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_DICT_VIEW],
@@ -221,7 +276,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "SystemFile",
         component: () => import("@/views/system/file/index.vue"),
         meta: {
-          title: "menu.file",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.file");
+          },
           icon: "FolderOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_FILE_VIEW],
@@ -232,7 +290,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         name: "SystemLog",
         component: () => import("@/views/system/log/index.vue"),
         meta: {
-          title: "menu.log",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.log");
+          },
           icon: "FileTextOutlined",
           requiresAuth: true,
           requiredPermissions: [PERMISSIONS.SYSTEM_LOG_VIEW],
@@ -246,7 +307,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
     redirect: "/examples/pro-table-advanced",
     component: () => import("@/components/Layout/AdminLayout.vue"),
     meta: {
-      title: "menu.examples",
+      /** @returns 当前语言的路由标题。 */
+      get title() {
+        return $t("menu.examples");
+      },
       icon: "AppstoreOutlined",
       requiresAuth: true,
       order: 2,
@@ -258,7 +322,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/pro-table-advanced",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesQuickStart",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesQuickStart");
+          },
           icon: "ThunderboltOutlined",
           requiresAuth: true,
           order: 1,
@@ -270,7 +337,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/pro-table-advanced/index.vue"),
             meta: {
-              title: "menu.proTableAdvanced",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.proTableAdvanced");
+              },
               icon: "TableOutlined",
               requiresAuth: true,
               order: 1,
@@ -282,7 +352,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/complex-form/index.vue"),
             meta: {
-              title: "menu.complexForm",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.complexForm");
+              },
               icon: "FormOutlined",
               requiresAuth: true,
               order: 2,
@@ -294,7 +367,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/master-detail/index.vue"),
             meta: {
-              title: "menu.masterDetail",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.masterDetail");
+              },
               icon: "ProfileOutlined",
               requiresAuth: true,
               order: 3,
@@ -306,7 +382,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/virtual-table/index.vue"),
             meta: {
-              title: "menu.virtualTable",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.virtualTable");
+              },
               icon: "TableOutlined",
               requiresAuth: true,
               order: 4,
@@ -320,7 +399,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/form",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesFormInput",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesFormInput");
+          },
           icon: "FormOutlined",
           requiresAuth: true,
           order: 2,
@@ -331,7 +413,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesForm",
             component: () => import("@/views/examples/form/index.vue"),
             meta: {
-              title: "menu.form",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.form");
+              },
               icon: "FormOutlined",
               requiresAuth: true,
               order: 1,
@@ -342,7 +427,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesJsonInput",
             component: () => import("@/views/examples/json-input/index.vue"),
             meta: {
-              title: "menu.jsonInput",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.jsonInput");
+              },
               icon: "CodeOutlined",
               requiresAuth: true,
               order: 2,
@@ -353,7 +441,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesSchemaForm",
             component: () => import("@/views/examples/schema-form/index.vue"),
             meta: {
-              title: "menu.schemaForm",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.schemaForm");
+              },
               icon: "FormOutlined",
               requiresAuth: true,
               order: 1.5,
@@ -364,7 +455,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesI18nInput",
             component: () => import("@/views/examples/i18n-input/index.vue"),
             meta: {
-              title: "menu.i18nInput",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.i18nInput");
+              },
               icon: "GlobalOutlined",
               requiresAuth: true,
               order: 3,
@@ -376,7 +470,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/advanced-filter/index.vue"),
             meta: {
-              title: "menu.advancedFilter",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.advancedFilter");
+              },
               icon: "ControlOutlined",
               requiresAuth: true,
               order: 4,
@@ -390,7 +487,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/editor",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesContent",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesContent");
+          },
           icon: "EditOutlined",
           requiresAuth: true,
           order: 3,
@@ -401,7 +501,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesEditor",
             component: () => import("@/views/examples/editor/index.vue"),
             meta: {
-              title: "menu.editor",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.editor");
+              },
               icon: "EditOutlined",
               requiresAuth: true,
               order: 1,
@@ -412,7 +515,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesMilkdown",
             component: () => import("@/views/examples/milkdown/index.vue"),
             meta: {
-              title: "menu.milkdown",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.milkdown");
+              },
               icon: "FileMarkdownOutlined",
               requiresAuth: true,
               order: 2,
@@ -423,7 +529,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesCodeEditor",
             component: () => import("@/views/examples/code-editor/index.vue"),
             meta: {
-              title: "menu.codeEditor",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.codeEditor");
+              },
               icon: "CodeOutlined",
               requiresAuth: true,
               order: 3,
@@ -437,7 +546,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/table",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesInteraction",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesInteraction");
+          },
           icon: "AppstoreAddOutlined",
           requiresAuth: true,
           order: 4,
@@ -448,7 +560,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesTable",
             component: () => import("@/views/examples/table/index.vue"),
             meta: {
-              title: "menu.table",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.table");
+              },
               icon: "TableOutlined",
               requiresAuth: true,
               order: 1,
@@ -459,7 +574,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesVxeTable",
             component: () => import("@/views/examples/vxe-table/index.vue"),
             meta: {
-              title: "menu.vxeTable",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.vxeTable");
+              },
               icon: "TableOutlined",
               requiresAuth: true,
               order: 1.5,
@@ -470,7 +588,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesModal",
             component: () => import("@/views/examples/modal/index.vue"),
             meta: {
-              title: "menu.modal",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.modal");
+              },
               icon: "ExpandOutlined",
               requiresAuth: true,
               order: 2,
@@ -481,7 +602,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesIcon",
             component: () => import("@/views/examples/icon/index.vue"),
             meta: {
-              title: "menu.icon",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.icon");
+              },
               icon: "SmileOutlined",
               requiresAuth: true,
               order: 3,
@@ -492,7 +616,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesSpin",
             component: () => import("@/views/examples/spin/index.vue"),
             meta: {
-              title: "menu.spin",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.spin");
+              },
               icon: "LoadingOutlined",
               requiresAuth: true,
               order: 4,
@@ -503,7 +630,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesCaptcha",
             component: () => import("@/views/examples/captcha/index.vue"),
             meta: {
-              title: "menu.captcha",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.captcha");
+              },
               icon: "SafetyCertificateOutlined",
               requiresAuth: true,
               order: 5,
@@ -514,7 +644,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesWatermark",
             component: () => import("@/views/examples/watermark/index.vue"),
             meta: {
-              title: "menu.watermark",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.watermark");
+              },
               icon: "HighlightOutlined",
               requiresAuth: true,
               order: 6,
@@ -525,7 +658,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesSplitter",
             component: () => import("@/views/examples/splitter/index.vue"),
             meta: {
-              title: "menu.splitter",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.splitter");
+              },
               icon: "ColumnHeightOutlined",
               requiresAuth: true,
               order: 7,
@@ -536,7 +672,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesTour",
             component: () => import("@/views/examples/tour/index.vue"),
             meta: {
-              title: "menu.tour",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.tour");
+              },
               icon: "CompassOutlined",
               requiresAuth: true,
               order: 8,
@@ -547,7 +686,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesQRCode",
             component: () => import("@/views/examples/qrcode/index.vue"),
             meta: {
-              title: "menu.qrcode",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.qrcode");
+              },
               icon: "QrcodeOutlined",
               requiresAuth: true,
               order: 9,
@@ -558,7 +700,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesSegmented",
             component: () => import("@/views/examples/segmented/index.vue"),
             meta: {
-              title: "menu.segmented",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.segmented");
+              },
               icon: "AppstoreOutlined",
               requiresAuth: true,
               order: 10,
@@ -569,7 +714,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesColorPicker",
             component: () => import("@/views/examples/color-picker/index.vue"),
             meta: {
-              title: "menu.colorPicker",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.colorPicker");
+              },
               icon: "BgColorsOutlined",
               requiresAuth: true,
               order: 11,
@@ -583,7 +731,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/upload-system",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesBusinessScaffold",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesBusinessScaffold");
+          },
           icon: "ProfileOutlined",
           requiresAuth: true,
           order: 5,
@@ -595,7 +746,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/upload-system/index.vue"),
             meta: {
-              title: "menu.uploadSystem",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.uploadSystem");
+              },
               icon: "CloudUploadOutlined",
               requiresAuth: true,
               order: 1,
@@ -607,7 +761,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/state-cache/index.vue"),
             meta: {
-              title: "menu.stateCache",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.stateCache");
+              },
               icon: "DatabaseOutlined",
               requiresAuth: true,
               order: 2,
@@ -619,7 +776,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/import-export/index.vue"),
             meta: {
-              title: "menu.importExport",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.importExport");
+              },
               icon: "FileTextOutlined",
               requiresAuth: true,
               order: 3,
@@ -633,7 +793,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/request-auth",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesSecurityEngineering",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesSecurityEngineering");
+          },
           icon: "SafetyOutlined",
           requiresAuth: true,
           order: 6,
@@ -645,7 +808,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/request-auth/index.vue"),
             meta: {
-              title: "menu.requestAuth",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.requestAuth");
+              },
               icon: "SafetyOutlined",
               requiresAuth: true,
               order: 1,
@@ -656,7 +822,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesRbacFlow",
             component: () => import("@/views/examples/scaffold/rbac/index.vue"),
             meta: {
-              title: "menu.rbacFlow",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.rbacFlow");
+              },
               icon: "SafetyCertificateOutlined",
               requiresAuth: true,
               order: 2,
@@ -668,7 +837,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/observability/index.vue"),
             meta: {
-              title: "menu.observability",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.observability");
+              },
               icon: "LineChartOutlined",
               requiresAuth: true,
               order: 3,
@@ -680,7 +852,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             component: () =>
               import("@/views/examples/scaffold/testing/index.vue"),
             meta: {
-              title: "menu.testing",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.testing");
+              },
               icon: "CheckCircleOutlined",
               requiresAuth: true,
               order: 4,
@@ -694,7 +869,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/external/iframe/typescript",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesIntegration",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesIntegration");
+          },
           icon: "LinkOutlined",
           requiresAuth: true,
           order: 7,
@@ -706,7 +884,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             redirect: "/examples/external/iframe/typescript",
             component: () => import("@/components/RouteView.vue"),
             meta: {
-              title: "menu.externalIframe",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.externalIframe");
+              },
               icon: "AppstoreAddOutlined",
               requiresAuth: true,
               order: 1,
@@ -718,7 +899,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
                 component: () =>
                   import("@/views/examples/external/iframe/typescript.vue"),
                 meta: {
-                  title: "menu.externalTypescript",
+                  /** @returns 当前语言的路由标题。 */
+                  get title() {
+                    return $t("menu.externalTypescript");
+                  },
                   icon: "CodeOutlined",
                   requiresAuth: true,
                   order: 1,
@@ -730,7 +914,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
                 component: () =>
                   import("@/views/examples/external/iframe/antdv-next.vue"),
                 meta: {
-                  title: "menu.externalAntdvNext",
+                  /** @returns 当前语言的路由标题。 */
+                  get title() {
+                    return $t("menu.externalAntdvNext");
+                  },
                   icon: "AntDesignOutlined",
                   requiresAuth: true,
                   order: 2,
@@ -743,7 +930,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesExternalLink",
             component: () => import("@/components/RouteView.vue"),
             meta: {
-              title: "menu.externalLink",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.externalLink");
+              },
               icon: "LinkOutlined",
               requiresAuth: true,
               order: 2,
@@ -755,7 +945,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
                 component: () =>
                   import("@/views/examples/external/link/vite.vue"),
                 meta: {
-                  title: "menu.externalVite",
+                  /** @returns 当前语言的路由标题。 */
+                  get title() {
+                    return $t("menu.externalVite");
+                  },
                   icon: "ThunderboltOutlined",
                   requiresAuth: true,
                   externalLink: "https://vite.dev",
@@ -768,7 +961,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
                 component: () =>
                   import("@/views/examples/external/link/vue.vue"),
                 meta: {
-                  title: "menu.externalVue",
+                  /** @returns 当前语言的路由标题。 */
+                  get title() {
+                    return $t("menu.externalVue");
+                  },
                   icon: "CoffeeOutlined",
                   requiresAuth: true,
                   externalLink: "https://vuejs.org",
@@ -785,7 +981,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
         redirect: "/examples/exception/403",
         component: () => import("@/components/RouteView.vue"),
         meta: {
-          title: "menu.examplesExceptionPages",
+          /** @returns 当前语言的路由标题。 */
+          get title() {
+            return $t("menu.examplesExceptionPages");
+          },
           icon: "WarningOutlined",
           requiresAuth: true,
           order: 8,
@@ -796,7 +995,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesException403",
             component: () => import("@/views/examples/exception/403.vue"),
             meta: {
-              title: "menu.exception403",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.exception403");
+              },
               icon: "StopOutlined",
               requiresAuth: true,
               order: 1,
@@ -807,7 +1009,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesException404",
             component: () => import("@/views/examples/exception/404.vue"),
             meta: {
-              title: "menu.exception404",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.exception404");
+              },
               icon: "FileUnknownOutlined",
               requiresAuth: true,
               order: 2,
@@ -818,7 +1023,10 @@ export const asyncRoutes: AppRouteRecordRaw[] = [
             name: "ExamplesException500",
             component: () => import("@/views/examples/exception/500.vue"),
             meta: {
-              title: "menu.exception500",
+              /** @returns 当前语言的路由标题。 */
+              get title() {
+                return $t("menu.exception500");
+              },
               icon: "BugOutlined",
               requiresAuth: true,
               order: 3,
@@ -838,7 +1046,10 @@ export const notFoundRoute: AppRouteRecordRaw = {
   name: "NotFoundCatchAll",
   component: () => import("@/views/error/404.vue"),
   meta: {
-    title: "error.404",
+    /** @returns 当前语言的路由标题。 */
+    get title() {
+      return $t("error.404");
+    },
     // Before login, this can also match a dynamic route that is not registered yet.
     requiresAuth: true,
     hidden: true,

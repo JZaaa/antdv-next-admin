@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { CloseOutlined } from '@antdv-next/icons';
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import { $t } from '@/locales';
 import { resolveLocaleText } from '@/utils/i18n';
@@ -104,6 +104,7 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
+const router = useRouter();
 const draft = ref('');
 const messages = ref<ChatMessage[]>([]);
 const messagesBodyRef = ref<HTMLElement | null>(null);
@@ -112,8 +113,10 @@ const streamingMessageId = ref<number | null>(null);
 let messageId = 0;
 let streamTimer: number | null = null;
 
+/** @returns 当前页面的标题，重新读取路由以响应显式翻译的语言变化。 */
 const currentPageTitle = computed(() => {
-  const routeTitle = typeof route.meta?.title === 'string' ? route.meta.title : '';
+  const title = router.resolve(route.fullPath).meta.title;
+  const routeTitle = typeof title === 'string' ? title : '';
   const routeName = typeof route.name === 'string' ? route.name : route.path;
   if (routeTitle) {
     return resolveLocaleText(routeTitle, routeName);

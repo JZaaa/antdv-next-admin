@@ -295,8 +295,15 @@ const refreshCurrentTab = () => {
   tabsStore.refreshTab(tab.path);
 };
 
-const getTabLabel = (tab: Tab) => {
-  return resolveLocaleText(tab.title, tab.name);
+/**
+ * 从当前路由读取标签标题，避免持久化文案固定在旧语言。
+ * @param tab 待显示的标签。
+ * @returns 当前路由标题；路由失效时使用已保存的标题。
+ */
+const getTabLabel = (tab: Tab): string => {
+  const resolved = router.resolve(tab.fullPath || tab.path);
+  const title = resolved.name === tab.name ? resolved.meta.title : tab.title;
+  return resolveLocaleText(typeof title === 'string' ? title : tab.title, tab.name);
 };
 </script>
 
