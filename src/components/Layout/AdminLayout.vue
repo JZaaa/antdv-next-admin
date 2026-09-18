@@ -302,17 +302,29 @@ const menuItems = computed(() => {
   return fallbackMenuItems.value;
 });
 
+/**
+ * 将菜单树转换为水平导航或溢出菜单，仅水平导航首层使用自定义下拉箭头。
+ * @param menus 待转换的菜单树。
+ * @param showCustomSubmenuArrow 是否为首层子菜单显示自定义下拉箭头。
+ * @returns 供菜单组件渲染的菜单项。
+ */
 const convertHorizontalMenus = (
   menus: MenuItemType[],
   showCustomSubmenuArrow: boolean,
 ): HorizontalMenuItems => {
-  const convert = (list: MenuItemType[]): HorizontalMenuItems => {
+  /**
+   * 递归转换菜单层级，弹出菜单保留组件库自带的展开箭头。
+   * @param list 当前层级的菜单项。
+   * @param isRoot 是否为导航首层。
+   * @returns 当前层级及其子菜单的渲染配置。
+   */
+  const convert = (list: MenuItemType[], isRoot: boolean): HorizontalMenuItems => {
     return list.map((menu) => {
       const text = resolveLocaleText(menu.label, menu.id);
       const childMenus = menu.children || [];
       const hasChildren = childMenus.length > 0;
       const label =
-        hasChildren && showCustomSubmenuArrow
+        hasChildren && showCustomSubmenuArrow && isRoot
           ? h('span', { class: 'horizontal-submenu-label' }, [
               h('span', { class: 'horizontal-submenu-text' }, text),
               h(DownOutlined, { class: 'horizontal-submenu-arrow' }),
@@ -329,7 +341,7 @@ const convertHorizontalMenus = (
         return {
           ...item,
           key: menu.id,
-          children: convert(childMenus),
+          children: convert(childMenus, false),
         };
       }
 
@@ -337,7 +349,7 @@ const convertHorizontalMenus = (
     });
   };
 
-  return convert(menus);
+  return convert(menus, true);
 };
 
 const horizontalMenuItems = computed<HorizontalMenuItems>(() => {
@@ -744,17 +756,6 @@ watch(
           :deep(.ant-menu-submenu-arrow) {
             display: none;
           }
-
-          :deep(.horizontal-submenu-label) {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-          }
-
-          :deep(.horizontal-submenu-arrow) {
-            font-size: 12px;
-            color: var(--color-text-tertiary);
-          }
         }
 
         .horizontal-overflow-trigger {
@@ -769,6 +770,24 @@ watch(
             background: var(--color-bg-layout);
             color: var(--color-text-primary);
           }
+        }
+      }
+
+      // 菜单组件的多根节点不透传作用域标记，须从原生容器穿透，并保持测量样式一致。
+      .horizontal-menu-area,
+      .horizontal-menu-measure-wrap {
+        :deep(.horizontal-submenu-label) {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+          white-space: nowrap;
+        }
+
+        :deep(.horizontal-submenu-arrow) {
+          flex: 0 0 12px;
+          min-width: 12px;
+          font-size: 12px;
+          color: var(--color-text-tertiary);
         }
       }
 
