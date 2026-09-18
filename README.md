@@ -223,7 +223,11 @@ if (hasRole("admin")) {
 
 ## 环境变量与后端接入
 
+项目名称统一通过 `VITE_APP_TITLE` 配置，用于登录页（含移动端与页脚）、侧栏与横向布局、加载页及浏览器标题。修改 `.env*` 后需重启开发服务，生产环境需重新构建。
+
 缓存通过 `VITE_APP_NAMESPACE` 隔离项目，并自动加入应用版本、运行模式及 `VITE_APP_CACHE_VERSION`。配置方式、升级行为和业务使用示例见 [缓存与多项目隔离](docs/cache-storage.md)。
+
+认证协议在 `src/settings.ts` 的 `auth` 中配置，不参与缓存。支持 `enableRefreshToken` 切换单／双令牌，以及后端令牌字段、刷新请求和认证头映射，详见 [认证协议配置](docs/auth-configuration.md)。
 
 开发环境默认启用 Vite Mock 服务:
 

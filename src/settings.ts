@@ -1,3 +1,4 @@
+import type { AuthSettings } from './types/auth.ts';
 import type { AppFeatures, UserPreferences } from './types/preferences.ts';
 import type { ProTableSearch } from './types/pro.ts';
 
@@ -36,6 +37,7 @@ export interface ButtonDefaultSettings {
 }
 
 export interface AppDefaultSettings {
+  auth: AuthSettings;
   features: AppFeatures;
   preferences: UserPreferences;
   layout: {
@@ -50,6 +52,17 @@ export interface AppDefaultSettings {
 }
 
 export const appDefaultSettings: AppDefaultSettings = {
+  // 认证协议只读取源码配置，不写入 localStorage/sessionStorage 或用户偏好。
+  auth: {
+    enableRefreshToken: true,
+    tokenField: 'token',
+    refreshTokenField: 'refreshToken',
+    expiresInField: 'expiresIn',
+    refreshTokenRequestField: 'refreshToken',
+    refreshUrl: '/auth/refresh',
+    headerName: 'Authorization',
+    tokenPrefix: 'Bearer',
+  },
   // System switches are code-only. Cache and the preferences drawer cannot override them.
   features: {
     personalization: true,

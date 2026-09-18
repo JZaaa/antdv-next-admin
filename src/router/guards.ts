@@ -2,6 +2,7 @@ import type { MenuHistoryItem } from '@/types/navigation';
 import type { AppRouteRecordRaw } from '@/types/router';
 import type { Router, RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
 
+import { APP_TITLE } from '@/constants/app';
 import { useAuthStore } from '@/stores/auth';
 import { useDictStore } from '@/stores/dict';
 import { usePermissionStore } from '@/stores/permission';
@@ -17,6 +18,11 @@ import { getRouteNamesToRemove } from './utils';
 const MENU_HISTORY_KEY = 'app-menu-history';
 const MAX_HISTORY_ITEMS = 10;
 
+/**
+ * 将当前页面标题与统一的项目名称组合为浏览器标题。
+ * @param route 当前路由。
+ * @returns 无返回值。
+ */
 function setDocumentTitle(route: RouteLocationNormalized) {
   if (!route.meta.title) return;
 
@@ -24,9 +30,19 @@ function setDocumentTitle(route: RouteLocationNormalized) {
     route.meta.title as string,
     String(route.name || route.path || 'Dashboard'),
   );
-  document.title = `${title} - ${import.meta.env.VITE_APP_TITLE || 'Antdv Next Admin'}`;
+  document.title = `${title} - ${APP_TITLE}`;
 }
 
+/**
+ * 等待认证恢复后生成权限路由，防止使用刷新完成前的空身份。
+ * @param router 当前路由器。
+ * @param authStore 认证状态。
+ * @param permissionStore 权限路由状态。
+ * @param dictStore 字典状态。
+ * @param options 是否替换现有动态路由。
+ * @returns 动态路由及所需字典加载完成。
+ * @throws 认证恢复失败或权限路由加载失败。
+ */
 async function ensureDynamicRoutes(
   router: Router,
   authStore: ReturnType<typeof useAuthStore>,
@@ -37,7 +53,11 @@ async function ensureDynamicRoutes(
   if (permissionStore.isRoutesGenerated && !options.replaceExisting) return;
 
   if (!authStore.user) {
-    authStore.initAuth();
+    await authStore.initAuth();
+  }
+
+  if (!authStore.token) {
+    throw new Error('登录已失效，请重新登录');
   }
 
   const accessRoutes = await permissionStore.generateRoutes(
@@ -176,6 +196,8 @@ export function resetRouter(router: Router) {
 
 /**
  * Setup router guards
+ * @param router 当前路由器。
+ * @returns 无返回值。
  */
 export function setupRouterGuards(router: Router) {
   // Before each route navigation
@@ -203,7 +225,7 @@ export function setupRouterGuards(router: Router) {
         return { path: to.path, query: to.query, hash: to.hash, replace: true };
       } catch (error) {
         console.error('Failed to recover dynamic route:', error);
-        return '/403';
+        return authStore.token ? '/403' : '/login';
       }
     }
 
@@ -230,7 +252,7 @@ export function setupRouterGuards(router: Router) {
           return { path: to.path, query: to.query, hash: to.hash, replace: true };
         } catch (error) {
           console.error('Failed to generate routes:', error);
-          return '/403';
+          return authStore.token ? '/403' : '/login';
         }
       }
 

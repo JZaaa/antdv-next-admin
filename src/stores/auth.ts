@@ -5,6 +5,7 @@ import { ref, computed } from 'vue';
 
 import avatarImg from '@/assets/images/avatar-256.png';
 import { ALL_PERMISSION } from '@/constants/permissions';
+import { appDefaultSettings } from '@/settings';
 import { appLocalStorage } from '@/utils/cache';
 
 const TOKEN_KEY = 'access_token';
@@ -78,9 +79,20 @@ function normalizeUserInfo(userInfo: User): User {
   };
 }
 
+/**
+ * 管理框架认证状态，按源码配置选择单/双令牌协议。
+ * @returns 认证状态、身份权限及会话生命周期操作。
+ */
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(appLocalStorage.getItem(TOKEN_KEY));
-  const refreshTokenValue = ref<string | null>(appLocalStorage.getItem(REFRESH_TOKEN_KEY));
+  const refreshTokenValue = ref<string | null>(
+    appDefaultSettings.auth.enableRefreshToken ? appLocalStorage.getItem(REFRESH_TOKEN_KEY) : null,
+  );
+  let refreshPromise: Promise<string> | null = null;
+  let sessionVersion = 0;
+  if (!appDefaultSettings.auth.enableRefreshToken) {
+    appLocalStorage.removeItem(REFRESH_TOKEN_KEY);
+  }
   const tokenExpiresAt = ref<number | null>(null);
   const user = ref<User | null>(null);
   const roles = ref<Role[]>([]);
@@ -101,11 +113,20 @@ export const useAuthStore = defineStore('auth', () => {
   const userRoles = computed(() => roles.value.map((role) => role.code));
   const userPermissions = computed(() => permissions.value.map((perm) => perm.code));
 
+  /**
+   * 保存令牌及有效期；单令牌模式和退出时清理刷新令牌。
+   * @param newToken 新访问令牌，null清除会话凭据。
+   * @param newRefreshToken undefined保留原刷新令牌，null清除。
+   * @param expiresIn 有效秒数，缺省沿用JWT exp或24小时兜底。
+   * @returns 无返回值。
+   */
   const setToken = (
     newToken: string | null,
     newRefreshToken?: string | null,
     expiresIn?: number,
-  ) => {
+  ): void => {
+    sessionVersion += 1;
+    refreshPromise = null;
     token.value = newToken;
     if (newToken) {
       appLocalStorage.setItem(TOKEN_KEY, newToken);
@@ -129,10 +150,12 @@ export const useAuthStore = defineStore('auth', () => {
       appLocalStorage.removeItem(TOKEN_EXPIRES_KEY);
     }
 
-    if (newRefreshToken !== undefined) {
-      refreshTokenValue.value = newRefreshToken;
-      if (newRefreshToken) {
-        appLocalStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
+    const refreshValue =
+      newToken && appDefaultSettings.auth.enableRefreshToken ? newRefreshToken : null;
+    if (refreshValue !== undefined) {
+      refreshTokenValue.value = refreshValue;
+      if (refreshValue) {
+        appLocalStorage.setItem(REFRESH_TOKEN_KEY, refreshValue);
       } else {
         appLocalStorage.removeItem(REFRESH_TOKEN_KEY);
       }
@@ -174,17 +197,36 @@ export const useAuthStore = defineStore('auth', () => {
     setUserInfo(null);
   };
 
-  const refreshToken = async (): Promise<string> => {
-    const { refreshToken: refreshTokenApi } = await import('@/api/auth');
-
-    if (!refreshTokenValue.value) {
-      throw new Error('No refresh token available');
+  /**
+   * 双令牌模式合并并发刷新，并阻止退出或切换账号后的旧响应恢复会话。
+   * @returns 更新后的访问令牌；刷新响应省略刷新令牌时保留旧值。
+   * @throws 单令牌模式、缺少刷新令牌、会话已变更或刷新请求失败。
+   */
+  async function refreshToken(): Promise<string> {
+    if (!appDefaultSettings.auth.enableRefreshToken || !refreshTokenValue.value) {
+      throw new Error('登录已失效，请重新登录');
     }
-
-    const result = await refreshTokenApi(refreshTokenValue.value);
-    setToken(result.data.token, result.data.refreshToken, result.data.expiresIn);
-    return result.data.token;
-  };
+    if (refreshPromise) return refreshPromise;
+    const version = sessionVersion;
+    const currentRefreshToken = refreshTokenValue.value;
+    /** @returns 刷新并保存当前会话的凭据。@throws 请求失败或会话已变更。 */
+    const refresh = async (): Promise<string> => {
+      const { refreshToken: refreshTokenApi } = await import('@/api/auth');
+      const result = await refreshTokenApi(currentRefreshToken);
+      if (version !== sessionVersion) {
+        throw new Error('认证会话已变更');
+      }
+      setToken(result.data.token, result.data.refreshToken, result.data.expiresIn);
+      return result.data.token;
+    };
+    const pending = refresh();
+    refreshPromise = pending;
+    try {
+      return await pending;
+    } finally {
+      if (refreshPromise === pending) refreshPromise = null;
+    }
+  }
 
   const hasRole = (role: string): boolean => {
     return userRoles.value.includes(role);
@@ -212,10 +254,23 @@ export const useAuthStore = defineStore('auth', () => {
     return permissionList.every((perm) => hasPermission(perm));
   };
 
-  const initAuth = () => {
-    if (isTokenExpired.value && token.value) {
-      logout();
-      return;
+  /**
+   * 恢复身份缓存；双令牌模式在启动时刷新过期访问令牌。
+   * @returns 会话恢复完成；刷新失败时清除凭据和身份。
+   */
+  const initAuth = async (): Promise<void> => {
+    if (token.value && tokenExpiresAt.value !== null && Date.now() >= tokenExpiresAt.value) {
+      if (!appDefaultSettings.auth.enableRefreshToken || !refreshTokenValue.value) {
+        logout();
+        return;
+      }
+      const version = sessionVersion;
+      try {
+        await refreshToken();
+      } catch {
+        if (version === sessionVersion) logout();
+        return;
+      }
     }
 
     // Discard cached user data written by an older version of the app

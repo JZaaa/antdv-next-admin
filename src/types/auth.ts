@@ -1,5 +1,22 @@
 // Authentication Types
 
+/** 仅由源码配置的认证协议，不参与用户偏好缓存。 */
+export interface AuthSettings {
+  enableRefreshToken: boolean;
+  /** 登录和刷新响应 data 中的访问令牌字段。 */
+  tokenField: string;
+  /** 登录和刷新响应 data 中的刷新令牌字段。 */
+  refreshTokenField: string;
+  /** 响应 data 中的有效时长字段，单位为秒。 */
+  expiresInField: string;
+  /** 刷新请求 JSON 中的刷新令牌字段。 */
+  refreshTokenRequestField: string;
+  refreshUrl: string;
+  headerName: string;
+  /** 认证前缀；空字符串表示直接发送令牌。 */
+  tokenPrefix: string;
+}
+
 export interface LoginParams {
   username: string;
   password: string;
