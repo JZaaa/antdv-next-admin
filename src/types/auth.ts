@@ -1,8 +1,12 @@
 // Authentication Types
 
-/** 仅由源码配置的认证协议，不参与用户偏好缓存。 */
+/** 仅由源码配置的认证协议与登录策略，不参与用户偏好缓存。 */
 export interface AuthSettings {
   enableRefreshToken: boolean;
+  /** 是否允许在登录页选择记住登录；关闭时固定使用 rememberLogin。 */
+  enableRememberLogin: boolean;
+  /** 复选框默认状态；禁止选择时作为固定策略，仅保存凭据、不保存密码。 */
+  rememberLogin: boolean;
   /** 登录和刷新响应 data 中的访问令牌字段。 */
   tokenField: string;
   /** 登录和刷新响应 data 中的刷新令牌字段。 */

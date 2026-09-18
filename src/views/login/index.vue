@@ -139,8 +139,8 @@
               />
             </a-form-item>
 
-            <div class="login-options">
-              <a-checkbox v-model:checked="formState.remember">
+            <div v-if="appDefaultSettings.auth.enableRememberLogin" class="login-options">
+              <a-checkbox v-model:checked="formState.remember" :disabled="loading">
                 {{ $t('login.remember') }}
               </a-checkbox>
             </div>
@@ -207,6 +207,7 @@ import LanguageSwitch from '@/components/Layout/LanguageSwitch.vue';
 import ThemeToggle from '@/components/Layout/ThemeToggle.vue';
 import { APP_TITLE } from '@/constants/app';
 import { $t } from '@/locales';
+import { appDefaultSettings } from '@/settings';
 import { useAuthStore } from '@/stores/auth';
 import { useSettingsStore } from '@/stores/settings';
 import { clearSessionState } from '@/utils/session';
@@ -224,7 +225,7 @@ const captchaRef = ref<InstanceType<typeof SliderCaptcha>>();
 const formState = reactive({
   username: 'admin',
   password: '123456',
-  remember: false,
+  remember: appDefaultSettings.auth.rememberLogin,
 });
 
 const capabilityStats = [
@@ -282,12 +283,16 @@ async function enterWorkspace(): Promise<void> {
   }
 }
 
-const handleSubmit = async () => {
+/**
+ * 完成验证码后按源码策略或复选框选择保存登录凭据，不保存密码。
+ * @returns 登录及导航处理完成；失败时展示错误并重置验证码。
+ */
+const handleSubmit = async (): Promise<void> => {
   if (loading.value || authenticated.value || !captchaVerified.value) return;
   loading.value = true;
   try {
     clearSessionState(router);
-    await authStore.login(formState.username, formState.password);
+    await authStore.login(formState.username, formState.password, formState.remember);
     authenticated.value = true;
     await enterWorkspace();
   } catch (error: unknown) {

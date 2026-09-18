@@ -265,7 +265,10 @@ export default {
     title: 'User Login',
     username: 'Username',
     password: 'Password',
-    remember: 'Remember me',
+    remember: 'Keep me signed in',
+    sessionChangedTitle: 'Sign-in state changed',
+    sessionChangedMessage:
+      'Another tab changed or signed out of the remembered session. Refresh this page to continue.',
     login: 'Login',
     forgotPassword: 'Forgot password',
     noAccount: "Don't have an account?",

@@ -52,9 +52,13 @@ export interface AppDefaultSettings {
 }
 
 export const appDefaultSettings: AppDefaultSettings = {
-  // 认证协议只读取源码配置，不写入 localStorage/sessionStorage 或用户偏好。
+  // 认证协议与登录策略只读取源码配置，不写入 localStorage/sessionStorage 或用户偏好。
   auth: {
     enableRefreshToken: true,
+    // 开启时显示记住登录复选框；关闭时固定使用 rememberLogin。
+    enableRememberLogin: true,
+    // true 使用 localStorage，false 使用当前标签页的 sessionStorage。
+    rememberLogin: false,
     tokenField: 'token',
     refreshTokenField: 'refreshToken',
     expiresInField: 'expiresIn',

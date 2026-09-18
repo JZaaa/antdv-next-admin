@@ -37,13 +37,18 @@ export const service: AxiosInstance = axios.create({
 
 service.interceptors.request.use(
   /**
-   * 按源码配置的请求头和前缀注入访问令牌。
+   * 核对共享会话后按源码配置注入当前页面令牌，阻止旧页面以其他身份提交请求。
    * @param config 本次请求配置。
    * @returns 已添加认证信息的请求配置。
+   * @throws 其他标签页已更换或清除共享凭据时拒绝请求。
    */
   (config) => {
     const requestConfig = config as RequestConfig;
     const authStore = useAuthStore();
+
+    if (!requestConfig.skipAuth && authStore.token && !authStore.checkSession()) {
+      throw new Error('登录状态已在其他标签页变更，请刷新页面');
+    }
 
     if (!requestConfig.skipAuth && authStore.token) {
       const { headerName, tokenPrefix } = appDefaultSettings.auth;
