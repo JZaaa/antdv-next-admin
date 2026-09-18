@@ -13,7 +13,7 @@
       <div class="pane-left-content">
         <div class="logo-mark">
           <img :src="logoImg" alt="Logo" class="logo-glyph" />
-          <span>{{ $t('common.appName') }}</span>
+          <span>{{ APP_TITLE }}</span>
         </div>
 
         <div class="pane-left-spacer"></div>
@@ -48,7 +48,7 @@
       </div>
 
       <div class="pane-left-foot">
-        <span>© {{ currentYear }} {{ $t('common.appName') }}</span>
+        <span>© {{ currentYear }} {{ APP_TITLE }}</span>
         <span class="coord">⟶ 31.230 N / 121.473 E · SHA</span>
       </div>
     </section>
@@ -57,7 +57,7 @@
       <div class="mobile-brand">
         <div class="logo-mark">
           <img :src="logoImg" alt="Logo" class="logo-glyph" />
-          <span>{{ $t('common.appName') }}</span>
+          <span>{{ APP_TITLE }}</span>
         </div>
         <p>{{ $t('login.gridSubtitle') }}</p>
       </div>
@@ -206,6 +206,7 @@ import logoImg from '@/assets/images/logo.png';
 import { SliderCaptcha } from '@/components/Captcha';
 import LanguageSwitch from '@/components/Layout/LanguageSwitch.vue';
 import ThemeToggle from '@/components/Layout/ThemeToggle.vue';
+import { APP_TITLE } from '@/constants/app';
 import { $t } from '@/locales';
 import { useAuthStore } from '@/stores/auth';
 import { useSettingsStore } from '@/stores/settings';
