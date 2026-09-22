@@ -72,6 +72,8 @@ export const appDefaultSettings: AppDefaultSettings = {
     // 页面 Logo 图片显隐，仅由源码控制。
     logo: true,
     personalization: true,
+    // false 隐藏偏好设置中的“页面与标签”分组，true 显示。
+    pagePreferences: true,
     search: true,
     notifications: true,
     fullscreen: true,

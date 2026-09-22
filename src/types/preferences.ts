@@ -24,6 +24,8 @@ export interface AppFeatures {
   /** 控制页面 Logo 图片，保留系统名称与浏览器标签页图标。 */
   logo: boolean;
   personalization: boolean;
+  /** 控制偏好设置中“页面与标签”分组的显隐，不改变页面动画及标签功能。 */
+  pagePreferences: boolean;
   search: boolean;
   notifications: boolean;
   fullscreen: boolean;

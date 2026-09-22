@@ -133,7 +133,11 @@
         </div>
       </section>
 
-      <section class="settings-section" aria-labelledby="page-heading">
+      <section
+        v-if="settingsStore.features.pagePreferences"
+        class="settings-section"
+        aria-labelledby="page-heading"
+      >
         <h3 id="page-heading" class="section-title">
           <AppstoreOutlined aria-hidden="true" />{{ $t('settings.pagePreferences') }}
         </h3>
