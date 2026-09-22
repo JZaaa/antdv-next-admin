@@ -66,7 +66,7 @@ export default defineConfig({
     // Scan the app's route graph, not lab/reference HTML with their own aliases.
     entries: ["index.html"],
     // Template/virtual imports may not be visible to the initial dependency scan.
-    // The icon assets plugin also adds the configured lazy icon subpaths.
+    // 动态图标分组在开发时也复用总入口，避免全量子入口导致数百个拆分请求。
     include: ["antdv-next", "@antdv-next/icons", "@iconify/vue"],
   },
   server: {
