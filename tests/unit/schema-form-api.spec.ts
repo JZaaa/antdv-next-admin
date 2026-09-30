@@ -326,6 +326,25 @@ describe('modern Vben form contracts', () => {
     await vi.advanceTimersByTimeAsync(11);
     expect(submit).toHaveBeenCalledTimes(1);
   });
+  it('submits the same search again after a reset with notifications paused', async () => {
+    vi.useFakeTimers();
+    const submit = vi.fn();
+    const api = mounted({
+      schema: [{ fieldName: 'name', component: 'Input', defaultValue: '' }],
+      submitOnChange: true,
+      changeDebouncedTime: 10,
+      handleSubmit: submit,
+    });
+    await api.setFieldValue('name', 'same search');
+    await vi.advanceTimersByTimeAsync(11);
+    api.setState({ submitOnChange: false });
+    await api.reset();
+    api.setState({ submitOnChange: true });
+    await api.setFieldValue('name', 'same search');
+    await vi.advanceTimersByTimeAsync(11);
+    expect(submit).toHaveBeenCalledTimes(2);
+    expect(submit.mock.calls[1]?.[0]).toEqual({ name: 'same search' });
+  });
   it('merges form results in declaration order without invoking submission callbacks', async () => {
     const submit = vi.fn();
     const a = mounted({

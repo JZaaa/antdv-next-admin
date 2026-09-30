@@ -7,6 +7,7 @@ import type {
 } from '../types';
 import type { FormApi } from './api';
 import type { RuntimeRecord } from './runtime';
+import type { ButtonProps } from 'antdv-next';
 import type { Component, Slots, VNodeChild } from 'vue';
 
 import { Button, Tooltip } from 'antdv-next';
@@ -74,6 +75,16 @@ export function createFormRenderer<
   S extends object,
 >(api: FormApi<T, C, P, S>, slots: Slots) {
   const runtime = api.runtime;
+  const resetting = ref(false);
+  // Field components depend on the options they render, not the whole config
+  // object. Updating an action button must not update every input's handlers.
+  const formLayout = computed(() => api.state.layout);
+  const formLocale = computed(() => api.state.locale);
+  const formSchema = computed(() => api.state.schema);
+  const formWrapperClass = computed(() => api.state.wrapperClass);
+  // Prepare defaults before child controls render, instead of mounting them empty
+  // and immediately updating the entire form in the mounted hook.
+  runtime.attach();
   const Field = defineComponent({
     name: 'VbenSchemaField',
     props: { name: { type: String, required: true }, forceHideLabel: Boolean },
@@ -257,7 +268,7 @@ export function createFormRenderer<
               {
                 'form-valid-error': !!error,
                 'form-is-required': requiredRule(record),
-                'vben-field-vertical': api.state.layout === 'vertical',
+                'vben-field-vertical': formLayout.value === 'vertical',
               },
             ],
             style: record.dynamic.show === false ? { display: 'none' } : undefined,
@@ -269,8 +280,9 @@ export function createFormRenderer<
                   'label',
                   {
                     class: ['vben-form-label', config.labelClass],
+                    'data-auto-label': labelWidth === 'auto' ? '' : undefined,
                     style:
-                      api.state.layout === 'vertical' ||
+                      formLayout.value === 'vertical' ||
                       String(config.labelClass ?? '').includes('w-')
                         ? undefined
                         : {
@@ -317,8 +329,8 @@ export function createFormRenderer<
                           },
                           () =>
                             collapsed.value
-                              ? (api.state.locale?.expand ?? '展开')
-                              : (api.state.locale?.collapse ?? '收起'),
+                              ? (formLocale.value?.expand ?? '展开')
+                              : (formLocale.value?.collapse ?? '收起'),
                         )
                       : null,
                   ],
@@ -360,7 +372,7 @@ export function createFormRenderer<
       let initialized = false;
       watch(
         () => {
-          const schema = api.state.schema?.[props.groupIndex];
+          const schema = formSchema.value?.[props.groupIndex];
           if (!schema || !('type' in schema) || schema.type !== 'group') return false;
           return schema.children.some((field) =>
             Object.keys(api.form.errors).some(
@@ -376,7 +388,7 @@ export function createFormRenderer<
         },
       );
       return () => {
-        const schema = api.state.schema?.[props.groupIndex];
+        const schema = formSchema.value?.[props.groupIndex];
         if (!schema || !('type' in schema) || schema.type !== 'group' || schema.hide) return null;
         if (!initialized) {
           collapsed.value = schema.collapsible !== false && !!schema.defaultCollapsed;
@@ -416,7 +428,7 @@ export function createFormRenderer<
             h(
               'div',
               {
-                class: ['vben-form-grid', classes(group.wrapperClass ?? api.state.wrapperClass)],
+                class: ['vben-form-grid', classes(group.wrapperClass ?? formWrapperClass.value)],
                 style: collapsed.value ? { display: 'none' } : undefined,
               },
               group.children.map((field) =>
@@ -560,8 +572,17 @@ export function createFormRenderer<
             {
               ...resetOptions,
               htmlType: 'button',
-              onClick: () => {
-                void api.resetByButton().catch(runtime.report);
+              loading: resetting.value || (resetOptions.loading as ButtonProps['loading']),
+              onClick: async (event: MouseEvent) => {
+                if (resetting.value) return;
+                resetting.value = true;
+                try {
+                  await api.resetByButton(event);
+                } catch (error) {
+                  runtime.report(error);
+                } finally {
+                  resetting.value = false;
+                }
               },
             },
             () => contentText(resetOptions.content, state.locale?.reset ?? '重置') as VNodeChild,
@@ -615,9 +636,13 @@ export function createFormRenderer<
   let foldScheduled = false;
   function measure(): void {
     if (!host.value) return;
-    const labels = [...host.value.querySelectorAll<HTMLElement>('.vben-form-label')].filter(
-      (label) => label.offsetParent !== null,
-    );
+    // Fixed-width and vertical labels need no Range/layout measurement at all.
+    const labels =
+      api.state.layout !== 'vertical' && host.value.querySelector('[data-auto-label]')
+        ? [...host.value.querySelectorAll<HTMLElement>('.vben-form-label')].filter(
+            (label) => label.offsetParent !== null,
+          )
+        : [];
     if (labels.length) {
       const width = Math.max(
         ...labels.map((label) => {
@@ -626,7 +651,9 @@ export function createFormRenderer<
           return range.getBoundingClientRect().width;
         }),
       );
-      host.value.style.setProperty('--vben-label-width', `${Math.ceil(width + 8)}px`);
+      const value = `${Math.ceil(width + 8)}px`;
+      if (host.value.style.getPropertyValue('--vben-label-width') !== value)
+        host.value.style.setProperty('--vben-label-width', value);
     }
     const root = host.value.querySelector<HTMLElement>('.vben-form-grid');
     if (!root) return;
@@ -639,9 +666,12 @@ export function createFormRenderer<
     });
     if (!api.state.showCollapseButton || !api.state.collapsed) return;
     const rows: number[] = [];
-    children.forEach((node) => {
-      if (node.offsetParent === null) return;
-      const top = node.offsetTop;
+    // Read all positions before changing classes; alternating reads/writes forces
+    // a layout for every field after the first collapsed row.
+    const positions = children.map((node) => (node.offsetParent === null ? null : node.offsetTop));
+    children.forEach((node, index) => {
+      const top = positions[index];
+      if (top === null || top === undefined) return;
       if (!rows.includes(top)) rows.push(top);
       if (rows.indexOf(top) >= (api.state.collapsedRows ?? 1))
         node.classList.add('vben-query-folded');
@@ -668,7 +698,22 @@ export function createFormRenderer<
     observer?.disconnect();
     api.unmount();
   });
-  watch(() => [api.state, runtime.layoutVersion.value], scheduleMeasure);
+  watch(
+    [
+      () => runtime.layoutVersion.value,
+      () => api.state.layout,
+      () => api.state.wrapperClass,
+      () => api.state.compact,
+      () => api.state.collapsed,
+      () => api.state.collapsedRows,
+      () => api.state.showCollapseButton,
+      () => api.state.locale,
+      () => api.state.actionLayout,
+      () => api.state.actionWrapperClass,
+      () => api.state.showDefaultActions,
+    ],
+    scheduleMeasure,
+  );
   return () => {
     void runtime.layoutVersion.value;
     return h(
@@ -692,7 +737,7 @@ export function createFormRenderer<
             return;
           }
           event.preventDefault();
-          void api.validateAndSubmit().catch(runtime.report);
+          void api.submit(event).catch(runtime.report);
         },
       },
       [

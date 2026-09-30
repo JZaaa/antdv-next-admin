@@ -16,6 +16,7 @@ const PLACEHOLDER = '%APP_STORAGE_NAMESPACE%';
 export function storageNamespacePlugin(): Plugin {
   let namespace = '';
   let fallbackHtml = '';
+  let baseUrl = '/';
   /**
    * 将源码配置写入 HTML，占位符在浏览器首次绘制前完成替换。
    * @param html 包含配置占位符的原始 HTML。
@@ -31,6 +32,7 @@ export function storageNamespacePlugin(): Plugin {
         .replaceAll('>', '&gt;');
     }
     return html
+      .replaceAll('%APP_BASE_URL%', escapeAttribute(baseUrl))
       .replaceAll('%APP_LOGO_VISIBLE%', String(appDefaultSettings.features.logo))
       .replaceAll(PLACEHOLDER, escapeAttribute(namespace))
       .replaceAll(
@@ -46,7 +48,13 @@ export function storageNamespacePlugin(): Plugin {
   }
   return {
     name: 'app-storage-namespace',
+    /**
+     * 读取部署前缀、缓存命名空间和回退页模板。
+     * @param config Vite 已解析的构建或开发配置。
+     * @returns 无返回值。
+     */
     configResolved(config) {
+      baseUrl = config.base;
       namespace = createStorageNamespace({
         project: config.env.VITE_APP_NAMESPACE || pkg.name,
         mode: config.mode,
@@ -56,9 +64,21 @@ export function storageNamespacePlugin(): Plugin {
       fallbackHtml = readFileSync(resolve(config.publicDir, '404.html'), 'utf8');
     },
     transformIndexHtml: { order: 'pre', handler: transform },
+    /**
+     * 为开发环境中带部署前缀的回退页注入配置。
+     * @param server 当前 Vite 开发服务器。
+     * @returns 无返回值。
+     */
     configureServer(server) {
+      /**
+       * 处理回退页请求，其他路径交给后续中间件。
+       * @param request 当前 HTTP 请求。
+       * @param response 当前 HTTP 响应。
+       * @param next 后续中间件入口。
+       * @returns 无返回值。
+       */
       server.middlewares.use((request, response, next) => {
-        if (request.url?.split('?')[0] !== '/404.html') return next();
+        if (request.url?.split('?')[0] !== `${baseUrl}404.html`) return next();
         response.setHeader('Content-Type', 'text/html; charset=utf-8');
         response.end(transform(fallbackHtml));
       });

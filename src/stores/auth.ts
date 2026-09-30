@@ -183,11 +183,15 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   /**
-   * 检查共享凭据是否被替换或清除，不将其他账号凭据注入当前页面。
-   * @returns 会话未变更时为 true；变更提示保持至重新加载或显式重新登录。
+   * 检查共享凭据的新增、替换或清除；独立标签页会话不受影响，不直接注入其他账号凭据。
+   * @returns 会话未变更时为 true；登录页可重新加载验证新会话，业务页保留变更提示。
    */
   function checkSession(): boolean {
-    if (remembered.value && token.value && appLocalStorage.getItem(TOKEN_KEY) !== token.value) {
+    const sharedToken = appLocalStorage.getItem(TOKEN_KEY);
+    if (
+      (remembered.value && token.value && sharedToken !== token.value) ||
+      (!token.value && sharedToken)
+    ) {
       sessionChanged.value = true;
     }
     return !sessionChanged.value;

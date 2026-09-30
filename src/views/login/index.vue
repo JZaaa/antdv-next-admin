@@ -12,7 +12,12 @@
 
       <div class="pane-left-content">
         <div class="logo-mark">
-          <img v-if="settingsStore.features.logo" src="/logo.png" alt="Logo" class="logo-glyph" />
+          <img
+            v-if="settingsStore.features.logo"
+            :src="APP_LOGO_URL"
+            alt="Logo"
+            class="logo-glyph"
+          />
           <span>{{ APP_TITLE }}</span>
         </div>
 
@@ -56,7 +61,12 @@
     <section class="pane-right" aria-labelledby="login-form-title">
       <div class="mobile-brand">
         <div class="logo-mark">
-          <img v-if="settingsStore.features.logo" src="/logo.png" alt="Logo" class="logo-glyph" />
+          <img
+            v-if="settingsStore.features.logo"
+            :src="APP_LOGO_URL"
+            alt="Logo"
+            class="logo-glyph"
+          />
           <span>{{ APP_TITLE }}</span>
         </div>
         <p>{{ $t('login.gridSubtitle') }}</p>
@@ -205,8 +215,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { SliderCaptcha } from '@/components/Captcha';
 import LanguageSwitch from '@/components/Layout/LanguageSwitch.vue';
 import ThemeToggle from '@/components/Layout/ThemeToggle.vue';
-import { APP_TITLE } from '@/constants/app';
+import { APP_LOGO_URL, APP_TITLE } from '@/constants/app';
 import { $t } from '@/locales';
+import { getLoginRedirect } from '@/router/utils';
 import { appDefaultSettings } from '@/settings';
 import { useAuthStore } from '@/stores/auth';
 import { useSettingsStore } from '@/stores/settings';
@@ -262,17 +273,15 @@ const selectDemoAccount = (username: string) => {
   formState.password = '123456';
 };
 
+/**
+ * 登录成功后使用与会话恢复共用的站内目标规则，导航失败时保留重试入口。
+ * @returns 导航处理完成，无返回值。
+ */
 async function enterWorkspace(): Promise<void> {
   navigationFailed.value = false;
   await nextTick();
   try {
-    const redirect = route.query.redirect;
-    const target =
-      typeof redirect === 'string' &&
-      /^\/(?![\\/])/.test(redirect) &&
-      router.resolve(redirect).name !== 'Login'
-        ? redirect
-        : '/';
+    const target = getLoginRedirect(router, route.query.redirect);
     const failure = await router.replace(target);
     if (failure) {
       throw failure;

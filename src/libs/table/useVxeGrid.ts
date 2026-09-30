@@ -14,7 +14,6 @@ import {
   defineComponent,
   h,
   nextTick,
-  onActivated,
   onBeforeUnmount,
   onMounted,
   shallowRef,
@@ -44,6 +43,7 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
       if (api.grid) throw new Error('One VxeGrid API can only mount one grid at a time');
       let alive = true;
       const grid = shallowRef<VxeGridInstance<T>>();
+      const host = shallowRef<HTMLElement>();
       const media =
         typeof window === 'undefined' ? undefined : window.matchMedia('(max-width: 767px)');
       const mobile = shallowRef(media?.matches ?? false);
@@ -58,7 +58,7 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
         for (const [key, value] of Object.entries(attrs)) {
           if (value != null)
             Object.assign(result, {
-              [key.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase())]: value,
+              [key.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase())]: value,
             });
         }
         return result;
@@ -68,6 +68,48 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
           state.value.gridOptions ?? {},
           (VxeUI.getConfig().grid ?? {}) as VxeTableGridOptions<T>,
         ),
+      );
+      const coalesceResize = computed(
+        () => (state.value.resizeDelayMs ?? 0) > 0 && base.value.autoResize !== false,
+      );
+      watch(
+        [
+          host,
+          () => grid.value?.getRefMaps().refTable.value?.getRefMaps().refElem.value,
+          coalesceResize,
+        ],
+        ([element, tableElement, enabled], _previousValue, cleanup) => {
+          if (!element || !enabled) return;
+          const sizes = new WeakMap<Element, { width: number; height: number }>();
+          let timer: ReturnType<typeof setTimeout> | undefined;
+          const observer = new ResizeObserver((entries) => {
+            let changed = false;
+            for (const entry of entries) {
+              const { width, height } = entry.contentRect;
+              if (!width || !height) continue;
+              const previous = sizes.get(entry.target);
+              if (previous && (previous.width !== width || previous.height !== height))
+                changed = true;
+              sizes.set(entry.target, { width, height });
+            }
+            // VXE owns initial layout and KeepAlive activation. Only real size changes
+            // need another recalculation, once a sidebar/viewport resize settles.
+            if (!changed) return;
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+              if (alive) void grid.value?.recalculate(true);
+            }, state.value.resizeDelayMs);
+          });
+          observer.observe(element);
+          // Match VXE's native observation range. Internal left/right slots can
+          // resize the table without changing the outer grid container.
+          if (tableElement) observer.observe(tableElement);
+          cleanup(() => {
+            observer.disconnect();
+            clearTimeout(timer);
+          });
+        },
+        { flush: 'post' },
       );
       const viewed = shallowRef(api.viewed);
       watch(
@@ -134,6 +176,25 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
           () => alive,
         ),
       );
+      const delayedLoading = shallowRef(false);
+      let loadingTimer: ReturnType<typeof setTimeout> | undefined;
+      const loadingDelay = computed(() => Math.max(0, state.value.loadingDelayMs ?? 0));
+      const delayProxyLoading = computed(
+        () => loadingDelay.value > 0 && wrappedProxy.value?.showLoading !== false,
+      );
+      watch(
+        () => delayProxyLoading.value && !!grid.value?.reactData.tableLoading,
+        (loading) => {
+          clearTimeout(loadingTimer);
+          if (!loading) delayedLoading.value = false;
+          else
+            loadingTimer = setTimeout(() => {
+              if (alive) delayedLoading.value = true;
+            }, loadingDelay.value);
+        },
+        // Cancel before the next render even when a local request resolves in a microtask.
+        { flush: 'sync' },
+      );
       const sourceColumns = computed(() => base.value.columns);
       const viewedCodes = computed(() => {
         const config = state.value.viewedRowOptions;
@@ -170,8 +231,11 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
       const resolved = computed<VxeGridProps<T>>(() => {
         const value: VxeTableGridOptions<T> = {
           ...base.value,
+          ...(coalesceResize.value ? { autoResize: false } : {}),
           columns: columns.value,
-          proxyConfig: wrappedProxy.value,
+          proxyConfig: delayProxyLoading.value
+            ? { ...wrappedProxy.value, showLoading: false }
+            : wrappedProxy.value,
           formConfig: { enabled: false },
         };
         if (state.value.tableData !== undefined) value.data = state.value.tableData;
@@ -276,9 +340,8 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
           if (alive) await grid.value?.recalculate();
         },
       );
-      onActivated(() => {
-        void grid.value?.recalculate();
-      });
+      // VXE already recalculates and restores scroll on activation. A second call
+      // here repeats synchronous measurements of the same cached table.
       onMounted(async () => {
         api.grid = grid.value;
         try {
@@ -296,6 +359,7 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
       });
       onBeforeUnmount(() => {
         alive = false;
+        clearTimeout(loadingTimer);
         media?.removeEventListener('change', updateMobile);
         api.unmount();
       });
@@ -366,10 +430,18 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
           if (event.code === 'search') api.toggleSearchForm();
           current.gridEvents?.toolbarToolClick?.(event);
         };
-        return h('div', { class: ['schema-grid', current.class] }, [
+        return h('div', { ref: host, class: ['schema-grid', current.class] }, [
           h(
             VxeGrid as Component,
-            { ...resolved.value, ...listeners, class: current.gridClass, ref: grid },
+            {
+              ...resolved.value,
+              ...listeners,
+              // Loading is presentation state. Keep pager/proxy/toolbar option
+              // identities stable when only the delayed indicator changes.
+              loading: base.value.loading || delayedLoading.value,
+              class: current.gridClass,
+              ref: grid,
+            },
             nativeSlots,
           ),
         ]);

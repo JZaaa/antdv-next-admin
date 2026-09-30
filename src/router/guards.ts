@@ -20,7 +20,7 @@ import { normalizeMenuHistoryItems } from '@/utils/menuPreferences';
 
 import { shouldRecoverDynamicRoute } from './routeRecovery';
 import { basicRoutes, notFoundRoute, staticRoutes } from './routes';
-import { getRouteNamesToRemove } from './utils';
+import { getLoginRedirect, getRouteNamesToRemove } from './utils';
 
 const MENU_HISTORY_KEY = 'app-menu-history';
 const MAX_HISTORY_ITEMS = 10;
@@ -202,7 +202,7 @@ export function resetRouter(router: Router) {
 }
 
 /**
- * Setup router guards
+ * 安装认证与权限守卫，访问登录页时恢复已有会话并跳转到站内目标。
  * @param router 当前路由器。
  * @returns 无返回值。
  */
@@ -215,7 +215,11 @@ export function setupRouterGuards(router: Router) {
     }
   });
 
-  // Before each route navigation
+  /**
+   * 恢复登录会话、装配权限路由并维护页签；已有有效会话时跳过登录页。
+   * @param to 本次导航的目标路由。
+   * @returns 重定向位置或无返回值以继续导航。
+   */
   router.beforeEach(async (to) => {
     const authStore = useAuthStore();
     const permissionStore = usePermissionStore();
@@ -224,6 +228,17 @@ export function setupRouterGuards(router: Router) {
 
     // Set page title
     setDocumentTitle(to);
+
+    if (to.name === 'Login' && authStore.token) {
+      try {
+        await authStore.initAuth();
+        if (authStore.isLoggedIn && authStore.checkSession()) {
+          return { path: getLoginRedirect(router, to.query.redirect), replace: true };
+        }
+      } catch {
+        // 恢复失败时保留登录入口，请求层负责对应错误提示。
+      }
+    }
 
     // A dynamic route may initially match the catch-all on a fresh page load.
     // Restore permission routes first, then resolve the unchanged target again.

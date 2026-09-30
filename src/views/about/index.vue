@@ -17,7 +17,7 @@
       </div>
       <div class="hero-content">
         <div v-if="appDefaultSettings.features.logo" class="hero-icon">
-          <img src="/logo.png" alt="Logo" class="hero-logo" />
+          <img :src="APP_LOGO_URL" alt="Logo" class="hero-logo" />
         </div>
         <h1 class="hero-title">Antdv Next Admin</h1>
         <p class="hero-desc">{{ $t('about.description') }}</p>
@@ -187,6 +187,7 @@ import {
   CloudOutlined,
 } from '@antdv-next/icons';
 
+import { APP_LOGO_URL } from '@/constants/app';
 import { $t } from '@/locales';
 import { appDefaultSettings } from '@/settings';
 import { hexColorVariables } from '@/utils/color';

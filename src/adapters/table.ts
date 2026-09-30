@@ -64,7 +64,10 @@ export function useVxeGrid<
   >,
 ] {
   setupHost();
-  return useCoreGrid(options, createTableSearch<T, S>);
+  return useCoreGrid(
+    { loadingDelayMs: 120, resizeDelayMs: 100, ...options },
+    createTableSearch<T, S>,
+  );
 }
 export { setupVxeTable, VxeUI } from '@/libs/table';
 export type * from '@/libs/table';

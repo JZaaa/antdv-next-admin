@@ -37,6 +37,10 @@ export interface TableProps<T = TableRow, F = unknown> {
   gridOptions?: VxeTableGridOptions<T>;
   gridEvents?: VxeGridListeners<T>;
   formOptions?: F | false;
+  /** Delay the native proxy spinner for fast requests; 0 keeps immediate loading. */
+  loadingDelayMs?: number;
+  /** Merge container resize notifications; 0 keeps the native observer. */
+  resizeDelayMs?: number;
   showSearchForm?: boolean;
   separator?: boolean | { show?: boolean; backgroundColor?: string };
   viewedRowOptions?: boolean | ViewedRowOptions<T>;

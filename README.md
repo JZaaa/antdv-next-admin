@@ -7,6 +7,8 @@
 [![Vite](https://img.shields.io/badge/Vite-8-purple.svg)](https://vite.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+公共性能优化的实现、配置与验证边界见 [公共框架性能优化](docs/framework-performance-optimization.md)。
+
 ## 预览
 
 在线体验: [https://antdv-next-admin.yelog.org/dashboard](https://antdv-next-admin.yelog.org/dashboard)
@@ -112,36 +114,36 @@ tests/e2e/                # Playwright starter，依赖未安装
 
 ## 功能矩阵
 
-| 能力 | 说明 |
-| --- | --- |
-| 权限系统 | RBAC、动态路由、按钮权限、`v-permission` 指令、`usePermission()` 组合式函数、`PermissionButton` 组件 |
-| 路由系统 | 静态路由、基础登录路由、权限动态路由、404 动态路由恢复 |
-| 布局系统 | 垂直/水平布局、响应式侧边栏、面包屑、多标签页、右键菜单、全局搜索 |
-| 主题系统 | 亮色、暗色、跟随系统、6 种主题色、灰色模式、色弱模式、CSS Variables 驱动 |
-| 国际化 | 支持 `zh-CN`、`en-US`，非默认语言按需异步加载 |
-| Mock 数据 | 覆盖认证、用户、角色、权限、部门、字典、配置、文件、日志、Dashboard 等模块 |
-| 内容编辑 | TipTap 富文本、Milkdown Markdown、CodeMirror 代码编辑器 |
-| 示例体系 | ProTable、复杂表单、主从表、虚拟表格、JSON 输入、i18n 输入、高级筛选、导入导出、请求鉴权、RBAC、可观测性、测试示例等 |
-| 工程质量 | strict TypeScript、Vitest、oxlint、oxfmt、vue-tsc、生产构建检查 |
+| 能力      | 说明                                                                                                                 |
+| --------- | -------------------------------------------------------------------------------------------------------------------- |
+| 权限系统  | RBAC、动态路由、按钮权限、`v-permission` 指令、`usePermission()` 组合式函数、`PermissionButton` 组件                 |
+| 路由系统  | 静态路由、基础登录路由、权限动态路由、404 动态路由恢复                                                               |
+| 布局系统  | 垂直/水平布局、响应式侧边栏、面包屑、多标签页、右键菜单、全局搜索                                                    |
+| 主题系统  | 亮色、暗色、跟随系统、6 种主题色、灰色模式、色弱模式、CSS Variables 驱动                                             |
+| 国际化    | 支持 `zh-CN`、`en-US`，非默认语言按需异步加载                                                                        |
+| Mock 数据 | 覆盖认证、用户、角色、权限、部门、字典、配置、文件、日志、Dashboard 等模块                                           |
+| 内容编辑  | TipTap 富文本、Milkdown Markdown、CodeMirror 代码编辑器                                                              |
+| 示例体系  | ProTable、复杂表单、主从表、虚拟表格、JSON 输入、i18n 输入、高级筛选、导入导出、请求鉴权、RBAC、可观测性、测试示例等 |
+| 工程质量  | strict TypeScript、Vitest、oxlint、oxfmt、vue-tsc、生产构建检查                                                      |
 
 ## Pro 组件
 
 `src/components/Pro/` 提供以下配置化组件:
 
-| 组件 | 定位 |
-| --- | --- |
-| ProTable | 配置化表格，支持请求、搜索、分页、工具栏、列设置、表头过滤、列宽调整、权限动作 |
-| ProForm | 配置化表单，支持网格布局、校验、动态选项和自定义渲染 |
-| ProModal | 增强弹窗，支持拖拽、全屏和表单集成 |
-| ProDescriptions | 配置化描述列表 |
-| ProDetail | 详情页布局和 Tabs |
-| ProChart | ECharts 图表封装 |
-| ProStatCard | 统计卡片 |
-| ProStepForm | 分步表单 |
-| ProSplitLayout | 分栏布局 |
-| ProUpload | 上传组件封装 |
-| ProStatus | dot/tag/badge 状态展示 |
-| ProCodeEditor | CodeMirror 代码编辑器 |
+| 组件            | 定位                                                                           |
+| --------------- | ------------------------------------------------------------------------------ |
+| ProTable        | 配置化表格，支持请求、搜索、分页、工具栏、列设置、表头过滤、列宽调整、权限动作 |
+| ProForm         | 配置化表单，支持网格布局、校验、动态选项和自定义渲染                           |
+| ProModal        | 增强弹窗，支持拖拽、全屏和表单集成                                             |
+| ProDescriptions | 配置化描述列表                                                                 |
+| ProDetail       | 详情页布局和 Tabs                                                              |
+| ProChart        | ECharts 图表封装                                                               |
+| ProStatCard     | 统计卡片                                                                       |
+| ProStepForm     | 分步表单                                                                       |
+| ProSplitLayout  | 分栏布局                                                                       |
+| ProUpload       | 上传组件封装                                                                   |
+| ProStatus       | dot/tag/badge 状态展示                                                         |
+| ProCodeEditor   | CodeMirror 代码编辑器                                                          |
 
 ProTable 请求函数需要返回 `ProTableRequestResult`:
 
@@ -151,29 +153,27 @@ import type {
   ProFormItem,
   ProTableRequestParams,
   ProTableRequestResult,
-} from "@/types/pro";
+} from '@/types/pro';
 
 interface UserRecord {
   id: number;
   name: string;
-  status: "active" | "disabled";
+  status: 'active' | 'disabled';
   createdAt: string;
 }
 
 const columns: ProTableColumn<UserRecord>[] = [
-  { title: "姓名", dataIndex: "name", valueType: "text" },
-  { title: "状态", dataIndex: "status", valueType: "tag" },
-  { title: "创建时间", dataIndex: "createdAt", valueType: "date" },
+  { title: '姓名', dataIndex: 'name', valueType: 'text' },
+  { title: '状态', dataIndex: 'status', valueType: 'tag' },
+  { title: '创建时间', dataIndex: 'createdAt', valueType: 'date' },
 ];
 
 const searchFormItems: ProFormItem[] = [
-  { name: "keyword", label: "关键词", type: "input" },
-  { name: "status", label: "状态", type: "select", options: statusOptions },
+  { name: 'keyword', label: '关键词', type: 'input' },
+  { name: 'status', label: '状态', type: 'select', options: statusOptions },
 ];
 
-async function loadData(
-  params: ProTableRequestParams,
-): Promise<ProTableRequestResult<UserRecord>> {
+async function loadData(params: ProTableRequestParams): Promise<ProTableRequestResult<UserRecord>> {
   console.log(params);
   return { data: [], total: 0, success: true };
 }
@@ -202,15 +202,15 @@ async function loadData(
 ```ts
 const { can, canAll, hasRole } = usePermission();
 
-if (can("user.create")) {
+if (can('user.create')) {
   // 有创建权限
 }
 
-if (canAll(["user.edit", "user.approve"])) {
+if (canAll(['user.edit', 'user.approve'])) {
   // 同时拥有编辑和审批权限
 }
 
-if (hasRole("admin")) {
+if (hasRole('admin')) {
   // 管理员角色
 }
 ```
@@ -310,6 +310,16 @@ npm run test:unit:run   # one-shot
 当前单测覆盖路由权限过滤、ProTable 请求、搜索、表头过滤和关键词搜索等逻辑。
 
 `tests/e2e/*.spec.ts` 是 Playwright starter，当前项目未安装 Playwright 依赖；如需启用 E2E，需要先补齐依赖、脚本和运行环境。
+
+## 子路径部署
+
+框架默认部署在根路径 "/"。部署到子路径（例如 "/bs/"）时，将 Vite 的 `base` 配置为该路径，或通过 `pnpm run build --base=/bs/` 在流水线构建时指定。使用以 "/" 开头、以 "/" 结尾的绝对路径前缀，确保 History 路由与嵌套路由刷新正确定位应用。
+
+Logo 通过 `APP_LOGO_URL` 读取 `import.meta.env.BASE_URL`，入口 HTML 使用 `%BASE_URL%`；静态 `404.html` 的回跳地址由构建插件注入相同前缀。新增 public 资源引用时也应使用部署前缀，避免写死域名根路径。
+
+`VITE_API_BASE_URL` 单独控制接口地址，不控制页面、Logo 或路由前缀。按网关实际配置设置，例如页面使用 "/bs/"，接口可以使用 "/bs/api" 或独立的代理前缀。内置开发 Mock 仍使用 "/api"。
+
+服务器需将该前缀下的静态资源映射到构建产物，并将页面路由回退到该前缀的 `index.html`；API 代理应优先匹配。`404.html` 是静态托管的备用回跳页，不能替代 Nginx 的 History 路由配置。构建后修改容器环境变量不会改变已打包的页面前缀或接口地址。
 
 ## 开发约定
 

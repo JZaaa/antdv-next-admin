@@ -10,7 +10,7 @@
   >
     <!-- Logo -->
     <div class="sidebar-logo">
-      <img v-if="settingsStore.features.logo" src="/logo.png" alt="Logo" class="logo-img" />
+      <img v-if="settingsStore.features.logo" :src="APP_LOGO_URL" alt="Logo" class="logo-img" />
       <transition name="fade">
         <span v-show="!layoutStore.collapsed" class="logo-title">
           {{ APP_TITLE }}
@@ -39,7 +39,7 @@ import type { MenuProps } from 'antdv-next';
 import { ref, computed, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { APP_TITLE } from '@/constants/app';
+import { APP_LOGO_URL, APP_TITLE } from '@/constants/app';
 import { basicRoutes } from '@/router/routes';
 import { routesToMenuTree } from '@/router/utils';
 import { useLayoutStore } from '@/stores/layout';

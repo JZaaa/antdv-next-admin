@@ -18,6 +18,7 @@ import { Store } from '@tanstack/store';
 import { computed, isRef, shallowRef } from 'vue';
 
 import { FormCancelledError } from '../internal/errors';
+import { feedbackPaint } from '../internal/feedback-paint';
 import {
   childUpdateName,
   clone,
@@ -223,6 +224,9 @@ export class FormApi<
   private applyState = (next: SchemaFormProps<C, P, T, S>): void => {
     const previous = this.state;
     this.stateRef.value = next;
+    // Action, locale and layout options are consumed directly by the renderer.
+    // Rebuilding the field registry is only necessary when its inputs change.
+    if (previous.schema === next.schema && previous.commonConfig === next.commonConfig) return;
     const oldFields = fields(previous.schema ?? []);
     const newFields = fields(this.state.schema ?? []);
     if (newFields.length < oldFields.length) {
@@ -309,8 +313,18 @@ export class FormApi<
     await this.form.reset(state, options);
     await this.runtime.settle();
   };
-  resetByButton = async (): Promise<void> => {
+  resetByButton = async (event?: Event): Promise<void> => {
+    const generation = this.generation;
+    if (event) {
+      event.preventDefault();
+      await this.ready();
+      await feedbackPaint();
+      // Check before getValues(): an unmounted form would otherwise wait for
+      // its next mount and reset the newly opened record.
+      if (generation !== this.generation) throw new FormCancelledError();
+    }
     const values = await this.getValues();
+    if (generation !== this.generation) throw new FormCancelledError();
     if (this.state.handleReset) await this.state.handleReset(values);
     else await this.reset();
   };
@@ -334,6 +348,13 @@ export class FormApi<
     const task = (async () => {
       await this.ready();
       this.runtime.submitting.value = true;
+      // UI submissions should paint their busy state before validation and a
+      // synchronous consumer callback occupy the main thread. Programmatic and
+      // debounced submissions keep their existing scheduling.
+      if (event) {
+        await feedbackPaint();
+        if (generation !== this.generation) throw new FormCancelledError();
+      }
       if (!(await this.validate()).valid) return;
       if (generation !== this.generation) throw new FormCancelledError();
       const { rawValues, values } = await this.getValueSnapshot();

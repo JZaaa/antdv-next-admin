@@ -32,12 +32,12 @@ export function createTableSearch<T extends object = FormValues, S extends objec
       api.setState({ submitOnChange: false });
       try {
         await api.reset();
-        const values = await api.getValues();
-        api.setLatestSubmissionValues(values);
-        await reload(values);
       } finally {
         api.setState({ submitOnChange });
       }
+      const values = await api.getValues();
+      api.setLatestSubmissionValues(values);
+      await reload(values);
     },
   };
   const [Form, api] = useSchemaForm<T, string, Record<never, never>, S>({

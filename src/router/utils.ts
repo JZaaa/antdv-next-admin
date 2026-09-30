@@ -1,9 +1,23 @@
 import type { AppRouteRecordRaw, MenuItem, RouteConfig } from '@/types/router';
-import type { RouteRecordNameGeneric } from 'vue-router';
+import type { RouteRecordNameGeneric, Router } from 'vue-router';
 
 import { ALL_PERMISSION } from '@/constants/permissions';
 
 type RouteName = NonNullable<RouteRecordNameGeneric>;
+
+/**
+ * 为手动登录和已有会话恢复选择站内目标，拒绝外部地址和返回登录页的循环。
+ * @param router 用于识别登录路由的当前路由器。
+ * @param redirect 登录页查询参数中的原始目标，非单个站内路径时回到首页。
+ * @returns 保留查询参数和片段的站内路径，默认首页。
+ */
+export function getLoginRedirect(router: Router, redirect: unknown): string {
+  return typeof redirect === 'string' &&
+    /^\/(?![\\/])/.test(redirect) &&
+    router.resolve(redirect).name !== 'Login'
+    ? redirect
+    : '/';
+}
 
 function resolveRoutePath(path: string, basePath = ''): string {
   if (!path) {

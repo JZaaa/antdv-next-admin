@@ -465,8 +465,13 @@ export function createFormRuntime<T extends object, S extends object>(
       });
       if (arrayChanged) sync();
       else dependentRecords.forEach((record) => refresh(record));
-      if (!state.value.handleValuesChange && !state.value.submitOnChange) return;
       const current = engine.state.values;
+      // Keep the comparison baseline current while notifications are paused (e.g.
+      // a query reset). Typing the previous search again must still count as a change.
+      if (!state.value.handleValuesChange && !state.value.submitOnChange) {
+        notifyValues = current;
+        return;
+      }
       const changedFields = fields(state.value.schema ?? [])
         .map((field) => field.fieldName)
         .filter((name) => !equal(getValue(current, name), getValue(notifyValues, name)));
@@ -700,6 +705,7 @@ export function createFormRuntime<T extends object, S extends object>(
     report,
     settle,
     attach() {
+      if (attached) return;
       defaultsValues = initialValues(state.value.schema ?? []);
       engine.reset(clone(defaultsValues));
       attached = true;

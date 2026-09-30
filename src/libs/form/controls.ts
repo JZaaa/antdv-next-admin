@@ -2,21 +2,16 @@ import type { BuiltinControl } from './types';
 import type { Component } from 'vue';
 
 import {
-  AutoComplete,
   Button,
   Checkbox,
   CheckboxGroup,
   Input,
   InputNumber,
   InputPassword,
-  InputOTP,
   Divider,
-  Mentions,
   Radio,
   RadioGroup,
-  Rate,
   Select,
-  Slider,
   Switch,
   Space,
   TextArea,
@@ -36,8 +31,12 @@ const controls: Record<BuiltinControl, Component> = {
   Radio,
   RadioGroup,
   Switch,
-  Rate,
-  Slider,
+  Rate: defineAsyncComponent(() =>
+    import('antdv-next/dist/rate/index').then((module) => module.default),
+  ),
+  Slider: defineAsyncComponent(() =>
+    import('antdv-next/dist/slider/index').then((module) => module.default),
+  ),
   DatePicker: defineAsyncComponent(() =>
     import('antdv-next/dist/date-picker/index').then((module) => module.default),
   ),
@@ -58,13 +57,19 @@ const controls: Record<BuiltinControl, Component> = {
   ),
 };
 const aliases: Record<string, Component> = {
-  AutoComplete,
+  AutoComplete: defineAsyncComponent(() =>
+    import('antdv-next/dist/auto-complete/index').then((module) => module.default),
+  ),
   Divider,
-  Mentions,
+  Mentions: defineAsyncComponent(() =>
+    import('antdv-next/dist/mentions/index').then((module) => module.default),
+  ),
   Space,
   VbenInput: Input,
   VbenInputPassword: InputPassword,
-  VbenPinInput: InputOTP,
+  VbenPinInput: defineAsyncComponent(() =>
+    import('antdv-next/dist/input/index').then((module) => module.InputOTP),
+  ),
   VbenCheckbox: Checkbox,
   VbenSelect: Select,
   DefaultButton: Button,

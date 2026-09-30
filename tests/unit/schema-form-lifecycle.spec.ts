@@ -8,11 +8,117 @@ const cleanup: (() => void)[] = [];
 afterEach(() => {
   cleanup.splice(0).forEach((stop) => stop());
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 async function started(check: () => boolean): Promise<void> {
   await vi.waitFor(() => expect(check()).toBe(true), { interval: 1, timeout: 1000 });
 }
 describe('Vben async lifecycle and snapshots', () => {
+  it.each([false, true])(
+    'cancels a UI reset after unmount, including a fast remount (%s)',
+    async (remountBeforeFeedback) => {
+      vi.useFakeTimers();
+      vi.stubGlobal('document', { hidden: false });
+      vi.stubGlobal(
+        'requestAnimationFrame',
+        vi.fn(() => 1),
+      );
+      vi.stubGlobal('cancelAnimationFrame', vi.fn());
+      const handleReset = vi.fn();
+      const api = new FormApi({
+        schema: [{ fieldName: 'name', component: 'Input', defaultValue: 'default' }],
+        handleReset,
+      });
+      cleanup.push(api.dispose);
+      api.mount();
+      const pending = api.resetByButton(new Event('click')).catch((error: unknown) => error);
+      await Promise.resolve();
+      api.unmount();
+      if (remountBeforeFeedback) {
+        api.mount();
+        await api.setFieldValue('name', 'new record');
+      }
+      await vi.advanceTimersByTimeAsync(120);
+      expect(await pending).toBeInstanceOf(FormCancelledError);
+      if (!remountBeforeFeedback) {
+        api.mount();
+        await api.setFieldValue('name', 'new record');
+      }
+      expect(handleReset).not.toHaveBeenCalled();
+      expect(await api.getValues()).toEqual({ name: 'new record' });
+    },
+  );
+  it('preserves UI reset callbacks and programmatic reset scheduling', async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal('document', { hidden: false });
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn(() => 1),
+    );
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    const handleReset = vi.fn();
+    const api = new FormApi({
+      schema: [{ fieldName: 'name', component: 'Input', defaultValue: 'A' }],
+      handleReset,
+    });
+    cleanup.push(api.dispose);
+    api.mount();
+    const pending = api.resetByButton(new Event('click'));
+    await Promise.resolve();
+    expect(handleReset).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(120);
+    await pending;
+    expect(handleReset).toHaveBeenCalledExactlyOnceWith({ name: 'A' });
+    handleReset.mockClear();
+    await api.resetByButton();
+    expect(handleReset).toHaveBeenCalledExactlyOnceWith({ name: 'A' });
+  });
+  it('keeps UI submission single-flight while busy feedback is pending', async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal('document', { hidden: false });
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn(() => 1),
+    );
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    const submit = vi.fn();
+    const api = new FormApi({
+      schema: [{ fieldName: 'name', component: 'Input', defaultValue: 'A' }],
+      handleSubmit: submit,
+    });
+    cleanup.push(api.dispose);
+    api.mount();
+    const pending = api.submit(new Event('submit', { cancelable: true }));
+    expect(api.submit(new Event('submit'))).toBe(pending);
+    await Promise.resolve();
+    expect(api.form.meta.submitting).toBe(true);
+    expect(submit).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(120);
+    expect(await pending).toEqual({ name: 'A' });
+    expect(submit).toHaveBeenCalledTimes(1);
+    expect(api.form.meta.submitting).toBe(false);
+  });
+  it('does not start a stale UI submission after the form closes during feedback', async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal('document', { hidden: false });
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn(() => 1),
+    );
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    const submit = vi.fn();
+    const api = new FormApi({ handleSubmit: submit });
+    cleanup.push(api.dispose);
+    api.mount();
+    const pending = api.submit(new Event('submit')).catch((error: unknown) => error);
+    await Promise.resolve();
+    api.unmount();
+    await vi.advanceTimersByTimeAsync(120);
+    expect(await pending).toBeInstanceOf(FormCancelledError);
+    expect(submit).not.toHaveBeenCalled();
+    expect(api.form.meta.submitting).toBe(false);
+  });
   it('keeps manual errors across programmatic value writes and hidden rules', async () => {
     const api = new FormApi({
       schema: [{ fieldName: 'name', component: 'Input', rules: 'required' }],

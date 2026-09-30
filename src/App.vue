@@ -12,6 +12,7 @@
       <a-app>
         <router-view />
         <a-modal
+          v-if="authStore.sessionChanged"
           :open="authStore.sessionChanged"
           :title="t('login.sessionChangedTitle')"
           :closable="false"
@@ -38,8 +39,9 @@ import {
 } from 'antdv-next';
 import enUS from 'antdv-next/dist/locale/en_US';
 import zhCN from 'antdv-next/dist/locale/zh_CN';
-import { computed, h, onMounted, onUnmounted, watch, watchEffect } from 'vue';
+import { computed, h, onBeforeMount, onMounted, onUnmounted, watch, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 import { applyLocalePreference } from './locales';
 import { appDefaultSettings } from './settings';
@@ -52,6 +54,7 @@ import { useWatermarkStore } from './stores/watermark';
 
 const preferenceStore = usePreferencesStore();
 const authStore = useAuthStore();
+const route = useRoute();
 const themeStore = useThemeStore();
 const settingsStore = useSettingsStore();
 const watermarkStore = useWatermarkStore();
@@ -120,21 +123,38 @@ function reloadSession(): void {
   window.location.reload();
 }
 
-/** 初始化页面偏好并监听共享凭据变化及标签页重新激活。@returns 无返回值。 */
-onMounted(() => {
-  // Initialize theme and settings from localStorage
+/**
+ * 登录页发现共享会话变化时自动重新加载，由路由守卫恢复身份并跳转；业务页保留变更提示。
+ * @returns 无返回值；隐藏期间交由再次激活时处理。
+ */
+function checkSession(): void {
+  if (document.visibilityState === 'hidden') return;
+  if (!authStore.checkSession() && route.name === 'Login') {
+    reloadSession();
+  }
+}
+
+// Resolve system theme and CSS preferences before child controls mount. Applying
+// them afterwards invalidates freshly generated component styles and layout.
+onBeforeMount(() => {
   themeStore.initTheme();
   settingsStore.initSettings();
   watermarkStore.initWatermark();
-  window.addEventListener('focus', authStore.checkSession);
-  window.addEventListener('storage', authStore.checkSession);
-  authStore.checkSession();
+});
+
+/** 监听共享凭据变化及标签页重新激活。@returns 无返回值。 */
+onMounted(() => {
+  window.addEventListener('focus', checkSession);
+  window.addEventListener('storage', checkSession);
+  document.addEventListener('visibilitychange', checkSession);
+  checkSession();
 });
 
 /** 卸载时移除共享会话监听，避免重复订阅。@returns 无返回值。 */
 onUnmounted(() => {
-  window.removeEventListener('focus', authStore.checkSession);
-  window.removeEventListener('storage', authStore.checkSession);
+  window.removeEventListener('focus', checkSession);
+  window.removeEventListener('storage', checkSession);
+  document.removeEventListener('visibilitychange', checkSession);
 });
 </script>
 

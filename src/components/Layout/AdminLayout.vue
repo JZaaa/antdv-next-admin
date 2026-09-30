@@ -1,5 +1,5 @@
 <template>
-  <a-watermark v-bind="watermarkStore.watermarkProps" class="global-watermark">
+  <div class="admin-layout-shell">
     <a class="skip-to-content" href="#main-content">
       {{ $t('layout.skipToContent') }}
     </a>
@@ -56,7 +56,11 @@
                 <div class="page-scroll">
                   <slot v-if="$slots.default" />
                   <router-view v-else v-slot="{ Component }">
-                    <transition :name="settingsStore.pageAnimation" mode="out-in">
+                    <transition
+                      :css="false"
+                      @enter="pageTransition.enter"
+                      @enter-cancelled="pageTransition.cancel"
+                    >
                       <keep-alive :include="cachedTabs" :max="tabsStore.maxCachedTabs">
                         <component :is="Component" :key="pageViewKey" />
                       </keep-alive>
@@ -96,7 +100,7 @@
         <a-layout-header v-if="!layoutStore.pageFullscreen" class="horizontal-header">
           <div class="header-left">
             <div class="logo">
-              <img v-if="settingsStore.features.logo" src="/logo.png" alt="Logo" />
+              <img v-if="settingsStore.features.logo" :src="APP_LOGO_URL" alt="Logo" />
               <span class="logo-title">{{ APP_TITLE }}</span>
             </div>
 
@@ -164,7 +168,11 @@
                   <div class="page-scroll">
                     <slot v-if="$slots.default" />
                     <router-view v-else v-slot="{ Component }">
-                      <transition :name="settingsStore.pageAnimation" mode="out-in">
+                      <transition
+                        :css="false"
+                        @enter="pageTransition.enter"
+                        @enter-cancelled="pageTransition.cancel"
+                      >
                         <keep-alive :include="cachedTabs" :max="tabsStore.maxCachedTabs">
                           <component :is="Component" :key="pageViewKey" />
                         </keep-alive>
@@ -200,7 +208,12 @@
         </a-layout>
       </template>
     </a-layout>
-  </a-watermark>
+    <a-watermark
+      v-if="watermarkStore.enabled"
+      v-bind="watermarkStore.watermarkProps"
+      class="global-watermark"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -221,7 +234,8 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { APP_TITLE } from '@/constants/app';
+import { usePageTransition } from '@/composables/usePageTransition';
+import { APP_LOGO_URL, APP_TITLE } from '@/constants/app';
 import { basicRoutes } from '@/router/routes';
 import { routesToMenuTree } from '@/router/utils';
 import { useLayoutStore } from '@/stores/layout';
@@ -246,6 +260,7 @@ const route = useRoute();
 const router = useRouter();
 const layoutStore = useLayoutStore();
 const settingsStore = useSettingsStore();
+const pageTransition = usePageTransition(() => settingsStore.pageAnimation);
 const tabsStore = useTabsStore();
 const permissionStore = usePermissionStore();
 const watermarkStore = useWatermarkStore();
@@ -259,7 +274,6 @@ const MIN_AI_PANEL_WIDTH = 320;
 const MAX_AI_PANEL_WIDTH = 560;
 const MIN_MAIN_WORKSPACE_WIDTH = 420;
 let resizeObserver: ResizeObserver | null = null;
-let workspaceResizeObserver: ResizeObserver | null = null;
 let rafId = 0;
 
 const workspaceRef = ref<HTMLElement | null>(null);
@@ -427,6 +441,7 @@ const overflowMenuProps = computed(() => ({
 }));
 
 const updateWorkspaceWidth = () => {
+  if (!isAICollabActive.value) return;
   workspaceWidth.value = workspaceRef.value?.getBoundingClientRect().width || 0;
 };
 
@@ -531,6 +546,10 @@ const scheduleMenuLayout = () => {
   if (rafId) {
     cancelAnimationFrame(rafId);
   }
+  if (settingsStore.layoutMode !== 'horizontal') {
+    rafId = 0;
+    return;
+  }
 
   rafId = requestAnimationFrame(() => {
     rafId = 0;
@@ -553,14 +572,8 @@ onMounted(() => {
     resizeObserver = new ResizeObserver(() => {
       scheduleMenuLayout();
     });
-    workspaceResizeObserver = new ResizeObserver(() => {
-      updateWorkspaceWidth();
-      syncAiPanelWidth();
-    });
-
     if (menuAreaRef.value) resizeObserver.observe(menuAreaRef.value);
     if (measureMenuWrapRef.value) resizeObserver.observe(measureMenuWrapRef.value);
-    if (workspaceRef.value) workspaceResizeObserver.observe(workspaceRef.value);
   }
 });
 
@@ -574,9 +587,24 @@ onBeforeUnmount(() => {
   window.removeEventListener('mouseup', stopAiResize);
   resizeObserver?.disconnect();
   resizeObserver = null;
-  workspaceResizeObserver?.disconnect();
-  workspaceResizeObserver = null;
 });
+
+// Workspace measurements only serve the optional AI panel. ResizeObserver already
+// supplies the width, so an inactive panel must not force layout on every route.
+watch(
+  [workspaceRef, isAICollabActive],
+  ([element, active], _previous, cleanup) => {
+    if (!element || !active || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      workspaceWidth.value = entry.contentRect.width;
+      syncAiPanelWidth();
+    });
+    observer.observe(element);
+    cleanup(() => observer.disconnect());
+  },
+  { flush: 'post' },
+);
 
 watch(
   [horizontalMenuItems, dropdownOverflowMenuItems],
@@ -591,12 +619,9 @@ watch(
   () => {
     scheduleMenuLayout();
     nextTick(() => {
-      if (workspaceResizeObserver) {
-        workspaceResizeObserver.disconnect();
-        if (workspaceRef.value) {
-          workspaceResizeObserver.observe(workspaceRef.value);
-        }
-      }
+      resizeObserver?.disconnect();
+      if (menuAreaRef.value) resizeObserver?.observe(menuAreaRef.value);
+      if (measureMenuWrapRef.value) resizeObserver?.observe(measureMenuWrapRef.value);
       updateWorkspaceWidth();
       syncAiPanelWidth();
     });
@@ -974,11 +999,9 @@ watch(
 
 // Global watermark overlay - must cover fixed elements like Sidebar
 .global-watermark {
-  :deep(> div:last-child) {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 9999 !important;
-    pointer-events: none !important;
-  }
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
 }
 </style>
