@@ -12,7 +12,12 @@ export type TableRow = Record<string, unknown>;
 export type ClassType = string | Record<string, boolean> | ClassType[];
 export type TableLocale = 'zh-CN' | 'en-US';
 export interface VxeTableGridOptions<T = TableRow> extends VxeGridProps<T> {
-  toolbarConfig?: VxeGridPropTypes.ToolbarConfig & { search?: boolean };
+  toolbarConfig?: VxeGridPropTypes.ToolbarConfig & {
+    search?: boolean;
+    /** VXE 4.21+: callbacks and icons belong in refreshOptions / zoomOptions. */
+    refresh?: boolean;
+    zoom?: boolean;
+  };
 }
 export type VxeTableGridColumns<T = TableRow> = VxeTableGridOptions<T>['columns'];
 /** Form is injected by the host. The table never imports a form engine. */
@@ -39,7 +44,7 @@ export interface TableProps<T = TableRow, F = unknown> {
   formOptions?: F | false;
   /** Delay the native proxy spinner for fast requests; 0 keeps immediate loading. */
   loadingDelayMs?: number;
-  /** Merge container resize notifications; 0 keeps the native observer. */
+  /** Opt-in container debounce; omitted or 0 uses VXE native resize handling. */
   resizeDelayMs?: number;
   showSearchForm?: boolean;
   separator?: boolean | { show?: boolean; backgroundColor?: string };

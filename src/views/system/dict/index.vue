@@ -40,26 +40,21 @@
 
       <template #main>
         <!-- dict data list -->
-        <ProTable
-          v-if="selectedTypeCode"
-          :key="selectedTypeCode"
-          :columns="columns"
-          :request="loadData"
-          :search="false"
-          :toolbar="{
-            title: t('dict.dictDataTitle', { name: selectedTypeName }),
-          }"
+        <Grid
+          v-show="selectedTypeCode"
+          :grid-options="gridOptions"
+          :table-title="t('dict.dictDataTitle', { name: selectedTypeName })"
         >
-          <template #toolbar-actions>
+          <template #toolbar-tools>
             <a-button type="primary" @click="handleAdd">
               <PlusOutlined /> {{ t('dict.createData') }}
             </a-button>
           </template>
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'status'">
+          <template #bodyCell="{ column, row: record }">
+            <template v-if="column.field === 'status'">
               <ProStatus :value="record.status" :status-map="dictStatusMap" />
             </template>
-            <template v-if="column.key === 'action'">
+            <template v-if="column.field === 'action'">
               <a-space :size="4">
                 <a-button type="link" size="small" @click="handleEdit(record)">
                   <template #icon><EditOutlined /></template>
@@ -72,8 +67,8 @@
               </a-space>
             </template>
           </template>
-        </ProTable>
-        <div v-else class="dict-data-empty">
+        </Grid>
+        <div v-if="!selectedTypeCode" class="dict-data-empty">
           <a-empty :description="t('dict.selectTypeHint')" />
         </div>
       </template>
@@ -139,14 +134,16 @@
 </template>
 
 <script setup lang="ts">
+import type { VxeTableGridOptions } from '@/libs/table';
 import type { DictType, DictData } from '@/types/dict';
-import type { ProTableColumn, ProStatusMap } from '@/types/pro';
+import type { ProStatusMap } from '@/types/pro';
 
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@antdv-next/icons';
 import { message, Modal } from 'antdv-next';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { useVxeGrid } from '@/adapters/table';
 import {
   getDictTypes,
   createDictType,
@@ -159,7 +156,6 @@ import {
 } from '@/api/dict';
 import ProSplitLayout from '@/components/Pro/ProSplitLayout/index.vue';
 import ProStatus from '@/components/Pro/ProStatus/index.vue';
-import ProTable from '@/components/Pro/ProTable/index.vue';
 import { useDictStore } from '@/stores/dict';
 
 const { t } = useI18n();
@@ -204,42 +200,20 @@ const dataForm = ref<Partial<DictData>>({
 });
 
 // table columns
-const columns: ProTableColumn[] = [
-  {
-    title: t('dict.dictLabel'),
-    dataIndex: 'label',
-    key: 'label',
-  },
-  {
-    title: t('dict.dictValue'),
-    dataIndex: 'value',
-    key: 'value',
-  },
-  {
-    title: t('dict.sort'),
-    dataIndex: 'sort',
-    key: 'sort',
-    width: 80,
-  },
-  {
-    title: t('common.status'),
-    dataIndex: 'status',
-    key: 'status',
-    width: 80,
-  },
-  {
-    title: t('dict.remark'),
-    dataIndex: 'remark',
-    key: 'remark',
-  },
+const columns = computed<NonNullable<VxeTableGridOptions<DictData>['columns']>>(() => [
+  { title: t('dict.dictLabel'), field: 'label', minWidth: 150 },
+  { title: t('dict.dictValue'), field: 'value', minWidth: 150 },
+  { title: t('dict.sort'), field: 'sort', width: 80 },
+  { title: t('common.status'), field: 'status', width: 80, slots: { default: 'bodyCell' } },
+  { title: t('dict.remark'), field: 'remark', minWidth: 150 },
   {
     title: t('common.actions'),
-    dataIndex: 'action',
-    key: 'action',
+    field: 'action',
     width: 150,
     fixed: 'right',
+    slots: { default: 'bodyCell' },
   },
-];
+]);
 
 // load dict type list
 const loadDictTypes = async () => {
@@ -258,27 +232,22 @@ const loadDictTypes = async () => {
 
 // load dict data list
 const loadData = async (params: Record<string, unknown>) => {
-  try {
+  let current = Number(params.current || 1);
+  // 左侧切换可能发生在请求中；只把最新分组的数据交给表格。
+  while (true) {
+    const key = selectedTypeCode.value;
+    if (!key) return { data: [], total: 0, success: true };
     const response = await getDictDataList({
-      typeCode: selectedTypeCode.value,
-      page: params.current as number,
-      pageSize: params.pageSize as number,
+      typeCode: key,
+      page: current,
+      pageSize: Number(params.pageSize || 10),
     });
-    if (response.code === 200) {
-      return {
-        data: response.data.list,
-        total: response.data.total,
-        success: true,
-      };
+    if (key !== selectedTypeCode.value) {
+      current = 1;
+      continue;
     }
-  } catch (error: unknown) {
-    console.error(t('dict.loadDataFailed'), (error as Error).message);
+    return { data: response.data.list, total: response.data.total, success: true };
   }
-  return {
-    data: [],
-    total: 0,
-    success: false,
-  };
 };
 
 // select dict type
@@ -383,6 +352,7 @@ const handleDelete = (record: DictData) => {
         if (response.code === 200) {
           message.success(t('dict.deleteSuccess'));
           dictStore.refreshDictData();
+          void gridApi.query();
         }
       } catch (_error: unknown) {
         message.error(t('dict.deleteFailed'));
@@ -405,6 +375,7 @@ const handleDataSubmit = async () => {
         message.success(t('dict.updateSuccess'));
         dataModalVisible.value = false;
         dictStore.refreshDictData();
+        void gridApi.query();
       }
     } else {
       const response = await createDictData(dataForm.value);
@@ -412,6 +383,7 @@ const handleDataSubmit = async () => {
         message.success(t('dict.createSuccess'));
         dataModalVisible.value = false;
         dictStore.refreshDictData();
+        void gridApi.query();
       }
     }
   } catch (_error: unknown) {
@@ -421,6 +393,32 @@ const handleDataSubmit = async () => {
 
 // init
 loadDictTypes();
+const gridOptions = computed<VxeTableGridOptions<DictData>>(() => ({
+  id: 'system-dict',
+  height: 'auto',
+  rowConfig: { keyField: 'id' },
+  columns: [{ type: 'seq', width: 60 }, ...columns.value],
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  proxyConfig: {
+    autoLoad: false,
+    ajax: {
+      async query({ page }, search: Record<string, unknown>) {
+        const result = await loadData({
+          ...search,
+          current: page.currentPage,
+          pageSize: page.pageSize,
+        });
+        return { items: result.data, total: result.total };
+      },
+    },
+  },
+}));
+const [Grid, gridApi] = useVxeGrid<DictData>({ gridOptions: gridOptions.value });
+watch(selectedTypeCode, () => {
+  gridApi.setGridOptions({ pagerConfig: { currentPage: 1 } });
+  void gridApi.reload();
+});
 </script>
 
 <style scoped lang="scss">
@@ -544,8 +542,7 @@ loadDictTypes();
 }
 
 // dict data content
-:deep(.ant-table-thead > tr > th),
-:deep(.ant-table-thead > tr > td) {
+:deep(.vxe-header--row) {
   background: var(--color-fill-quaternary, #fafafa);
 }
 

@@ -3,29 +3,30 @@
     <div class="log-container">
       <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
         <a-tab-pane key="operation" :tab="t('log.operationLog')">
-          <ProTable
-            ref="operationTableRef"
-            :key="'operation-' + operationRefreshKey"
-            :columns="operationColumns"
-            :request="loadOperationLogs"
-            :toolbar="{ title: t('log.operationLog') }"
-            :search="{ formItems: operationSearchFormItems }"
+          <OperationGrid
+            :grid-options="operationGridOptions"
+            :form-options="{
+              schema: operationSearchFormItems,
+              collapsed: true,
+              commonConfig: { labelWidth: 80 },
+            }"
+            :table-title="t('log.operationLog')"
           >
-            <template #toolbar-actions>
+            <template #toolbar-tools>
               <a-button danger @click="handleClearOperationLog">
-                <DeleteOutlined /> {{ t("log.clearLog") }}
+                <DeleteOutlined /> {{ t('log.clearLog') }}
               </a-button>
             </template>
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'action'">
+            <template #bodyCell="{ column, row: record }">
+              <template v-if="column.field === 'action'">
                 <a-tag :color="actionColorMap[record.action] || 'default'">
                   {{ t(`log.actionTypes.${record.action}`) || record.action }}
                 </a-tag>
               </template>
-              <template v-if="column.key === 'status'">
+              <template v-if="column.field === 'status'">
                 <ProStatus :value="record.status" :status-map="logStatusMap" />
               </template>
-              <template v-if="column.key === 'duration'">
+              <template v-if="column.field === 'duration'">
                 <span
                   :style="{
                     color:
@@ -40,29 +41,30 @@
                 </span>
               </template>
             </template>
-          </ProTable>
+          </OperationGrid>
         </a-tab-pane>
 
         <a-tab-pane key="login" :tab="t('log.loginLog')">
-          <ProTable
-            ref="loginTableRef"
-            :key="'login-' + loginRefreshKey"
-            :columns="loginColumns"
-            :request="loadLoginLogs"
-            :toolbar="{ title: t('log.loginLog') }"
-            :search="{ formItems: loginSearchFormItems }"
+          <LoginGrid
+            :grid-options="loginGridOptions"
+            :form-options="{
+              schema: loginSearchFormItems,
+              collapsed: true,
+              commonConfig: { labelWidth: 80 },
+            }"
+            :table-title="t('log.loginLog')"
           >
-            <template #toolbar-actions>
+            <template #toolbar-tools>
               <a-button danger @click="handleClearLoginLog">
-                <DeleteOutlined /> {{ t("log.clearLog") }}
+                <DeleteOutlined /> {{ t('log.clearLog') }}
               </a-button>
             </template>
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'status'">
+            <template #bodyCell="{ column, row: record }">
+              <template v-if="column.field === 'status'">
                 <ProStatus :value="record.status" :status-map="logStatusMap" />
               </template>
             </template>
-          </ProTable>
+          </LoginGrid>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -70,202 +72,158 @@
 </template>
 
 <script setup lang="ts">
-import type { ProFormItem, ProTableColumn, ProStatusMap } from "@/types/pro";
+import type { FormSchema } from '@/libs/form';
+import type { VxeTableGridOptions } from '@/libs/table';
+import type { OperationLog, LoginLog } from '@/types/log';
+import type { ProStatusMap } from '@/types/pro';
 
-import { DeleteOutlined } from "@antdv-next/icons";
-import { message, Modal } from "antdv-next";
-import { ref, computed } from "vue";
-import { useI18n } from "vue-i18n";
+import { DeleteOutlined } from '@antdv-next/icons';
+import { message, Modal } from 'antdv-next';
+import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import {
-  getOperationLogList,
-  getLoginLogList,
-  clearOperationLog,
-  clearLoginLog,
-} from "@/api/log";
-import ProStatus from "@/components/Pro/ProStatus/index.vue";
-import ProTable from "@/components/Pro/ProTable/index.vue";
+import { useVxeGrid } from '@/adapters/table';
+import { getOperationLogList, getLoginLogList, clearOperationLog, clearLoginLog } from '@/api/log';
+import ProStatus from '@/components/Pro/ProStatus/index.vue';
 
 const { t } = useI18n();
 
 const logStatusMap = computed<ProStatusMap>(() => ({
-  success: { text: t("log.success"), color: "#52c41a" },
-  fail: { text: t("log.fail"), color: "#ff4d4f" },
+  success: { text: t('log.success'), color: '#52c41a' },
+  fail: { text: t('log.fail'), color: '#ff4d4f' },
 }));
 
-const activeTab = ref("operation");
-const operationRefreshKey = ref(0);
-const loginRefreshKey = ref(0);
+const activeTab = ref('operation');
 
 const actionColorMap: Record<string, string> = {
-  login: "blue",
-  logout: "default",
-  create: "green",
-  update: "orange",
-  delete: "red",
-  export: "purple",
-  import: "cyan",
-  other: "default",
+  login: 'blue',
+  logout: 'default',
+  create: 'green',
+  update: 'orange',
+  delete: 'red',
+  export: 'purple',
+  import: 'cyan',
+  other: 'default',
 };
 
 // operation log search form items
-const operationSearchFormItems = computed<ProFormItem[]>(() => [
-  { name: "username", label: t("log.operationUser"), type: "input" },
+const operationSearchFormItems = computed<FormSchema[]>(() => [
   {
-    name: "module",
-    label: t("log.operationModule"),
-    type: "select",
-    options: [
-      { label: t("log.modules.userManagement"), value: "userManagement" },
-      { label: t("log.modules.roleManagement"), value: "roleManagement" },
-      { label: t("log.modules.menuManagement"), value: "menuManagement" },
-      { label: t("log.modules.dictionary"), value: "dictionary" },
-      { label: t("log.modules.systemLogin"), value: "systemLogin" },
-      { label: t("log.modules.profile"), value: "profile" },
-      { label: t("log.modules.dashboard"), value: "dashboard" },
-    ],
+    fieldName: 'username',
+    label: t('log.operationUser'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: t('proForm.enterPlaceholder', { label: t('log.operationUser') }),
+    },
   },
   {
-    name: "action",
-    label: t("log.operationType"),
-    type: "select",
-    options: [
-      { label: t("log.actionTypes.login"), value: "login" },
-      { label: t("log.actionTypes.logout"), value: "logout" },
-      { label: t("log.actionTypes.create"), value: "create" },
-      { label: t("log.actionTypes.update"), value: "update" },
-      { label: t("log.actionTypes.delete"), value: "delete" },
-      { label: t("log.actionTypes.export"), value: "export" },
-    ],
+    fieldName: 'module',
+    label: t('log.operationModule'),
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      placeholder: t('proForm.selectPlaceholder', { label: t('log.operationModule') }),
+      options: [
+        { label: t('log.modules.userManagement'), value: 'userManagement' },
+        { label: t('log.modules.roleManagement'), value: 'roleManagement' },
+        { label: t('log.modules.menuManagement'), value: 'menuManagement' },
+        { label: t('log.modules.dictionary'), value: 'dictionary' },
+        { label: t('log.modules.systemLogin'), value: 'systemLogin' },
+        { label: t('log.modules.profile'), value: 'profile' },
+        { label: t('log.modules.dashboard'), value: 'dashboard' },
+      ],
+    },
   },
   {
-    name: "status",
-    label: t("common.status"),
-    type: "select",
-    options: [
-      { label: t("log.success"), value: "success" },
-      { label: t("log.fail"), value: "fail" },
-    ],
+    fieldName: 'action',
+    label: t('log.operationType'),
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      placeholder: t('proForm.selectPlaceholder', { label: t('log.operationType') }),
+      options: [
+        { label: t('log.actionTypes.login'), value: 'login' },
+        { label: t('log.actionTypes.logout'), value: 'logout' },
+        { label: t('log.actionTypes.create'), value: 'create' },
+        { label: t('log.actionTypes.update'), value: 'update' },
+        { label: t('log.actionTypes.delete'), value: 'delete' },
+        { label: t('log.actionTypes.export'), value: 'export' },
+      ],
+    },
+  },
+  {
+    fieldName: 'status',
+    label: t('common.status'),
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      placeholder: t('proForm.selectPlaceholder', { label: t('common.status') }),
+      options: [
+        { label: t('log.success'), value: 'success' },
+        { label: t('log.fail'), value: 'fail' },
+      ],
+    },
   },
 ]);
 
 // operation log columns
-const operationColumns = computed<ProTableColumn[]>(() => [
-  {
-    title: t("log.operationUser"),
-    dataIndex: "username",
-    key: "username",
-    width: 100,
-  },
-  {
-    title: t("log.operationModule"),
-    dataIndex: "module",
-    key: "module",
-    width: 110,
-  },
-  {
-    title: t("log.operationType"),
-    dataIndex: "action",
-    key: "action",
-    width: 90,
-  },
-  {
-    title: t("log.operationDescription"),
-    dataIndex: "description",
-    key: "description",
-    ellipsis: true,
-  },
-  {
-    title: t("log.requestMethod"),
-    dataIndex: "method",
-    key: "method",
-    width: 90,
-  },
-  {
-    title: t("log.ipAddress"),
-    dataIndex: "ip",
-    key: "ip",
-    width: 130,
-  },
-  {
-    title: t("common.status"),
-    dataIndex: "status",
-    key: "status",
-    width: 80,
-  },
-  {
-    title: t("log.duration"),
-    dataIndex: "duration",
-    key: "duration",
-    width: 80,
-  },
-  {
-    title: t("log.operationTime"),
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 170,
-  },
+const operationColumns = computed<NonNullable<VxeTableGridOptions<OperationLog>['columns']>>(() => [
+  { title: t('log.operationUser'), field: 'username', minWidth: 100 },
+  { title: t('log.operationModule'), field: 'module', width: 110 },
+  { title: t('log.operationType'), field: 'action', width: 90, slots: { default: 'bodyCell' } },
+  { title: t('log.operationDescription'), field: 'description', minWidth: 150, showOverflow: true },
+  { title: t('log.requestMethod'), field: 'method', width: 90 },
+  { title: t('log.ipAddress'), field: 'ip', width: 130 },
+  { title: t('common.status'), field: 'status', width: 80, slots: { default: 'bodyCell' } },
+  { title: t('log.duration'), field: 'duration', width: 80, slots: { default: 'bodyCell' } },
+  { title: t('log.operationTime'), field: 'createTime', width: 170 },
 ]);
 
 // login log search form items
-const loginSearchFormItems = computed<ProFormItem[]>(() => [
-  { name: "username", label: t("log.username"), type: "input" },
-  { name: "ip", label: t("log.ipAddress"), type: "input" },
+const loginSearchFormItems = computed<FormSchema[]>(() => [
   {
-    name: "status",
-    label: t("common.status"),
-    type: "select",
-    options: [
-      { label: t("log.success"), value: "success" },
-      { label: t("log.fail"), value: "fail" },
-    ],
+    fieldName: 'username',
+    label: t('log.username'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: t('proForm.enterPlaceholder', { label: t('log.username') }),
+    },
+  },
+  {
+    fieldName: 'ip',
+    label: t('log.ipAddress'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: t('proForm.enterPlaceholder', { label: t('log.ipAddress') }),
+    },
+  },
+  {
+    fieldName: 'status',
+    label: t('common.status'),
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      placeholder: t('proForm.selectPlaceholder', { label: t('common.status') }),
+      options: [
+        { label: t('log.success'), value: 'success' },
+        { label: t('log.fail'), value: 'fail' },
+      ],
+    },
   },
 ]);
 
 // login log columns
-const loginColumns = computed<ProTableColumn[]>(() => [
-  {
-    title: t("log.username"),
-    dataIndex: "username",
-    key: "username",
-    width: 120,
-  },
-  {
-    title: t("log.ipAddress"),
-    dataIndex: "ip",
-    key: "ip",
-    width: 140,
-  },
-  {
-    title: t("log.browser"),
-    dataIndex: "browser",
-    key: "browser",
-    width: 130,
-  },
-  {
-    title: t("log.os"),
-    dataIndex: "os",
-    key: "os",
-    width: 130,
-  },
-  {
-    title: t("common.status"),
-    dataIndex: "status",
-    key: "status",
-    width: 80,
-  },
-  {
-    title: t("log.message"),
-    dataIndex: "message",
-    key: "message",
-    ellipsis: true,
-  },
-  {
-    title: t("log.loginTime"),
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 170,
-  },
+const loginColumns = computed<NonNullable<VxeTableGridOptions<LoginLog>['columns']>>(() => [
+  { title: t('log.username'), field: 'username', minWidth: 120 },
+  { title: t('log.ipAddress'), field: 'ip', width: 140 },
+  { title: t('log.browser'), field: 'browser', width: 130 },
+  { title: t('log.os'), field: 'os', width: 130 },
+  { title: t('common.status'), field: 'status', width: 80, slots: { default: 'bodyCell' } },
+  { title: t('log.message'), field: 'message', minWidth: 150, showOverflow: true },
+  { title: t('log.loginTime'), field: 'createTime', width: 170 },
 ]);
 
 const handleTabChange = () => {};
@@ -288,9 +246,10 @@ const loadOperationLogs = async (params: Record<string, unknown>) => {
       };
     }
   } catch (error: unknown) {
-    console.error(t("log.loadOperationLogFailed"), (error as Error).message);
+    console.error(t('log.loadOperationLogFailed'), (error as Error).message);
+    throw error;
   }
-  return { data: [], total: 0, success: false };
+  throw new Error(t('common.error'));
 };
 
 const loadLoginLogs = async (params: Record<string, unknown>) => {
@@ -310,25 +269,26 @@ const loadLoginLogs = async (params: Record<string, unknown>) => {
       };
     }
   } catch (error: unknown) {
-    console.error(t("log.loadLoginLogFailed"), (error as Error).message);
+    console.error(t('log.loadLoginLogFailed'), (error as Error).message);
+    throw error;
   }
   return { data: [], total: 0, success: false };
 };
 
 const handleClearOperationLog = () => {
   Modal.confirm({
-    title: t("log.confirmClear"),
-    content: t("log.confirmClearOperation"),
-    okType: "danger",
+    title: t('log.confirmClear'),
+    content: t('log.confirmClearOperation'),
+    okType: 'danger',
     onOk: async () => {
       try {
         const response = await clearOperationLog();
         if (response.code === 200) {
-          message.success(t("log.clearSuccess"));
-          operationRefreshKey.value++;
+          message.success(t('log.clearSuccess'));
+          void operationGridApi.reload();
         }
       } catch (_error: unknown) {
-        message.error(t("log.clearFailed"));
+        message.error(t('log.clearFailed'));
       }
     },
   });
@@ -336,22 +296,78 @@ const handleClearOperationLog = () => {
 
 const handleClearLoginLog = () => {
   Modal.confirm({
-    title: t("log.confirmClear"),
-    content: t("log.confirmClearLogin"),
-    okType: "danger",
+    title: t('log.confirmClear'),
+    content: t('log.confirmClearLogin'),
+    okType: 'danger',
     onOk: async () => {
       try {
         const response = await clearLoginLog();
         if (response.code === 200) {
-          message.success(t("log.clearSuccess"));
-          loginRefreshKey.value++;
+          message.success(t('log.clearSuccess'));
+          void loginGridApi.reload();
         }
       } catch (_error: unknown) {
-        message.error(t("log.clearFailed"));
+        message.error(t('log.clearFailed'));
       }
     },
   });
 };
+const operationGridOptions = computed<VxeTableGridOptions<OperationLog>>(() => ({
+  id: 'system-operation-log',
+  height: 'auto',
+  rowConfig: { keyField: 'id' },
+  columns: [{ type: 'seq', width: 60 }, ...operationColumns.value],
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  proxyConfig: {
+    ajax: {
+      async query({ page }, search: Record<string, unknown>) {
+        const result = await loadOperationLogs({
+          ...search,
+          current: page.currentPage,
+          pageSize: page.pageSize,
+        });
+        return { items: result.data, total: result.total };
+      },
+    },
+  },
+}));
+const [OperationGrid, operationGridApi] = useVxeGrid<OperationLog>({
+  gridOptions: operationGridOptions.value,
+  formOptions: {
+    schema: operationSearchFormItems.value,
+    collapsed: true,
+    commonConfig: { labelWidth: 80 },
+  },
+});
+const loginGridOptions = computed<VxeTableGridOptions<LoginLog>>(() => ({
+  id: 'system-login-log',
+  height: 'auto',
+  rowConfig: { keyField: 'id' },
+  columns: [{ type: 'seq', width: 60 }, ...loginColumns.value],
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  proxyConfig: {
+    ajax: {
+      async query({ page }, search: Record<string, unknown>) {
+        const result = await loadLoginLogs({
+          ...search,
+          current: page.currentPage,
+          pageSize: page.pageSize,
+        });
+        return { items: result.data, total: result.total };
+      },
+    },
+  },
+}));
+const [LoginGrid, loginGridApi] = useVxeGrid<LoginLog>({
+  gridOptions: loginGridOptions.value,
+  formOptions: {
+    schema: loginSearchFormItems.value,
+    collapsed: true,
+    commonConfig: { labelWidth: 80 },
+  },
+});
 </script>
 
 <style scoped lang="scss">
@@ -372,7 +388,7 @@ const handleClearLoginLog = () => {
     flex-direction: column;
   }
 
-  :deep(.ant-tabs-content-holder) {
+  :deep(.ant-tabs-body-holder) {
     flex: 1;
     min-height: 0;
   }
@@ -381,7 +397,7 @@ const handleClearLoginLog = () => {
     height: 100%;
   }
 
-  :deep(.ant-tabs-tabpane) {
+  :deep(.ant-tabs-body) {
     height: 100%;
   }
 
@@ -389,8 +405,7 @@ const handleClearLoginLog = () => {
     margin-bottom: 8px;
   }
 
-  :deep(.ant-table-thead > tr > th),
-  :deep(.ant-table-thead > tr > td) {
+  :deep(.vxe-header--row) {
     background: var(--color-fill-quaternary);
   }
 }

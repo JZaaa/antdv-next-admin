@@ -1,54 +1,55 @@
 <template>
   <div class="page-container">
-    <ProTable
-      ref="tableRef"
-      :columns="columns"
-      :request="fetchTableData"
-      :toolbar="toolbarConfig"
-      :search="{
-        formItems: searchFormItems,
-        labelWidth: 6,
-        defaultCollapsed: true,
-      }"
-      row-key="id"
+    <Grid
+      :grid-options="gridOptions"
+      :form-options="{ schema: searchFormItems, collapsed: true, commonConfig: { labelWidth: 80 } }"
+      :table-title="$t('role.title')"
     >
-      <template #toolbar-actions>
+      <template #toolbar-tools>
         <a-button type="primary" @click="handleCreate">
           <PlusOutlined /> {{ $t('role.createRole') }}
         </a-button>
       </template>
-    </ProTable>
+      <template #bodyCell="{ row }"
+        ><a-space :size="0"
+          ><a-button type="link" size="small" @click="handleEdit(row)"
+            ><EditOutlined />{{ $t('common.edit') }}</a-button
+          ><a-button type="link" size="small" danger @click="handleDelete(row)"
+            ><DeleteOutlined />{{ $t('common.delete') }}</a-button
+          ></a-space
+        ></template
+      ></Grid
+    >
 
-    <ProFormModal
+    <SchemaFormModal
       v-model:open="modalVisible"
       :title="editingRoleId ? $t('role.editRole') : $t('role.createRole')"
-      :confirm-loading="submitting"
-      :session-key="formSessionKey"
-      :form-items="formItems"
+      v-if="formSessionKey"
+      :key="formSessionKey"
+      :schema="formItems"
       :initial-values="formData"
-      :grid="{ cols: 2, gutter: 16 }"
-      :layout="{ layout: 'vertical' }"
       width="820px"
-      @submit="handleSubmit"
-      @cancel="handleCancel"
+      :save="handleSubmit"
       @closed="finishFormClose"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import type { FormFieldSchema, FormSchema } from '@/libs/form';
+import type { VxeTableGridOptions } from '@/libs/table';
 import type { Permission, Role } from '@/types/auth';
-import type { ProFormItem, ProTableColumn } from '@/types/pro';
 import type { TreeSelectProps } from 'antdv-next';
 
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@antdv-next/icons';
 import { message, Modal, Tag } from 'antdv-next';
 import { computed, h, onMounted, ref } from 'vue';
+import { z } from 'zod';
 
+import { useVxeGrid } from '@/adapters/table';
 import { getPermissionTree } from '@/api/permission';
 import { createRole, deleteRole, getRoleList, updateRole } from '@/api/role';
-import ProFormModal from '@/components/Pro/ProFormModal/index.vue';
-import ProTable from '@/components/Pro/ProTable/index.vue';
+import SchemaFormModal from '@/components/SchemaFormModal/index.vue';
 import { useCrudFormSession } from '@/composables/useCrudFormSession';
 import { $t, getLocale } from '@/locales';
 import { resolveLocalizedText } from '@/utils/localizedText';
@@ -63,15 +64,11 @@ type RoleFormValues = {
 };
 
 type PermissionOption = {
-  label: string;
+  title: string;
   value: string;
   children?: PermissionOption[];
 };
 
-const tableRef = ref<{
-  refresh: () => void;
-  reload: () => void;
-} | null>(null);
 const {
   open: modalVisible,
   record: editingRole,
@@ -82,22 +79,13 @@ const {
   close: closeFormModal,
   finishClose: finishFormClose,
 } = useCrudFormSession<Role, RoleFormValues>(createDefaultFormValues);
-const submitting = ref(false);
 const editingRoleId = computed(() => editingRole.value?.id ?? null);
 const permissionTree = ref<Permission[]>([]);
-
-const toolbarConfig = computed(() => ({
-  title: $t('role.title'),
-  subTitle: 'ProTable + ProForm',
-  actions: ['refresh', 'density', 'columnSetting'] as Array<
-    'refresh' | 'density' | 'columnSetting'
-  >,
-}));
 
 const permissionOptions = computed<PermissionOption[]>(() => {
   const buildOptions = (nodes: Permission[]): PermissionOption[] => {
     return nodes.map((node) => ({
-      label: `${resolveLocalizedText(node.name, getLocale())} (${node.code})`,
+      title: `${resolveLocalizedText(node.name, getLocale())} (${node.code})`,
       value: node.id,
       children: node.children && node.children.length > 0 ? buildOptions(node.children) : undefined,
     }));
@@ -155,95 +143,80 @@ const renderPermissionTreeTitle: NonNullable<TreeSelectProps['treeTitleRender']>
   );
 };
 
-const searchFormItems = computed<ProFormItem[]>(() => [
-  { name: 'name', label: $t('role.name'), type: 'input' },
-  { name: 'code', label: $t('role.code'), type: 'input' },
+const searchFormItems = computed<FormSchema[]>(() => [
+  {
+    fieldName: 'name',
+    label: $t('role.name'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.enterPlaceholder', { label: $t('role.name') }),
+    },
+  },
+  {
+    fieldName: 'code',
+    label: $t('role.code'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.enterPlaceholder', { label: $t('role.code') }),
+    },
+  },
 ]);
 
-const columns = computed<ProTableColumn[]>(() => [
-  {
-    title: $t('role.name'),
-    dataIndex: 'name',
-    width: 200,
-  },
-  {
-    title: $t('role.code'),
-    dataIndex: 'code',
-    width: 200,
-  },
-  {
-    title: $t('role.description'),
-    dataIndex: 'description',
-  },
-  {
-    title: $t('role.permissions'),
-    dataIndex: 'permissionCount',
-    width: 120,
-  },
-  {
-    title: $t('common.updateTime'),
-    dataIndex: 'updatedAt',
-    width: 200,
-    valueType: 'dateTime',
-  },
+const columns = computed<
+  NonNullable<VxeTableGridOptions<Role & { permissionCount: number }>['columns']>
+>(() => [
+  { title: $t('role.name'), field: 'name', minWidth: 200 },
+  { title: $t('role.code'), field: 'code', width: 200 },
+  { title: $t('role.description'), field: 'description', minWidth: 150 },
+  { title: $t('role.permissions'), field: 'permissionCount', width: 120 },
+  { title: $t('common.updateTime'), field: 'updatedAt', width: 200, formatter: 'formatDateTime' },
   {
     title: $t('common.actions'),
-    dataIndex: 'action',
+    field: 'action',
     width: 160,
     fixed: 'right',
-    actions: [
-      {
-        label: $t('common.edit'),
-        icon: EditOutlined,
-        onClick: (record) => handleEdit(record as unknown as Role),
-      },
-      {
-        label: $t('common.delete'),
-        icon: DeleteOutlined,
-        danger: true,
-        confirm: $t('role.confirmDelete'),
-        onClick: (record) => handleDelete(record as unknown as Role),
-      },
-    ],
+    slots: { default: 'bodyCell' },
   },
 ]);
 
-const formItems = computed<ProFormItem[]>(() => [
+const formItems = computed<FormFieldSchema[]>(() => [
   {
-    name: 'name',
+    fieldName: 'name',
     label: $t('role.name'),
-    type: 'input',
-    required: true,
+    component: 'Input',
+    rules: 'required',
+    componentProps: {},
   },
   {
-    name: 'code',
+    fieldName: 'code',
     label: $t('role.code'),
-    type: 'input',
-    required: true,
-    props: {
+    component: 'Input',
+    rules: z
+      .string()
+      .min(1, $t('role.codeRequired'))
+      .regex(/^[a-zA-Z0-9_.-]+$/, $t('role.codePattern')),
+    componentProps: {
       disabled: Boolean(editingRoleId.value),
     },
-    rules: [
-      { required: true, message: $t('role.codeRequired') },
-      { pattern: /^[a-zA-Z0-9_.-]+$/, message: $t('role.codePattern') },
-    ],
   },
   {
-    name: 'description',
+    fieldName: 'description',
     label: $t('role.description'),
-    type: 'textarea',
-    colSpan: 2,
-    props: {
+    component: 'Textarea',
+    formItemClass: 'col-span-full',
+    componentProps: {
       rows: 3,
     },
   },
   {
-    name: 'permissionIds',
+    fieldName: 'permissionIds',
     label: $t('role.permissions'),
-    type: 'treeSelect',
-    colSpan: 2,
-    options: permissionOptions.value,
-    props: {
+    component: 'TreeSelect',
+    formItemClass: 'col-span-full',
+    rules: z.array(z.string()).min(1, $t('role.selectPermissions')),
+    componentProps: {
       class: 'permission-role-tree-select',
       treeCheckable: true,
       allowClear: true,
@@ -251,8 +224,8 @@ const formItems = computed<ProFormItem[]>(() => [
       showCheckedStrategy: 'SHOW_PARENT',
       maxTagCount: 2,
       treeTitleRender: renderPermissionTreeTitle,
+      treeData: permissionOptions.value,
     },
-    rules: [{ type: 'array', required: true, message: $t('role.selectPermissions') }],
   },
 ]);
 
@@ -291,11 +264,11 @@ const fetchTableData = async (params: Record<string, unknown>) => {
 };
 
 const refreshTable = () => {
-  tableRef.value?.refresh();
+  void gridApi.query();
 };
 
 const reloadTable = () => {
-  tableRef.value?.reload();
+  void gridApi.reload();
 };
 
 const handleCreate = () => {
@@ -312,10 +285,6 @@ const handleEdit = (record: Role) => {
   openEditForm(record, initialValues);
 };
 
-const handleCancel = () => {
-  closeFormModal();
-};
-
 const handleDelete = async (record: Role) => {
   Modal.confirm({
     title: $t('role.deleteRole'),
@@ -330,6 +299,7 @@ const handleDelete = async (record: Role) => {
 
 const handleSubmit = async (rawValues: Record<string, unknown>) => {
   const values = rawValues as RoleFormValues;
+  const session = formSessionKey.value;
 
   const permissionIds: string[] = values.permissionIds || [];
 
@@ -344,25 +314,48 @@ const handleSubmit = async (rawValues: Record<string, unknown>) => {
     permissions: selectedPermissions,
   };
 
-  submitting.value = true;
-  try {
-    if (editingRoleId.value) {
-      await updateRole(editingRoleId.value, payload);
-      message.success($t('role.updateSuccess'));
-      refreshTable();
-    } else {
-      await createRole(payload);
-      message.success($t('role.createSuccess'));
-      reloadTable();
-    }
-    closeFormModal();
-  } finally {
-    submitting.value = false;
+  if (editingRoleId.value) {
+    await updateRole(editingRoleId.value, payload);
+    message.success($t('role.updateSuccess'));
+    refreshTable();
+  } else {
+    await createRole(payload);
+    message.success($t('role.createSuccess'));
+    reloadTable();
   }
+  if (session === formSessionKey.value) closeFormModal();
 };
 
 onMounted(async () => {
-  await fetchPermissionTreeData();
+  try {
+    await fetchPermissionTreeData();
+  } catch (error) {
+    console.error('Failed to load role permissions:', error);
+  }
+});
+const gridOptions = computed<VxeTableGridOptions<Role & { permissionCount: number }>>(() => ({
+  id: 'system-role',
+  height: 'auto',
+  rowConfig: { keyField: 'id' },
+  columns: [{ type: 'seq', width: 60 }, ...columns.value],
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  proxyConfig: {
+    ajax: {
+      async query({ page }, search: Record<string, unknown>) {
+        const result = await fetchTableData({
+          ...search,
+          current: page.currentPage,
+          pageSize: page.pageSize,
+        });
+        return { items: result.data, total: result.total };
+      },
+    },
+  },
+}));
+const [Grid, gridApi] = useVxeGrid<Role & { permissionCount: number }>({
+  gridOptions: gridOptions.value,
+  formOptions: { schema: searchFormItems.value, collapsed: true, commonConfig: { labelWidth: 80 } },
 });
 </script>
 

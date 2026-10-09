@@ -6,28 +6,20 @@
           {{ $t('examples.scaffold.proTableAdvanced.searchColumnsPerRow') }}
         </span>
         <a-segmented v-model:value="searchColumnsPerRow" :options="[2, 3, 4, 5]" />
-        <code>search.columnsPerRow = {{ searchColumnsPerRow }}</code>
+        <code>formOptions.wrapperClass = {{ searchOptions.wrapperClass }}</code>
       </a-space>
       <span class="search-layout-demo-hint">
         {{ $t('examples.scaffold.proTableAdvanced.searchColumnsPerRowHint') }}
       </span>
     </div>
 
-    <ProTable
-      :columns="columns"
-      :request="requestTableData"
-      :toolbar="toolbarConfig"
-      :search="{
-        formItems: searchFormItems,
-        labelWidth: 80,
-        defaultCollapsed: true,
-        collapsedRows: 1,
-        columnsPerRow: searchColumnsPerRow,
-      }"
-      :row-selection="rowSelection"
-      row-key="id"
+    <Grid
+      :grid-options="gridOptions"
+      :grid-events="gridEvents"
+      :form-options="searchOptions"
+      :table-title="$t('examples.scaffold.proTableAdvanced.title')"
     >
-      <template #toolbar-actions>
+      <template #toolbar-tools>
         <a-space wrap>
           <a-tag color="processing">{{
             $t('examples.scaffold.proTableAdvanced.selectedCount', {
@@ -52,8 +44,22 @@
         </a-space>
       </template>
 
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'status'">
+      <template #bodyCell="{ column, row: record }">
+        <template v-if="column.field === 'gender'"
+          ><a-tag :color="record.gender === 'male' ? 'blue' : 'pink'">{{
+            $t(record.gender === 'male' ? 'user.male' : 'user.female')
+          }}</a-tag></template
+        >
+        <template v-if="column.field === 'action'"
+          ><a-space :size="0"
+            ><a-button type="link" size="small" @click="handleEdit(record)"
+              ><EditOutlined />{{ $t('common.edit') }}</a-button
+            ><a-button type="link" size="small" danger @click="handleDelete(record)"
+              ><DeleteOutlined />{{ $t('common.delete') }}</a-button
+            ></a-space
+          ></template
+        >
+        <template v-if="column.field === 'status'">
           <a-switch
             :checked="record.status === 'active'"
             :loading="switchLoadingId === record.id"
@@ -63,38 +69,37 @@
           />
         </template>
       </template>
-    </ProTable>
+    </Grid>
 
-    <ProFormModal
+    <SchemaFormModal
       v-model:open="modalVisible"
       :title="
         editingId
           ? $t('examples.scaffold.proTableAdvanced.editUser')
           : $t('examples.scaffold.proTableAdvanced.createUser')
       "
-      :confirm-loading="submitting"
-      :session-key="formSessionKey"
-      :form-items="formItems"
+      v-if="formSessionKey"
+      :key="formSessionKey"
+      :schema="formItems"
       :initial-values="formData"
-      :grid="{ cols: 2, gutter: 16 }"
-      :layout="{ layout: 'vertical' }"
       width="640px"
-      @submit="handleSubmit"
-      @cancel="handleCancel"
+      :save="handleSubmit"
       @closed="finishFormClose"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ProFormItem, ProTableColumn } from '@/types/pro';
+import type { FormFieldSchema, FormSchema } from '@/libs/form';
+import type { VxeTableGridOptions } from '@/libs/table';
 
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@antdv-next/icons';
 import { message, Modal } from 'antdv-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { z } from 'zod';
 
-import ProFormModal from '@/components/Pro/ProFormModal/index.vue';
-import ProTable from '@/components/Pro/ProTable/index.vue';
+import { useVxeGrid } from '@/adapters/table';
+import SchemaFormModal from '@/components/SchemaFormModal/index.vue';
 import { useCrudFormSession } from '@/composables/useCrudFormSession';
 import { $t } from '@/locales';
 
@@ -153,169 +158,158 @@ const {
   close: closeFormModal,
   finishClose: finishFormClose,
 } = useCrudFormSession<DemoRow, DemoFormValues>(createDefaultFormValues);
-const submitting = ref(false);
 const searchColumnsPerRow = ref(3);
 const editingId = computed(() => editingRecord.value?.id ?? null);
 
-const toolbarConfig = computed(() => ({
-  title: $t('examples.scaffold.proTableAdvanced.title'),
-  subTitle: $t('examples.scaffold.proTableAdvanced.description'),
-  actions: ['refresh', 'density', 'columnSetting'] as Array<
-    'refresh' | 'density' | 'columnSetting'
-  >,
-}));
-
-const searchFormItems = computed<ProFormItem[]>(() => [
-  { name: 'username', label: $t('examples.scaffold.proTableAdvanced.username'), type: 'input' },
-  { name: 'realName', label: $t('examples.scaffold.proTableAdvanced.realName'), type: 'input' },
-  { name: 'email', label: $t('examples.scaffold.proTableAdvanced.email'), type: 'input' },
+const searchFormItems = computed<FormSchema[]>(() => [
   {
-    name: 'gender',
-    label: $t('examples.scaffold.proTableAdvanced.gender'),
-    type: 'select',
-    options: [
-      { label: $t('user.male'), value: 'male' },
-      { label: $t('user.female'), value: 'female' },
-    ],
+    fieldName: 'username',
+    label: $t('examples.scaffold.proTableAdvanced.username'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.enterPlaceholder', {
+        label: $t('examples.scaffold.proTableAdvanced.username'),
+      }),
+    },
   },
   {
-    name: 'status',
+    fieldName: 'realName',
+    label: $t('examples.scaffold.proTableAdvanced.realName'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.enterPlaceholder', {
+        label: $t('examples.scaffold.proTableAdvanced.realName'),
+      }),
+    },
+  },
+  {
+    fieldName: 'email',
+    label: $t('examples.scaffold.proTableAdvanced.email'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.enterPlaceholder', {
+        label: $t('examples.scaffold.proTableAdvanced.email'),
+      }),
+    },
+  },
+  {
+    fieldName: 'gender',
+    label: $t('examples.scaffold.proTableAdvanced.gender'),
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.selectPlaceholder', {
+        label: $t('examples.scaffold.proTableAdvanced.gender'),
+      }),
+      options: [
+        { label: $t('user.male'), value: 'male' },
+        { label: $t('user.female'), value: 'female' },
+      ],
+    },
+  },
+  {
+    fieldName: 'status',
     label: $t('examples.scaffold.proTableAdvanced.status'),
-    type: 'select',
-    options: [
-      {
-        label: $t('examples.scaffold.proTableAdvanced.statusActive'),
-        value: 'active',
-      },
-      {
-        label: $t('examples.scaffold.proTableAdvanced.statusInactive'),
-        value: 'inactive',
-      },
-    ],
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.selectPlaceholder', {
+        label: $t('examples.scaffold.proTableAdvanced.status'),
+      }),
+      options: [
+        {
+          label: $t('examples.scaffold.proTableAdvanced.statusActive'),
+          value: 'active',
+        },
+        {
+          label: $t('examples.scaffold.proTableAdvanced.statusInactive'),
+          value: 'inactive',
+        },
+      ],
+    },
   },
 ]);
 
-const formItems = computed<ProFormItem[]>(() => [
+const formItems = computed<FormFieldSchema[]>(() => [
   {
-    name: 'username',
+    fieldName: 'username',
     label: $t('examples.scaffold.proTableAdvanced.username'),
-    type: 'input',
-    required: true,
-    props: {
+    component: 'Input',
+    rules: z.string().min(3, $t('user.usernameLength')).max(20, $t('user.usernameLength')),
+    componentProps: {
       disabled: Boolean(editingId.value),
     },
-    rules: [
-      { required: true, message: $t('examples.scaffold.proTableAdvanced.usernameRequired') },
-      { min: 3, max: 20, message: $t('user.usernameLength') },
-    ],
   },
   {
-    name: 'realName',
+    fieldName: 'realName',
     label: $t('examples.scaffold.proTableAdvanced.realName'),
-    type: 'input',
-    required: true,
+    component: 'Input',
+    rules: 'required',
+    componentProps: {},
   },
   {
-    name: 'email',
+    fieldName: 'email',
     label: $t('examples.scaffold.proTableAdvanced.email'),
-    type: 'input',
-    required: true,
-    rules: [
-      { required: true, message: $t('examples.scaffold.proTableAdvanced.emailRequired') },
-      { type: 'email', message: $t('validation.email') },
-    ],
+    component: 'Input',
+    rules: z.email($t('validation.email')),
+    componentProps: {},
   },
   {
-    name: 'gender',
+    fieldName: 'gender',
     label: $t('examples.scaffold.proTableAdvanced.gender'),
-    type: 'select',
-    options: [
-      { label: $t('user.male'), value: 'male' },
-      { label: $t('user.female'), value: 'female' },
-    ],
+    component: 'Select',
+    componentProps: {
+      options: [
+        { label: $t('user.male'), value: 'male' },
+        { label: $t('user.female'), value: 'female' },
+      ],
+    },
   },
   {
-    name: 'status',
+    fieldName: 'status',
     label: $t('examples.scaffold.proTableAdvanced.status'),
-    type: 'switch',
-    valuePropName: 'checked',
-    required: true,
-    props: {
+    component: 'Switch',
+    rules: 'required',
+    componentProps: {
       checkedChildren: $t('examples.scaffold.proTableAdvanced.statusActive'),
       unCheckedChildren: $t('examples.scaffold.proTableAdvanced.statusInactive'),
     },
   },
 ]);
 
-const columns = computed<ProTableColumn[]>(() => [
-  {
-    title: $t('examples.scaffold.proTableAdvanced.username'),
-    dataIndex: 'username',
-    width: 150,
-  },
-  {
-    title: $t('examples.scaffold.proTableAdvanced.realName'),
-    dataIndex: 'realName',
-    width: 140,
-  },
-  {
-    title: $t('examples.scaffold.proTableAdvanced.email'),
-    dataIndex: 'email',
-    width: 220,
-  },
+const columns = computed<NonNullable<VxeTableGridOptions<DemoRow>['columns']>>(() => [
+  { title: $t('examples.scaffold.proTableAdvanced.username'), field: 'username', minWidth: 150 },
+  { title: $t('examples.scaffold.proTableAdvanced.realName'), field: 'realName', minWidth: 140 },
+  { title: $t('examples.scaffold.proTableAdvanced.email'), field: 'email', minWidth: 220 },
   {
     title: $t('examples.scaffold.proTableAdvanced.gender'),
-    dataIndex: 'gender',
-    valueType: 'tag',
-    valueEnum: {
-      male: { text: $t('user.male'), color: 'blue' },
-      female: { text: $t('user.female'), color: 'pink' },
-    },
+    field: 'gender',
     width: 120,
+    slots: { default: 'bodyCell' },
   },
   {
     title: $t('examples.scaffold.proTableAdvanced.status'),
-    dataIndex: 'status',
+    field: 'status',
     width: 140,
+    slots: { default: 'bodyCell' },
   },
   {
     title: $t('examples.scaffold.proTableAdvanced.createdAt'),
-    dataIndex: 'createdAt',
-    valueType: 'dateTime',
+    field: 'createdAt',
     width: 190,
+    formatter: 'formatDateTime',
   },
   {
     title: $t('common.actions'),
-    dataIndex: 'action',
+    field: 'action',
     width: 180,
     fixed: 'right',
-    actions: [
-      {
-        label: $t('common.edit'),
-        icon: EditOutlined,
-        onClick: (record) => handleEdit(record as unknown as DemoRow),
-      },
-      {
-        label: $t('common.delete'),
-        icon: DeleteOutlined,
-        danger: true,
-        confirm: $t('examples.scaffold.proTableAdvanced.deleteConfirm'),
-        onClick: (record) => {
-          tableRows.value = tableRows.value.filter((item) => item.id !== record.id);
-          selectedRowKeys.value = selectedRowKeys.value.filter((id) => id !== record.id);
-          message.success($t('examples.scaffold.proTableAdvanced.deleteSuccess'));
-        },
-      },
-    ],
+    slots: { default: 'bodyCell' },
   },
 ]);
-
-const rowSelection = computed(() => ({
-  selectedRowKeys: selectedRowKeys.value,
-  onChange: (keys: Array<string | number>) => {
-    selectedRowKeys.value = keys.map((item) => String(item));
-  },
-}));
 
 const requestTableData = async (params: Record<string, unknown>) => {
   const current = Number(params.current || 1);
@@ -378,6 +372,7 @@ const handleStatusSwitchChange = async (id: string, checked: boolean) => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 500));
     handleStatusChange(id, checked);
+    void gridApi.query();
   } finally {
     switchLoadingId.value = null;
   }
@@ -398,45 +393,38 @@ const handleEdit = (record: DemoRow) => {
   openEditForm(record, initialValues);
 };
 
-const handleCancel = () => {
-  closeFormModal();
-};
-
 const handleSubmit = async (rawValues: Record<string, unknown>) => {
   const values = rawValues as DemoFormValues;
 
-  submitting.value = true;
-  try {
-    const statusValue = values.status ? 'active' : 'inactive';
+  const statusValue = values.status ? 'active' : 'inactive';
 
-    if (editingId.value) {
-      const row = tableRows.value.find((item) => item.id === editingId.value);
-      if (row) {
-        row.username = values.username.trim();
-        row.realName = values.realName.trim();
-        row.email = values.email.trim();
-        row.gender = values.gender;
-        row.status = statusValue;
-      }
-      message.success($t('examples.scaffold.proTableAdvanced.updateSuccess'));
-    } else {
-      const newId = `demo-${Date.now()}`;
-      tableRows.value.unshift({
-        id: newId,
-        username: values.username.trim(),
-        realName: values.realName.trim(),
-        email: values.email.trim(),
-        gender: values.gender,
-        status: statusValue,
-        createdAt: new Date().toISOString(),
-      });
-      message.success($t('examples.scaffold.proTableAdvanced.createSuccess'));
+  if (editingId.value) {
+    const row = tableRows.value.find((item) => item.id === editingId.value);
+    if (row) {
+      row.username = values.username.trim();
+      row.realName = values.realName.trim();
+      row.email = values.email.trim();
+      row.gender = values.gender;
+      row.status = statusValue;
     }
-
-    closeFormModal();
-  } finally {
-    submitting.value = false;
+    message.success($t('examples.scaffold.proTableAdvanced.updateSuccess'));
+  } else {
+    const newId = `demo-${Date.now()}`;
+    tableRows.value.unshift({
+      id: newId,
+      username: values.username.trim(),
+      realName: values.realName.trim(),
+      email: values.email.trim(),
+      gender: values.gender,
+      status: statusValue,
+      createdAt: new Date().toISOString(),
+    });
+    message.success($t('examples.scaffold.proTableAdvanced.createSuccess'));
   }
+
+  closeFormModal();
+  if (editingId.value) void gridApi.query();
+  else void gridApi.reload();
 };
 
 const handleBatchSetStatus = (status: DemoRow['status']) => {
@@ -476,6 +464,8 @@ const handleBatchDelete = () => {
       const set = new Set(selectedRowKeys.value);
       tableRows.value = tableRows.value.filter((item) => !set.has(item.id));
       selectedRowKeys.value = [];
+      void gridApi.grid?.clearCheckboxRow();
+      void gridApi.grid?.clearCheckboxReserve();
       message.success($t('examples.scaffold.proTableAdvanced.batchDeleteSuccess'));
     },
   });
@@ -507,6 +497,70 @@ const exportCsv = () => {
 
   message.success($t('examples.scaffold.proTableAdvanced.exportSuccess'));
 };
+const gridOptions = computed<VxeTableGridOptions<DemoRow>>(() => ({
+  id: 'example-advanced-table',
+  height: 'auto',
+  rowConfig: { keyField: 'id' },
+  columns: [{ type: 'checkbox', width: 50 }, { type: 'seq', width: 60 }, ...columns.value],
+  checkboxConfig: { reserve: true },
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  proxyConfig: {
+    ajax: {
+      async query({ page }, search: Record<string, unknown>) {
+        const result = await requestTableData({
+          ...search,
+          current: page.currentPage,
+          pageSize: page.pageSize,
+        });
+        return { items: result.data, total: result.total };
+      },
+    },
+  },
+}));
+const [Grid, gridApi] = useVxeGrid<DemoRow>({
+  gridOptions: gridOptions.value,
+  formOptions: { schema: searchFormItems.value },
+});
+const searchOptions = computed(() => ({
+  schema: searchFormItems.value,
+  collapsed: true,
+  showCollapseButton: true,
+  commonConfig: { labelWidth: 80 },
+  wrapperClass: (
+    {
+      2: 'grid-cols-1 md:grid-cols-2',
+      3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+      4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+      5: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5',
+    } as Record<number, string>
+  )[searchColumnsPerRow.value],
+}));
+function syncSelection(): void {
+  const rows: DemoRow[] = [
+    ...(gridApi.grid?.getCheckboxRecords() || []),
+    ...(gridApi.grid?.getCheckboxReserveRecords() || []),
+  ];
+  selectedRowKeys.value = [
+    ...new Set(
+      rows.filter((row) => tableRows.value.some((item) => item.id === row.id)).map((row) => row.id),
+    ),
+  ];
+}
+const gridEvents = { checkboxChange: syncSelection, checkboxAll: syncSelection };
+function handleDelete(row: DemoRow): void {
+  Modal.confirm({
+    title: $t('examples.scaffold.proTableAdvanced.deleteConfirm'),
+    onOk() {
+      tableRows.value = tableRows.value.filter((item) => item.id !== row.id);
+      selectedRowKeys.value = selectedRowKeys.value.filter((id) => id !== row.id);
+      message.success($t('examples.scaffold.proTableAdvanced.deleteSuccess'));
+    },
+  });
+}
+watch(tableRows, () => {
+  void gridApi.query();
+});
 </script>
 
 <style scoped>

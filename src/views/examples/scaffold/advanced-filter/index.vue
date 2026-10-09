@@ -127,17 +127,7 @@
 
       <a-divider />
 
-      <ProTable
-        layout="content"
-        row-key="id"
-        size="small"
-        :columns="columns"
-        :data-source="previewRows"
-        :search="false"
-        :toolbar="false"
-        :pagination="false"
-        :show-index-column="false"
-      />
+      <Grid :grid-options="gridOptions" />
     </div>
 
     <a-modal
@@ -158,13 +148,13 @@
 </template>
 
 <script setup lang="ts">
+import type { VxeTableGridOptions } from '@/libs/table';
+
 import { DeleteOutlined, PlusOutlined } from '@antdv-next/icons';
 import { message } from 'antdv-next';
 import { computed, ref } from 'vue';
 
-import type { ProTableColumn } from '@/types/pro';
-
-import ProTable from '@/components/Pro/ProTable/index.vue';
+import { useVxeGrid } from '@/adapters/table';
 import { $t } from '@/locales';
 
 type Relation = 'AND' | 'OR';
@@ -259,13 +249,13 @@ const fieldOptions = computed(() => [
   { label: $t('common.createTime'), value: 'createdAt' },
 ]);
 
-const columns = computed<ProTableColumn[]>(() => [
-  { title: 'ID', dataIndex: 'id', width: 120 },
-  { title: $t('user.username'), dataIndex: 'username', width: 180 },
-  { title: $t('common.status'), dataIndex: 'status', width: 120 },
-  { title: $t('menu.role'), dataIndex: 'role', width: 120 },
-  { title: $t('examples.scaffold.advancedFilter.score'), dataIndex: 'score', width: 120 },
-  { title: $t('common.createTime'), dataIndex: 'createdAt', width: 180 },
+const columns = computed<NonNullable<VxeTableGridOptions<DemoRow>['columns']>>(() => [
+  { title: 'ID', field: 'id', width: 120 },
+  { title: $t('user.username'), field: 'username', minWidth: 180 },
+  { title: $t('common.status'), field: 'status', width: 120 },
+  { title: $t('menu.role'), field: 'role', width: 120 },
+  { title: $t('examples.scaffold.advancedFilter.score'), field: 'score', width: 120 },
+  { title: $t('common.createTime'), field: 'createdAt', width: 180 },
 ]);
 
 const filteredRows = computed(() => {
@@ -494,6 +484,15 @@ function removeScheme(id: string) {
     activeSchemeId.value = '';
   }
 }
+const gridOptions = computed<VxeTableGridOptions<DemoRow>>(() => ({
+  id: 'example-advanced-filter',
+  rowConfig: { keyField: 'id' },
+  columns: columns.value,
+  data: previewRows.value,
+  customConfig: { storage: true },
+  toolbarConfig: { refresh: true, refreshOptions: { queryMethod: async () => {} } },
+}));
+const [Grid] = useVxeGrid<DemoRow>({ gridOptions: gridOptions.value });
 </script>
 
 <style scoped lang="scss">

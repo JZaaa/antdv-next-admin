@@ -1,32 +1,32 @@
 <template>
   <div class="page-container">
-    <ProTable
-      :columns="columns"
-      :request="fetchData"
-      :toolbar="{
-        title: $t('exampleTable.userList'),
-        subTitle: $t('exampleTable.subTitle'),
-        actions: ['refresh', 'columnSetting'],
-      }"
-      :search="{
-        formItems: searchFormItems,
-        labelWidth: 80,
-        defaultCollapsed: true,
-      }"
-      :header-filter="{
-        defaultMode: 'server',
-        requestPayload: 'flat',
-      }"
-      row-key="id"
+    <Grid
+      :grid-options="gridOptions"
+      :form-options="{ schema: searchFormItems, collapsed: true, commonConfig: { labelWidth: 80 } }"
+      :table-title="$t('exampleTable.userList')"
     >
-      <template #toolbar-actions>
+      <template #toolbar-tools>
         <a-button type="primary" @click="handleCreate">
           <PlusOutlined /> {{ $t('exampleTable.createUser') }}
         </a-button>
       </template>
 
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'status'">
+      <template #bodyCell="{ column, row: record }">
+        <template v-if="column.field === 'action'"
+          ><a-space :size="0"
+            ><a-button type="link" size="small" @click="handleEdit(record)"
+              ><EditOutlined />{{ $t('common.edit') }}</a-button
+            ><a-button type="link" size="small" danger @click="confirmDelete(record)"
+              ><DeleteOutlined />{{ $t('common.delete') }}</a-button
+            ></a-space
+          ></template
+        >
+        <template v-if="column.field === 'email'"
+          ><a-typography-text :copyable="{ text: record.email }">{{
+            record.email
+          }}</a-typography-text></template
+        >
+        <template v-if="column.field === 'status'">
           <a-switch
             :checked="record.status === 'active'"
             @change="handleStatusChange(record, $event as boolean)"
@@ -35,45 +35,55 @@
             <template #unCheckedChildren>{{ $t('user.inactive') }}</template>
           </a-switch>
         </template>
-        <template v-else-if="column.dataIndex === 'gender'">
-          <a-tag :color="genderValueEnum[record.gender]?.color">
-            {{ genderValueEnum[record.gender]?.text || record.gender }}
+        <template v-else-if="column.field === 'gender'">
+          <a-tag :color="genderValueEnum[record.gender || 'male']?.color">
+            {{ genderValueEnum[record.gender || 'male']?.text || record.gender }}
           </a-tag>
         </template>
       </template>
-    </ProTable>
+      <template #usernameFilter="{ column, $panel }"
+        ><a-input
+          v-model:value="column.filters[0].data"
+          :placeholder="$t('proForm.enterPlaceholder', { label: $t('user.username') })"
+          @input="
+            (event: Event) => {
+              const value = (event.target as HTMLInputElement).value;
+              column.filters[0].data = value;
+              $panel.changeOption(event, Boolean(value), column.filters[0]);
+            }
+          " /></template
+    ></Grid>
 
     <!-- Create/Edit Modal -->
-    <ProFormModal
+    <SchemaFormModal
       v-model:open="modalVisible"
       :title="editingId ? $t('exampleTable.editUser') : $t('exampleTable.createUser')"
-      :session-key="formSessionKey"
-      :form-items="formItems"
+      v-if="formSessionKey"
+      :key="formSessionKey"
+      :schema="formItems"
       :initial-values="formData"
-      :grid="{ cols: 2, gutter: 16 }"
       width="600px"
-      @submit="handleSubmit"
-      @cancel="closeFormModal"
+      :save="handleSubmit"
       @closed="finishFormClose"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { PageParams } from '@/types/api';
+import type { FormFieldSchema, FormSchema } from '@/libs/form';
+import type { VxeTableGridOptions } from '@/libs/table';
 import type { User } from '@/types/auth';
-import type { ProTableColumn, ProFormItem, ProTableRequestParams } from '@/types/pro';
 
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@antdv-next/icons';
-import { message } from 'antdv-next';
+import { message, Modal } from 'antdv-next';
 import { computed } from 'vue';
+import { z } from 'zod';
 
+import { useVxeGrid } from '@/adapters/table';
 import { getUserList, createUser, updateUser, deleteUser } from '@/api/user';
-import ProFormModal from '@/components/Pro/ProFormModal/index.vue';
-import ProTable from '@/components/Pro/ProTable/index.vue';
+import SchemaFormModal from '@/components/SchemaFormModal/index.vue';
 import { useCrudFormSession } from '@/composables/useCrudFormSession';
 import { $t } from '@/locales';
-import { commonRules } from '@/utils/formRules';
 
 type TableFormValues = {
   username: string;
@@ -118,150 +128,154 @@ const genderValueEnum = computed<Record<string, { text: string; color?: string }
 }));
 
 // Search form items configuration
-const searchFormItems = computed<ProFormItem[]>(() => [
-  { name: 'email', label: $t('user.email'), type: 'input' },
-  { name: 'realName', label: $t('user.realName'), type: 'input' },
-  { name: 'gender', label: $t('user.gender'), type: 'select', options: genderOptions.value },
-  { name: 'createdAt', label: $t('common.createTime'), type: 'dateRange' },
+const searchFormItems = computed<FormSchema[]>(() => [
+  {
+    fieldName: 'email',
+    label: $t('user.email'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.enterPlaceholder', { label: $t('user.email') }),
+    },
+  },
+  {
+    fieldName: 'realName',
+    label: $t('user.realName'),
+    component: 'Input',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.enterPlaceholder', { label: $t('user.realName') }),
+    },
+  },
+  {
+    fieldName: 'gender',
+    label: $t('user.gender'),
+    component: 'Select',
+    componentProps: {
+      allowClear: true,
+      placeholder: $t('proForm.selectPlaceholder', { label: $t('user.gender') }),
+      options: genderOptions.value,
+    },
+  },
+  {
+    fieldName: 'createdAt',
+    label: $t('common.createTime'),
+    component: 'RangePicker',
+    componentProps: {
+      allowClear: true,
+      valueFormat: 'YYYY-MM-DD',
+    },
+  },
 ]);
 
 // Table columns configuration
-const columns = computed<ProTableColumn[]>(() => [
+const columns = computed<NonNullable<VxeTableGridOptions<User>['columns']>>(() => [
   {
     title: $t('user.username'),
-    dataIndex: 'username',
-    width: 150,
+    field: 'username',
+    filters: [{ data: '', value: 'keyword' }],
+    slots: { filter: 'usernameFilter' },
+    minWidth: 150,
     fixed: 'left',
-    headerFilter: {
-      type: 'keyword',
-      mode: 'server',
-      icon: 'search',
-      placeholder: `搜索${$t('user.username')}`,
-      matchAllKeywords: true,
-    },
   },
-  {
-    title: $t('user.email'),
-    dataIndex: 'email',
-    copyable: true,
-  },
-  {
-    title: $t('user.realName'),
-    dataIndex: 'realName',
-  },
-  {
-    title: $t('user.phone'),
-    dataIndex: 'phone',
-  },
+  { title: $t('user.email'), field: 'email', minWidth: 150, slots: { default: 'bodyCell' } },
+  { title: $t('user.realName'), field: 'realName', minWidth: 150 },
+  { title: $t('user.phone'), field: 'phone', minWidth: 150 },
   {
     title: $t('user.gender'),
-    dataIndex: 'gender',
-    headerFilter: {
-      type: 'select',
-      mode: 'server',
-      icon: 'filter',
-      multiple: true,
-      options: genderOptions.value,
-    },
-    valueType: 'tag',
-    valueEnum: genderValueEnum.value,
+    field: 'gender',
+    filters: genderOptions.value,
+    minWidth: 150,
+    slots: { default: 'bodyCell' },
   },
   {
     title: $t('common.status'),
-    dataIndex: 'status',
+    field: 'status',
+    filterMultiple: false,
+    filters: [
+      { label: $t('user.active'), value: 'active' },
+      { label: $t('user.inactive'), value: 'inactive' },
+    ],
     width: 150,
-    headerFilter: {
-      type: 'select',
-      mode: 'server',
-      icon: 'filter',
-      multiple: false,
-      options: [
-        { label: $t('user.active'), value: 'active' },
-        { label: $t('user.inactive'), value: 'inactive' },
-      ],
-    },
+    slots: { default: 'bodyCell' },
   },
   {
     title: $t('common.createTime'),
-    dataIndex: 'createdAt',
-    valueType: 'dateTime',
-    sorter: true,
+    field: 'createdAt',
+    sortable: true,
+    minWidth: 150,
+    formatter: 'formatDateTime',
   },
   {
     title: $t('common.actions'),
-    dataIndex: 'action',
+    field: 'action',
     width: 200,
     fixed: 'right',
-    actions: [
-      {
-        label: $t('common.edit'),
-        icon: EditOutlined,
-        onClick: (record) => handleEdit(record as unknown as User),
-      },
-      {
-        label: $t('common.delete'),
-        icon: DeleteOutlined,
-        danger: true,
-        confirm: $t('user.confirmDelete'),
-        onClick: (record) => handleDelete(record as unknown as User),
-      },
-    ],
+    slots: { default: 'bodyCell' },
   },
 ]);
 
 // Form items configuration
-const formItems = computed<ProFormItem[]>(() => [
+const formItems = computed<FormFieldSchema[]>(() => [
   {
-    name: 'username',
+    fieldName: 'username',
     label: $t('user.username'),
-    type: 'input',
-    required: true,
-    rules: [commonRules.required(), commonRules.length(3, 20), commonRules.username()],
+    component: 'Input',
+    rules: z
+      .string()
+      .min(3, $t('user.usernameLength'))
+      .max(20, $t('user.usernameLength'))
+      .regex(/^[a-zA-Z0-9_]+$/, $t('validation.usernamePattern')),
+    componentProps: {},
   },
   {
-    name: 'email',
+    fieldName: 'email',
     label: $t('user.email'),
-    type: 'input',
-    required: true,
-    rules: [commonRules.required(), commonRules.email()],
+    component: 'Input',
+    rules: z.email($t('validation.email')),
+    componentProps: {},
   },
   {
-    name: 'realName',
+    fieldName: 'realName',
     label: $t('user.realName'),
-    type: 'input',
-    required: true,
+    component: 'Input',
+    rules: 'required',
+    componentProps: {},
   },
   {
-    name: 'phone',
+    fieldName: 'phone',
     label: $t('user.phone'),
-    type: 'input',
-    rules: [commonRules.phone()],
+    component: 'Input',
+    rules: z
+      .string()
+      .regex(/^(?:1[3-9]\d{9})?$/, $t('validation.phone'))
+      .optional(),
+    componentProps: {},
   },
   {
-    name: 'gender',
+    fieldName: 'gender',
     label: $t('user.gender'),
-    type: 'select',
-    required: true,
-    options: genderOptions.value,
+    component: 'Select',
+    rules: 'required',
+    componentProps: { options: genderOptions.value },
   },
   {
-    name: 'status',
+    fieldName: 'status',
     label: $t('common.status'),
-    type: 'switch',
-    valuePropName: 'checked',
-    required: true,
-    initialValue: true,
-    props: {
+    component: 'Switch',
+    defaultValue: true,
+    rules: 'required',
+    componentProps: {
       checkedChildren: $t('user.active'),
       unCheckedChildren: $t('user.inactive'),
     },
   },
   {
-    name: 'bio',
+    fieldName: 'bio',
     label: $t('user.bio'),
-    type: 'textarea',
-    colSpan: 2,
-    props: {
+    component: 'Textarea',
+    formItemClass: 'col-span-full',
+    componentProps: {
       rows: 4,
       maxLength: 200,
       showCount: true,
@@ -270,18 +284,6 @@ const formItems = computed<ProFormItem[]>(() => [
 ]);
 
 // Methods
-const fetchData = async (params: ProTableRequestParams) => {
-  const res = await getUserList({
-    ...params,
-    current: Number(params.current || 1),
-    pageSize: Number(params.pageSize || 10),
-  } as PageParams);
-  return {
-    data: res.data.list,
-    total: res.data.total,
-    success: true,
-  };
-};
 
 const handleCreate = () => {
   openCreateForm();
@@ -302,10 +304,12 @@ const handleEdit = (record: User) => {
 const handleDelete = async (record: User) => {
   await deleteUser(record.id);
   message.success($t('exampleTable.deleteSuccess'));
+  void gridApi.query();
 };
 
 const handleSubmit = async (rawValues: Record<string, unknown>) => {
   const values = rawValues as TableFormValues;
+  const session = formSessionKey.value;
   const payload: Partial<User> = {
     ...values,
     status: values.status ? 'active' : 'inactive',
@@ -319,9 +323,11 @@ const handleSubmit = async (rawValues: Record<string, unknown>) => {
       await createUser(payload);
       message.success($t('exampleTable.createSuccess'));
     }
-    closeFormModal();
+    if (session === formSessionKey.value) closeFormModal();
+    if (editingId.value) void gridApi.query();
+    else void gridApi.reload();
   } catch (error: unknown) {
-    message.error((error as Error).message || $t('exampleTable.createSuccess'));
+    message.error((error as Error).message || $t('common.error'));
   }
 };
 
@@ -335,4 +341,45 @@ const handleStatusChange = async (record: User, checked: boolean) => {
     message.error((error as Error).message || $t('common.error'));
   }
 };
+function confirmDelete(row: User): void {
+  Modal.confirm({ title: $t('user.confirmDelete'), onOk: () => handleDelete(row) });
+}
+const gridOptions = computed<VxeTableGridOptions<User>>(() => ({
+  id: 'example-user-table',
+  height: 'auto',
+  rowConfig: { keyField: 'id' },
+  columns: [{ type: 'seq', width: 60 }, ...columns.value],
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  sortConfig: { remote: true },
+  filterConfig: { remote: true },
+  proxyConfig: {
+    sort: true,
+    filter: true,
+    ajax: {
+      async query({ page, sort, filters }, search: Record<string, unknown>) {
+        const headerFilters: Record<string, unknown> = {};
+        for (const filter of filters) {
+          headerFilters[filter.field] =
+            filter.field === 'username' ? filter.datas[0] : filter.values.join(',');
+        }
+        const response = await getUserList({
+          ...search,
+          ...headerFilters,
+          current: page.currentPage,
+          pageSize: page.pageSize,
+          sorter:
+            sort.field && sort.order
+              ? { field: sort.field, order: sort.order === 'asc' ? 'ascend' : 'descend' }
+              : undefined,
+        });
+        return { items: response.data.list, total: response.data.total };
+      },
+    },
+  },
+}));
+const [Grid, gridApi] = useVxeGrid<User>({
+  gridOptions: gridOptions.value,
+  formOptions: { schema: searchFormItems.value, collapsed: true, commonConfig: { labelWidth: 80 } },
+});
 </script>

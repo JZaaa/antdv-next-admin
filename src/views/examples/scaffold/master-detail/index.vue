@@ -4,23 +4,13 @@
       <h2>{{ $t('examples.scaffold.masterDetail.title') }}</h2>
       <p class="text-secondary mb-lg">{{ $t('examples.scaffold.masterDetail.description') }}</p>
 
-      <ProTable
-        layout="content"
-        :columns="columns"
-        :data-source="listData"
-        :search="false"
-        :toolbar="false"
-        row-key="id"
-        :pagination="{ pageSize: 8 }"
-        :show-index-column="false"
-        :on-row="buildRowProps"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'status'">
+      <Grid :grid-options="gridOptions" :grid-events="gridEvents">
+        <template #bodyCell="{ column, row: record }">
+          <template v-if="column.field === 'status'">
             <a-tag :color="getStatusColor(record.status)">{{ getStatusText(record.status) }}</a-tag>
           </template>
         </template>
-      </ProTable>
+      </Grid>
     </div>
 
     <a-drawer
@@ -65,12 +55,13 @@
 </template>
 
 <script setup lang="ts">
-import type { ProDescriptionItem, ProDetailTab, ProTableColumn } from '@/types/pro';
+import type { VxeTableGridOptions } from '@/libs/table';
+import type { ProDescriptionItem, ProDetailTab } from '@/types/pro';
 
 import { computed, ref } from 'vue';
 
+import { useVxeGrid } from '@/adapters/table';
 import ProDetail from '@/components/Pro/ProDetail/index.vue';
-import ProTable from '@/components/Pro/ProTable/index.vue';
 import { $t } from '@/locales';
 
 type TicketStatus = 'open' | 'processing' | 'closed';
@@ -90,11 +81,11 @@ interface TicketRecord {
   }>;
 }
 
-const statusTextMap: Record<TicketStatus, string> = computed(() => ({
+const statusTextMap = computed<Record<TicketStatus, string>>(() => ({
   open: $t('examples.scaffold.masterDetail.statusOpen'),
   processing: $t('examples.scaffold.masterDetail.statusProcessing'),
   closed: $t('examples.scaffold.masterDetail.statusClosed'),
-})).value;
+}));
 
 const statusColorMap: Record<TicketStatus, string> = {
   open: 'blue',
@@ -133,13 +124,23 @@ const listData = ref<TicketRecord[]>(
   }),
 );
 
-const columns = computed<ProTableColumn[]>(() => [
-  { title: $t('examples.scaffold.masterDetail.colTicketNumber'), dataIndex: 'id', width: 120 },
-  { title: $t('examples.scaffold.masterDetail.colTitle'), dataIndex: 'title', ellipsis: true },
-  { title: $t('examples.scaffold.masterDetail.colOwner'), dataIndex: 'owner', width: 120 },
-  { title: $t('examples.scaffold.masterDetail.colPriority'), dataIndex: 'priority', width: 100 },
-  { title: $t('examples.scaffold.masterDetail.colStatus'), dataIndex: 'status', width: 120 },
-  { title: $t('examples.scaffold.masterDetail.colCreatedAt'), dataIndex: 'createdAt', width: 190 },
+const columns = computed<NonNullable<VxeTableGridOptions<TicketRecord>['columns']>>(() => [
+  { title: $t('examples.scaffold.masterDetail.colTicketNumber'), field: 'id', width: 120 },
+  {
+    title: $t('examples.scaffold.masterDetail.colTitle'),
+    field: 'title',
+    minWidth: 150,
+    showOverflow: true,
+  },
+  { title: $t('examples.scaffold.masterDetail.colOwner'), field: 'owner', width: 120 },
+  { title: $t('examples.scaffold.masterDetail.colPriority'), field: 'priority', width: 100 },
+  {
+    title: $t('examples.scaffold.masterDetail.colStatus'),
+    field: 'status',
+    width: 120,
+    slots: { default: 'bodyCell' },
+  },
+  { title: $t('examples.scaffold.masterDetail.colCreatedAt'), field: 'createdAt', width: 190 },
 ]);
 
 const detailColumns = computed<ProDescriptionItem[]>(() => [
@@ -158,26 +159,54 @@ const drawerOpen = ref(false);
 const activeTab = ref('desc');
 const activeRecord = ref<TicketRecord | null>(null);
 
-const buildRowProps = (record: TicketRecord) => {
-  return {
-    style: { cursor: 'pointer' },
-    onClick: () => {
-      activeRecord.value = record;
-      activeTab.value = 'desc';
-      drawerOpen.value = true;
-    },
-  };
-};
+function openDetail(record: TicketRecord): void {
+  activeRecord.value = record;
+  activeTab.value = 'desc';
+  drawerOpen.value = true;
+}
 
 const getStatusText = (status: unknown) => {
   const key = (status || 'open') as TicketStatus;
-  return statusTextMap[key] || statusTextMap.open;
+  return statusTextMap.value[key] || statusTextMap.value.open;
 };
 
 const getStatusColor = (status: unknown) => {
   const key = (status || 'open') as TicketStatus;
   return statusColorMap[key] || statusColorMap.open;
 };
+const currentPage = ref(1);
+const pageSize = ref(8);
+const gridEvents = {
+  pageChange: ({
+    currentPage: page,
+    pageSize: size,
+  }: {
+    currentPage: number;
+    pageSize: number;
+  }) => {
+    currentPage.value = page;
+    pageSize.value = size;
+  },
+  cellClick: ({ row }: { row: TicketRecord }) => openDetail(row),
+};
+const gridOptions = computed<VxeTableGridOptions<TicketRecord>>(() => ({
+  id: 'example-master-detail',
+  rowConfig: { keyField: 'id' },
+  rowStyle: { cursor: 'pointer' },
+  columns: columns.value,
+  data: listData.value.slice(
+    (currentPage.value - 1) * pageSize.value,
+    currentPage.value * pageSize.value,
+  ),
+  pagerConfig: {
+    currentPage: currentPage.value,
+    pageSize: pageSize.value,
+    total: listData.value.length,
+  },
+  customConfig: { storage: true },
+  toolbarConfig: { refresh: true, refreshOptions: { queryMethod: async () => {} } },
+}));
+const [Grid] = useVxeGrid<TicketRecord>({ gridOptions: gridOptions.value });
 </script>
 
 <style scoped lang="scss">

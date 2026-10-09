@@ -114,7 +114,7 @@ export const appDefaultSettings: AppDefaultSettings = {
     collapsedWidth: 80,
   },
   proTable: {
-    size: 'smal',
+    size: 'middle',
     height: 'auto',
     resizable: true,
     columnResizable: true,

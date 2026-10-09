@@ -62,43 +62,23 @@
         :message="$t('examples.scaffold.importExport.importHint')"
       />
 
-      <ProTable
-        layout="content"
-        row-key="code"
-        size="small"
-        :columns="dataColumns"
-        :data-source="rows"
-        :search="false"
-        :toolbar="false"
-        :pagination="{ pageSize: 8 }"
-        :show-index-column="false"
-      />
+      <DataGrid :grid-options="dataGridOptions" :grid-events="dataGridEvents" />
 
       <a-divider />
 
-      <ProTable
-        layout="content"
-        row-key="id"
-        size="small"
-        :columns="errorColumns"
-        :data-source="importErrors"
-        :search="false"
-        :toolbar="false"
-        :pagination="{ pageSize: 6 }"
-        :show-index-column="false"
-      />
+      <ErrorGrid :grid-options="errorGridOptions" :grid-events="errorGridEvents" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { VxeTableGridOptions } from '@/libs/table';
+
 import { DownloadOutlined, UploadOutlined } from '@antdv-next/icons';
 import { message } from 'antdv-next';
 import { computed, ref } from 'vue';
 
-import type { ProTableColumn } from '@/types/pro';
-
-import ProTable from '@/components/Pro/ProTable/index.vue';
+import { useVxeGrid } from '@/adapters/table';
 import { $t } from '@/locales';
 
 interface ProductRow {
@@ -138,18 +118,18 @@ const lastSummary = ref<ImportSummary>({
   failed: 0,
 });
 
-const dataColumns = computed<ProTableColumn[]>(() => [
-  { title: $t('examples.scaffold.importExport.colCode'), dataIndex: 'code', width: 140 },
-  { title: $t('examples.scaffold.importExport.colName'), dataIndex: 'name', width: 220 },
-  { title: $t('examples.scaffold.importExport.colCategory'), dataIndex: 'category', width: 160 },
-  { title: $t('examples.scaffold.importExport.colPrice'), dataIndex: 'price', width: 120 },
-  { title: $t('examples.scaffold.importExport.colStock'), dataIndex: 'stock', width: 120 },
+const dataColumns = computed<NonNullable<VxeTableGridOptions<ProductRow>['columns']>>(() => [
+  { title: $t('examples.scaffold.importExport.colCode'), field: 'code', width: 140 },
+  { title: $t('examples.scaffold.importExport.colName'), field: 'name', minWidth: 220 },
+  { title: $t('examples.scaffold.importExport.colCategory'), field: 'category', width: 160 },
+  { title: $t('examples.scaffold.importExport.colPrice'), field: 'price', width: 120 },
+  { title: $t('examples.scaffold.importExport.colStock'), field: 'stock', width: 120 },
 ]);
 
-const errorColumns = computed<ProTableColumn[]>(() => [
-  { title: $t('examples.scaffold.importExport.errorRowNo'), dataIndex: 'rowNo', width: 100 },
-  { title: $t('examples.scaffold.importExport.errorReason'), dataIndex: 'reason', width: 260 },
-  { title: $t('examples.scaffold.importExport.errorRaw'), dataIndex: 'raw' },
+const errorColumns = computed<NonNullable<VxeTableGridOptions<ImportErrorRow>['columns']>>(() => [
+  { title: $t('examples.scaffold.importExport.errorRowNo'), field: 'rowNo', width: 100 },
+  { title: $t('examples.scaffold.importExport.errorReason'), field: 'reason', width: 260 },
+  { title: $t('examples.scaffold.importExport.errorRaw'), field: 'raw', minWidth: 150 },
 ]);
 
 function downloadTemplate() {
@@ -275,6 +255,8 @@ async function handleImport(file: File) {
 
     rows.value = [...rows.value, ...validRows];
     importErrors.value = errors;
+    dataGridPage.value = 1;
+    errorGridPage.value = 1;
     lastSummary.value = {
       total: rowsInCsv.length - 1,
       success: validRows.length + updatedCount,
@@ -362,6 +344,70 @@ function downloadCsv(rowsForExport: string[][], fileName: string) {
 
   URL.revokeObjectURL(url);
 }
+const dataGridPage = ref(1);
+const dataGridSize = ref(8);
+const dataGridEvents = {
+  pageChange: ({ currentPage, pageSize }: { currentPage: number; pageSize: number }) => {
+    dataGridPage.value = currentPage;
+    dataGridSize.value = pageSize;
+  },
+};
+const dataGridOptions = computed<VxeTableGridOptions<ProductRow>>(() => ({
+  id: 'import-code',
+  rowConfig: { keyField: 'code' },
+  columns: dataColumns.value,
+  data: rows.value.slice(
+    (dataGridPage.value - 1) * dataGridSize.value,
+    dataGridPage.value * dataGridSize.value,
+  ),
+  pagerConfig: {
+    currentPage: dataGridPage.value,
+    pageSize: dataGridSize.value,
+    total: rows.value.length,
+  },
+  toolbarConfig: {
+    refresh: true,
+    refreshOptions: {
+      queryMethod: async () => {
+        dataGridPage.value = 1;
+      },
+    },
+  },
+  customConfig: { storage: true },
+}));
+const [DataGrid] = useVxeGrid<ProductRow>({ gridOptions: dataGridOptions.value });
+const errorGridPage = ref(1);
+const errorGridSize = ref(6);
+const errorGridEvents = {
+  pageChange: ({ currentPage, pageSize }: { currentPage: number; pageSize: number }) => {
+    errorGridPage.value = currentPage;
+    errorGridSize.value = pageSize;
+  },
+};
+const errorGridOptions = computed<VxeTableGridOptions<ImportErrorRow>>(() => ({
+  id: 'import-id',
+  rowConfig: { keyField: 'id' },
+  columns: errorColumns.value,
+  data: importErrors.value.slice(
+    (errorGridPage.value - 1) * errorGridSize.value,
+    errorGridPage.value * errorGridSize.value,
+  ),
+  pagerConfig: {
+    currentPage: errorGridPage.value,
+    pageSize: errorGridSize.value,
+    total: importErrors.value.length,
+  },
+  toolbarConfig: {
+    refresh: true,
+    refreshOptions: {
+      queryMethod: async () => {
+        errorGridPage.value = 1;
+      },
+    },
+  },
+  customConfig: { storage: true },
+}));
+const [ErrorGrid] = useVxeGrid<ImportErrorRow>({ gridOptions: errorGridOptions.value });
 </script>
 
 <style scoped lang="scss">

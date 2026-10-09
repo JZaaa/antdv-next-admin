@@ -1,52 +1,68 @@
 <template>
-  <div class="page-container">
-    <ProTable
-      ref="tableRef"
-      :columns="columns"
-      :request="fetchTableData"
-      :toolbar="toolbarConfig"
-      :search="{
-        formItems: searchFormItems,
-        labelWidth: 6,
-        defaultCollapsed: true,
-      }"
-      row-key="id"
-    >
-      <template #toolbar-actions>
-        <a-space>
-          <a-upload :show-upload-list="false" accept=".csv" :before-upload="handleImport">
-            <a-button> <UploadOutlined /> {{ $t('common.import') }} </a-button>
+  <div class="page-container user-page">
+    <Grid :table-title="$t('user.title')" :grid-options="gridOptions" :form-options="searchOptions">
+      <template #toolbar-tools>
+        <a-space wrap>
+          <a-upload
+            v-if="can('system.user.create')"
+            :show-upload-list="false"
+            accept=".csv"
+            :before-upload="handleImport"
+          >
+            <a-button><UploadOutlined /> {{ $t('common.import') }}</a-button>
           </a-upload>
-          <a-button @click="handleExport">
-            <DownloadOutlined /> {{ $t('common.export') }}
-          </a-button>
-          <a-button type="primary" @click="handleCreate">
+          <a-button @click="handleExport"><DownloadOutlined /> {{ $t('common.export') }}</a-button>
+          <a-button v-if="can('system.user.create')" type="primary" @click="handleCreate">
             <PlusOutlined /> {{ $t('user.createUser') }}
           </a-button>
         </a-space>
       </template>
-    </ProTable>
-
-    <ProFormModal
+      <template #gender="{ row }">
+        <a-tag v-if="row.gender" :color="row.gender === 'male' ? 'blue' : 'magenta'">
+          {{ row.gender === 'male' ? $t('user.male') : $t('user.female') }}
+        </a-tag>
+        <span v-else>-</span>
+      </template>
+      <template #status="{ row }">
+        <a-badge
+          :status="row.status === 'active' ? 'success' : 'default'"
+          :text="row.status === 'active' ? $t('user.active') : $t('user.inactive')"
+        />
+      </template>
+      <template #actions="{ row }">
+        <a-space :size="0">
+          <a-button v-if="can('system.user.edit')" type="link" size="small" @click="handleEdit(row)"
+            ><EditOutlined /> {{ $t('common.edit') }}</a-button
+          >
+          <a-button
+            v-if="can('system.user.delete')"
+            type="link"
+            size="small"
+            danger
+            @click="handleDelete(row)"
+            ><DeleteOutlined /> {{ $t('common.delete') }}</a-button
+          >
+        </a-space>
+      </template>
+    </Grid>
+    <UserFormModal
+      v-if="formSessionKey"
+      :key="formSessionKey"
       v-model:open="modalVisible"
-      :title="editingUserId ? $t('user.editUser') : $t('user.createUser')"
-      :confirm-loading="submitting"
-      :session-key="formSessionKey"
-      :form-items="formItems"
+      :editing="Boolean(editingUserId)"
       :initial-values="formData"
-      :grid="{ cols: 2, gutter: 16 }"
-      :layout="{ layout: 'vertical' }"
-      width="760px"
-      @submit="handleSubmit"
-      @cancel="handleCancel"
+      :roles="roleOptions"
+      :save="handleSubmit"
       @closed="finishFormClose"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import type { UserFormValues } from './form';
+import type { SchemaFormProps } from '@/libs/form';
+import type { VxeTableGridOptions } from '@/libs/table';
 import type { Role, User } from '@/types/auth';
-import type { ProFormItem, ProTableColumn } from '@/types/pro';
 
 import {
   PlusOutlined,
@@ -56,31 +72,28 @@ import {
   DownloadOutlined,
 } from '@antdv-next/icons';
 import { message, Modal } from 'antdv-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
+import { useVxeGrid } from '@/adapters/table';
 import { getRoleList } from '@/api/role';
 import { createUser, deleteUser, getUserList, updateUser } from '@/api/user';
-import ProFormModal from '@/components/Pro/ProFormModal/index.vue';
-import ProTable from '@/components/Pro/ProTable/index.vue';
 import { useCrudFormSession } from '@/composables/useCrudFormSession';
+import { usePermission } from '@/composables/usePermission';
 import { $t } from '@/locales';
+import { useLayoutStore } from '@/stores/layout';
 import { exportToCSV, parseCSV } from '@/utils/export';
 
-type UserFormValues = {
-  username: string;
-  realName: string;
-  email: string;
-  phone: string;
-  gender: 'male' | 'female';
-  status: boolean;
-  roleIds: string[];
-  bio: string;
-};
+import { createDefaultFormValues, toUserFormValues, toUserPayload } from './form';
+import UserFormModal from './UserFormModal.vue';
 
-const tableRef = ref<{
-  refresh: () => void;
-  reload: () => void;
-} | null>(null);
+interface UserSearch {
+  username?: string;
+  email?: string;
+  status?: string;
+}
+type UserRow = User & { roleNames: string };
+const { can } = usePermission();
+const layoutStore = useLayoutStore();
 const {
   open: modalVisible,
   record: editingUser,
@@ -91,325 +104,164 @@ const {
   close: closeFormModal,
   finishClose: finishFormClose,
 } = useCrudFormSession<User, UserFormValues>(createDefaultFormValues);
-const submitting = ref(false);
 const editingUserId = computed(() => editingUser.value?.id ?? null);
 const roleOptions = ref<Role[]>([]);
-
-const toolbarConfig = computed(() => ({
-  title: $t('user.title'),
-  subTitle: 'ProTable + ProForm',
-  actions: ['refresh', 'density', 'columnSetting'] as Array<
-    'refresh' | 'density' | 'columnSetting'
-  >,
-}));
-
-const statusOptions = computed(() => [
-  { label: $t('user.active'), value: 'active' },
-  { label: $t('user.inactive'), value: 'inactive' },
-]);
-
-const genderOptions = computed(() => [
-  { label: $t('user.male'), value: 'male' },
-  { label: $t('user.female'), value: 'female' },
-]);
-
-const roleSelectOptions = computed(() => {
-  return roleOptions.value.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+let alive = true;
+onBeforeUnmount(() => {
+  alive = false;
 });
-
-const genderValueEnum = computed<Record<string, { text: string; status?: string; color?: string }>>(
-  () => ({
-    male: { text: $t('user.male'), color: 'blue' },
-    female: { text: $t('user.female'), color: 'magenta' },
-  }),
-);
-
-const statusValueEnum = computed<Record<string, { text: string; status?: string; color?: string }>>(
-  () => ({
-    active: { text: $t('user.active'), status: 'success' },
-    inactive: { text: $t('user.inactive'), status: 'default' },
-  }),
-);
-
-const searchFormItems = computed<ProFormItem[]>(() => [
-  { name: 'username', label: $t('user.username'), type: 'input' },
-  { name: 'email', label: $t('user.email'), type: 'input' },
-  { name: 'status', label: $t('user.status'), type: 'select', options: statusOptions.value },
-]);
-
-const columns = computed((): ProTableColumn[] => [
-  {
-    title: $t('user.username'),
-    dataIndex: 'username',
-    width: 150,
-    fixed: 'left',
-  },
-  {
-    title: $t('user.realName'),
-    dataIndex: 'realName',
-    width: 140,
-  },
-  {
-    title: $t('user.email'),
-    dataIndex: 'email',
-    width: 220,
-  },
-  {
-    title: $t('user.phone'),
-    dataIndex: 'phone',
-    width: 150,
-  },
-  {
-    title: $t('user.role'),
-    dataIndex: 'roleNames',
-    width: 220,
-  },
-  {
-    title: $t('user.gender'),
-    dataIndex: 'gender',
-    width: 100,
-    valueType: 'tag',
-    valueEnum: genderValueEnum.value,
-  },
-  {
-    title: $t('user.status'),
-    dataIndex: 'status',
-    width: 120,
-    valueType: 'badge',
-    valueEnum: statusValueEnum.value,
-  },
-  {
-    title: $t('common.createTime'),
-    dataIndex: 'createdAt',
-    width: 200,
-    valueType: 'dateTime',
-  },
-  {
-    title: $t('common.actions'),
-    dataIndex: 'action',
-    width: 160,
-    fixed: 'right',
-    actions: [
-      {
-        label: $t('common.edit'),
-        icon: EditOutlined,
-        onClick: (record) => handleEdit(record as unknown as User),
+const searchOptions = computed<SchemaFormProps<string, Record<never, never>, UserSearch>>(() => ({
+  submitOnEnter: true,
+  showCollapseButton: true,
+  collapsed: true,
+  commonConfig: { labelWidth: 70 },
+  schema: [
+    {
+      fieldName: 'username',
+      label: $t('user.username'),
+      component: 'Input',
+      defaultValue: '',
+      componentProps: {
+        allowClear: true,
+        placeholder: $t('proForm.enterPlaceholder', { label: $t('user.username') }),
       },
-      {
-        label: $t('common.delete'),
-        icon: DeleteOutlined,
-        danger: true,
-        confirm: $t('user.confirmDelete'),
-        onClick: (record) => handleDelete(record as unknown as User),
+    },
+    {
+      fieldName: 'email',
+      label: $t('user.email'),
+      component: 'Input',
+      defaultValue: '',
+      componentProps: {
+        allowClear: true,
+        placeholder: $t('proForm.enterPlaceholder', { label: $t('user.email') }),
       },
-    ],
-  },
-]);
-
-const formItems = computed<ProFormItem[]>(() => [
-  {
-    name: 'username',
-    label: $t('user.username'),
-    type: 'input',
-    required: true,
-    props: {
-      disabled: Boolean(editingUserId.value),
     },
-    rules: [
-      { required: true, message: $t('user.usernameRequired') },
-      { min: 3, max: 20, message: $t('user.usernameLength') },
-    ],
-  },
-  {
-    name: 'realName',
-    label: $t('user.realName'),
-    type: 'input',
-    required: true,
-  },
-  {
-    name: 'email',
-    label: $t('user.email'),
-    type: 'input',
-    required: true,
-    rules: [
-      { required: true, message: $t('user.emailRequired') },
-      { type: 'email', message: $t('validation.email') },
-    ],
-  },
-  {
-    name: 'phone',
-    label: $t('user.phone'),
-    type: 'input',
-    rules: [{ pattern: /^1[3-9]\d{9}$/, message: $t('validation.phone') }],
-  },
-  {
-    name: 'gender',
-    label: $t('user.gender'),
-    type: 'select',
-    options: genderOptions.value,
-  },
-  {
-    name: 'status',
-    label: $t('user.status'),
-    type: 'switch',
-    valuePropName: 'checked',
-    required: true,
-    props: {
-      checkedChildren: $t('user.active'),
-      unCheckedChildren: $t('user.inactive'),
+    {
+      fieldName: 'status',
+      label: $t('user.status'),
+      component: 'Select',
+      componentProps: {
+        allowClear: true,
+        placeholder: $t('proForm.selectPlaceholder', { label: $t('user.status') }),
+        options: [
+          { label: $t('user.active'), value: 'active' },
+          { label: $t('user.inactive'), value: 'inactive' },
+        ],
+      },
     },
-  },
-  {
-    name: 'roleIds',
-    label: $t('user.role'),
-    type: 'select',
-    options: roleSelectOptions.value,
-    props: {
-      mode: 'multiple',
-      allowClear: true,
+  ],
+}));
+const gridOptions = computed<VxeTableGridOptions<UserRow>>(() => ({
+  id: 'system-user',
+  height: 'auto',
+  minHeight: 300,
+  rowConfig: { keyField: 'id' },
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  columns: [
+    { type: 'seq', width: 60, fixed: layoutStore.isMobile ? undefined : 'left' },
+    {
+      field: 'username',
+      title: $t('user.username'),
+      width: 150,
+      fixed: layoutStore.isMobile ? undefined : 'left',
     },
-    rules: [{ type: 'array', required: true, message: $t('user.selectRole') }],
-  },
-  {
-    name: 'bio',
-    label: $t('user.bio'),
-    type: 'textarea',
-    colSpan: 2,
-    props: {
-      rows: 3,
-      maxLength: 200,
-      showCount: true,
+    { field: 'realName', title: $t('user.realName'), minWidth: 140 },
+    { field: 'email', title: $t('user.email'), minWidth: 220 },
+    { field: 'phone', title: $t('user.phone'), width: 150 },
+    { field: 'roleNames', title: $t('user.role'), minWidth: 220 },
+    { field: 'gender', title: $t('user.gender'), width: 100, slots: { default: 'gender' } },
+    { field: 'status', title: $t('user.status'), width: 120, slots: { default: 'status' } },
+    { field: 'createdAt', title: $t('common.createTime'), width: 200, formatter: 'formatDateTime' },
+    ...(can('system.user.edit') || can('system.user.delete')
+      ? [
+          {
+            field: 'action',
+            title: $t('common.actions'),
+            width: 180,
+            fixed: layoutStore.isMobile ? undefined : ('right' as const),
+            slots: { default: 'actions' },
+          },
+        ]
+      : []),
+  ],
+  proxyConfig: {
+    ajax: {
+      async query({ page }, search: UserSearch) {
+        const response = await getUserList({
+          current: page.currentPage,
+          pageSize: page.pageSize,
+          username: search.username?.trim() || undefined,
+          email: search.email?.trim() || undefined,
+          status: search.status,
+        });
+        return {
+          items: response.data.list.map((item) => ({
+            ...item,
+            roleNames: item.roles?.map((role) => role.name).join(', ') || '-',
+          })),
+          total: response.data.total,
+        };
+      },
     },
   },
-]);
-
-function createDefaultFormValues(): UserFormValues {
-  return {
-    username: '',
-    realName: '',
-    email: '',
-    phone: '',
-    gender: 'male',
-    status: true,
-    roleIds: [],
-    bio: '',
-  };
+}));
+const [Grid, gridApi] = useVxeGrid<UserRow, UserSearch>({
+  gridOptions: gridOptions.value,
+  formOptions: searchOptions.value,
+});
+function refreshTable(): void {
+  void gridApi.query();
 }
-
-const formatRoleNames = (roles: Role[]) => {
-  if (!roles || roles.length === 0) {
-    return '-';
-  }
-  return roles.map((role) => role.name).join(', ');
-};
-
-const fetchTableData = async (params: Record<string, unknown>) => {
-  const response = await getUserList({
-    current: Number(params.current || 1),
-    pageSize: Number(params.pageSize || 10),
-    username: (params.username as string)?.trim() || undefined,
-    email: (params.email as string)?.trim() || undefined,
-    status: params.status as string,
-  });
-
-  const list = response.data.list.map((item) => ({
-    ...item,
-    roleNames: formatRoleNames(item.roles),
-  }));
-
-  return {
-    data: list,
-    total: response.data.total,
-    success: true,
-  };
-};
-
-const fetchRoleOptions = async () => {
-  const response = await getRoleList({ current: 1, pageSize: 200 });
-  roleOptions.value = response.data.list;
-};
-
-const refreshTable = () => {
-  tableRef.value?.refresh();
-};
-
-const reloadTable = () => {
-  tableRef.value?.reload();
-};
-
-const handleCreate = () => {
-  openCreateForm();
-};
-
-const handleEdit = (record: User) => {
-  const statusStr = record.status || 'active';
-  const initialValues: UserFormValues = {
-    username: record.username,
-    realName: record.realName,
-    email: record.email,
-    phone: record.phone,
-    gender: record.gender || 'male',
-    status: statusStr === 'active',
-    roleIds: (record.roles || []).map((role) => role.id),
-    bio: record.bio || '',
-  };
-  openEditForm(record, initialValues);
-};
-
-const handleCancel = () => {
-  closeFormModal();
-};
-
-const handleDelete = async (record: User) => {
+function reloadTable(): void {
+  void gridApi.reload();
+}
+function handleCreate(): void {
+  if (can('system.user.create')) openCreateForm();
+}
+function handleEdit(record: User): void {
+  if (can('system.user.edit')) openEditForm(record, toUserFormValues(record));
+}
+function handleDelete(record: User): void {
+  if (!can('system.user.delete')) return;
   Modal.confirm({
     title: $t('user.deleteUser'),
     content: $t('user.confirmDelete'),
-    onOk: async () => {
-      await deleteUser(record.id);
-      message.success($t('common.success'));
-      refreshTable();
+    async onOk() {
+      try {
+        await deleteUser(record.id);
+        message.success($t('common.success'));
+        refreshTable();
+      } catch (error) {
+        // 请求层提供错误提示；保留确认框以便重试。
+        console.error('Failed to delete user:', error);
+        throw error;
+      }
     },
   });
-};
-
-const handleSubmit = async (rawValues: Record<string, unknown>) => {
-  const values = rawValues as UserFormValues;
-
-  const selectedRoles = roleOptions.value.filter((role) => values.roleIds?.includes(role.id));
-
-  const payload: Partial<User> = {
-    username: values.username?.trim(),
-    realName: values.realName?.trim(),
-    email: values.email?.trim(),
-    phone: values.phone?.trim(),
-    gender: values.gender,
-    status: values.status ? 'active' : 'inactive',
-    bio: values.bio?.trim(),
-    roles: selectedRoles,
-  };
-
-  submitting.value = true;
-  try {
-    if (editingUserId.value) {
-      await updateUser(editingUserId.value, payload);
-      message.success($t('user.updateSuccess'));
-      refreshTable();
-    } else {
-      await createUser(payload);
-      message.success($t('user.createSuccess'));
-      reloadTable();
-    }
-    closeFormModal();
-  } finally {
-    submitting.value = false;
-  }
-};
-
+}
+async function handleSubmit(values: UserFormValues): Promise<void> {
+  const session = formSessionKey.value;
+  const id = editingUserId.value;
+  if (!modalVisible.value || !can(id ? 'system.user.edit' : 'system.user.create')) return;
+  const payload = toUserPayload(values, roleOptions.value);
+  if (id) await updateUser(id, payload);
+  else await createUser(payload);
+  if (!alive) return;
+  message.success($t(id ? 'user.updateSuccess' : 'user.createSuccess'));
+  if (id) refreshTable();
+  else reloadTable();
+  // 旧请求完成时不能关闭后来打开的另一条记录。
+  if (session === formSessionKey.value) closeFormModal();
+}
 onMounted(async () => {
-  await fetchRoleOptions();
+  if (!can('system.user.create') && !can('system.user.edit')) return;
+  try {
+    const response = await getRoleList({ current: 1, pageSize: 200 });
+    if (alive) roleOptions.value = response.data.list;
+  } catch (error) {
+    console.error('Failed to load user role options:', error);
+  }
 });
 
 // export user data
@@ -454,6 +306,7 @@ const handleExport = async () => {
 
 // import user data
 const handleImport = async (file: File) => {
+  if (!can('system.user.create')) return false;
   try {
     const rows = await parseCSV(file);
     if (rows.length < 2) {

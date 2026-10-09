@@ -44,6 +44,7 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
       let alive = true;
       const grid = shallowRef<VxeGridInstance<T>>();
       const host = shallowRef<HTMLElement>();
+      const searchHost = shallowRef<HTMLElement>();
       const media =
         typeof window === 'undefined' ? undefined : window.matchMedia('(max-width: 767px)');
       const mobile = shallowRef(media?.matches ?? false);
@@ -68,6 +69,9 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
           state.value.gridOptions ?? {},
           (VxeUI.getConfig().grid ?? {}) as VxeTableGridOptions<T>,
         ),
+      );
+      const isFillHeight = computed(
+        () => base.value.height === 'auto' || base.value.height === '100%',
       );
       const coalesceResize = computed(
         () => (state.value.resizeDelayMs ?? 0) > 0 && base.value.autoResize !== false,
@@ -333,12 +337,33 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
         }
         return value;
       });
+      // Search content can change height without resizing the outer grid.
+      // Notify only this table; VXE coalesces layout requests internally.
       watch(
-        () => state.value.showSearchForm,
-        async () => {
-          await nextTick();
-          if (alive) await grid.value?.recalculate();
+        searchHost,
+        (element, _previous, cleanup) => {
+          if (!element) return;
+          let previousHeight: number | undefined;
+          let frame = 0;
+          const observer = new ResizeObserver(([entry]) => {
+            if (!entry) return;
+            const height = entry.contentRect.height;
+            if (previousHeight !== undefined && height !== previousHeight && !frame) {
+              // Leave the observer delivery phase before VXE reads/writes layout.
+              frame = requestAnimationFrame(() => {
+                frame = 0;
+                if (alive) void grid.value?.recalculate(true);
+              });
+            }
+            previousHeight = height;
+          });
+          observer.observe(element);
+          cleanup(() => {
+            observer.disconnect();
+            cancelAnimationFrame(frame);
+          });
         },
+        { flush: 'post' },
       );
       // VXE already recalculates and restores scroll on activation. A second call
       // here repeats synchronous measurements of the same cached table.
@@ -393,6 +418,7 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
             h(
               'div',
               {
+                ref: searchHost,
                 class: 'schema-grid__search',
                 style: current.showSearchForm === false ? { display: 'none' } : undefined,
               },
@@ -430,21 +456,28 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
           if (event.code === 'search') api.toggleSearchForm();
           current.gridEvents?.toolbarToolClick?.(event);
         };
-        return h('div', { ref: host, class: ['schema-grid', current.class] }, [
-          h(
-            VxeGrid as Component,
-            {
-              ...resolved.value,
-              ...listeners,
-              // Loading is presentation state. Keep pager/proxy/toolbar option
-              // identities stable when only the delayed indicator changes.
-              loading: base.value.loading || delayedLoading.value,
-              class: current.gridClass,
-              ref: grid,
-            },
-            nativeSlots,
-          ),
-        ]);
+        return h(
+          'div',
+          {
+            ref: host,
+            class: ['schema-grid', { 'schema-grid--fill': isFillHeight.value }, current.class],
+          },
+          [
+            h(
+              VxeGrid as Component,
+              {
+                ...resolved.value,
+                ...listeners,
+                // Loading is presentation state. Keep pager/proxy/toolbar option
+                // identities stable when only the delayed indicator changes.
+                loading: base.value.loading || delayedLoading.value,
+                class: current.gridClass,
+                ref: grid,
+              },
+              nativeSlots,
+            ),
+          ],
+        );
       };
     },
   });

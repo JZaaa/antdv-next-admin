@@ -134,7 +134,7 @@ export default {
     colorPicker: 'Color Picker',
     requestAuth: 'Request/Auth Flow',
     rbacFlow: 'RBAC Flow',
-    proTableAdvanced: 'ProTable Advanced',
+    proTableAdvanced: 'VXE Table Advanced',
     complexForm: 'Complex Form',
     uploadSystem: 'Upload System',
     importExport: 'Import/Export Flow',
@@ -308,7 +308,7 @@ export default {
     modulePermissionMeta: 'Roles and users',
     moduleMenuMeta: 'Permission codes',
     moduleSystemMeta: 'Settings and logs',
-    previewSubtitle: 'ProTable + ProForm',
+    previewSubtitle: 'VXE Table + SchemaForm',
     previewAddMenu: 'Add menu',
     previewCreateUser: 'Create user',
     permissionCode: 'Permission Code',
@@ -536,7 +536,7 @@ export default {
 
   exampleTable: {
     userList: 'User List',
-    subTitle: 'ProTable Example',
+    subTitle: 'VXE Table Example',
     createUser: 'Create User',
     editUser: 'Edit User',
     deleteSuccess: 'Deleted successfully',
@@ -636,7 +636,7 @@ export default {
   },
 
   exampleForm: {
-    description: 'Advanced ProForm example demonstrating various form controls',
+    description: 'Advanced SchemaForm example demonstrating various form controls',
     age: 'Age',
     ageRange: 'Age must be between 1 and 150',
     interests: 'Interests',
@@ -960,7 +960,7 @@ export default {
     feature5Desc: 'Built-in Chinese & English with easy locale extension',
     feature6: 'Light / Dark Theme Switching',
     feature6Desc: '6 preset theme colors with auto system preference detection',
-    feature7: 'ProTable / ProForm Components',
+    feature7: 'VXE Table / SchemaForm Components',
     feature7Desc: 'Config-driven tables and forms covering common business scenarios',
     feature8: 'Mock Data Development Mode',
     feature8Desc: 'Built-in mock system for parallel frontend and backend development',
@@ -1331,7 +1331,7 @@ export default {
           'Chain type-check + unit + e2e into pipeline, execute automatically before merge.',
       },
       proTableAdvanced: {
-        title: 'ProTable Advanced Example',
+        title: 'VXE Table Advanced Example',
         description:
           'Server-side pagination simulation + batch operations + inline editing + export',
         selectedCount: '{count} items selected',
@@ -1453,9 +1453,9 @@ export default {
       virtualTable: {
         title: 'Virtual Scroll Table Example',
         description:
-          'Demonstrates smooth rendering of large data sets using native a-table virtual scroll.',
+          'Demonstrates smooth rendering of large data sets using native VXE Table virtual scroll.',
         tipsNativeVirtual:
-          'Built with antdv-next native a-table + virtual, no extra virtual list library required.',
+          'Built with VXE Table native virtual scrolling, rendering only visible rows.',
         datasetSize: 'Dataset size',
         regenerate: 'Regenerate Data',
         regenerateSuccess: '{count} rows generated',

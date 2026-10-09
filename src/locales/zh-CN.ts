@@ -134,7 +134,7 @@ export default {
     colorPicker: '颜色选择器',
     requestAuth: '请求鉴权闭环',
     rbacFlow: 'RBAC 全链路',
-    proTableAdvanced: 'ProTable 高阶',
+    proTableAdvanced: 'VXE Table 高阶',
     complexForm: '复杂表单',
     uploadSystem: '上传体系',
     importExport: '导入导出闭环',
@@ -305,7 +305,7 @@ export default {
     modulePermissionMeta: '角色与用户',
     moduleMenuMeta: '权限代码',
     moduleSystemMeta: '配置与日志',
-    previewSubtitle: 'ProTable + ProForm',
+    previewSubtitle: 'VXE Table + SchemaForm',
     previewAddMenu: '新增菜单',
     previewCreateUser: '新增用户',
     permissionCode: '权限代码',
@@ -533,7 +533,7 @@ export default {
 
   exampleTable: {
     userList: '用户列表',
-    subTitle: 'ProTable 示例',
+    subTitle: 'VXE Table 示例',
     createUser: '新建用户',
     editUser: '编辑用户',
     deleteSuccess: '删除成功',
@@ -630,7 +630,7 @@ export default {
   },
 
   exampleForm: {
-    description: 'ProForm 高级表单示例 - 展示各种表单控件',
+    description: 'SchemaForm 高级表单示例 - 展示各种表单控件',
     age: '年龄',
     ageRange: '年龄必须在1-150之间',
     interests: '兴趣爱好',
@@ -945,7 +945,7 @@ export default {
     feature5Desc: '内置中英文切换，轻松扩展更多语言包',
     feature6: '亮色 / 暗色主题切换',
     feature6Desc: '6 种主题色预设，支持跟随系统自动切换',
-    feature7: 'ProTable / ProForm 高阶组件',
+    feature7: 'VXE Table / SchemaForm 高阶组件',
     feature7Desc: '配置驱动的表格与表单，覆盖常见业务场景',
     feature8: 'Mock 数据开发模式',
     feature8Desc: '内置完整 Mock 体系，前后端并行开发无阻塞',
@@ -1305,7 +1305,7 @@ export default {
         step3Description: '将 type-check + unit + e2e 串成流水线，合并前自动执行。',
       },
       proTableAdvanced: {
-        title: 'ProTable 高阶示例',
+        title: 'VXE Table 高阶示例',
         description: '服务端分页模拟 + 批量操作 + 行内编辑 + 导出',
         selectedCount: '已选 {count} 项',
         batchDisable: '批量禁用',
@@ -1422,8 +1422,8 @@ export default {
       },
       virtualTable: {
         title: '虚拟滚动表格示例',
-        description: '演示 a-table 原生虚拟滚动在万级数据下的流畅渲染能力。',
-        tipsNativeVirtual: '基于 antdv-next 原生 a-table + virtual，无需额外虚拟列表库。',
+        description: '演示 VXE Table 原生虚拟滚动在万级数据下的流畅渲染能力。',
+        tipsNativeVirtual: '基于 VXE Table 原生虚拟滚动，按可视区域渲染行。',
         datasetSize: '数据量',
         regenerate: '重新生成数据',
         regenerateSuccess: '已生成 {count} 条数据',

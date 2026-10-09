@@ -14,12 +14,7 @@
       <div class="toolbar">
         <a-space wrap>
           <span class="text-secondary">{{ $t('examples.scaffold.virtualTable.datasetSize') }}</span>
-          <a-select v-model:value="datasetSize" style="width: 140px">
-            <a-select-option :value="5000">5,000</a-select-option>
-            <a-select-option :value="20000">20,000</a-select-option>
-            <a-select-option :value="50000">50,000</a-select-option>
-            <a-select-option :value="100000">100,000</a-select-option>
-          </a-select>
+          <a-select v-model:value="datasetSize" :options="datasetOptions" style="width: 140px" />
           <a-button @click="regenerateRows">{{
             $t('examples.scaffold.virtualTable.regenerate')
           }}</a-button>
@@ -31,20 +26,7 @@
             style="width: 240px"
             :placeholder="$t('examples.scaffold.virtualTable.searchPlaceholder')"
           />
-          <a-select v-model:value="statusFilter" style="width: 150px">
-            <a-select-option value="all">{{
-              $t('examples.scaffold.virtualTable.allStatus')
-            }}</a-select-option>
-            <a-select-option value="active">{{
-              $t('examples.scaffold.virtualTable.statusActive')
-            }}</a-select-option>
-            <a-select-option value="inactive">{{
-              $t('examples.scaffold.virtualTable.statusInactive')
-            }}</a-select-option>
-            <a-select-option value="pending">{{
-              $t('examples.scaffold.virtualTable.statusPending')
-            }}</a-select-option>
-          </a-select>
+          <a-select v-model:value="statusFilter" :options="statusOptions" style="width: 150px" />
         </a-space>
       </div>
 
@@ -58,39 +40,26 @@
         <a-tag>{{ $t('examples.scaffold.virtualTable.renderedRowsTip') }}</a-tag>
       </a-space>
 
-      <ProTable
-        layout="content"
-        row-key="id"
-        size="small"
-        bordered
-        virtual
-        :columns="columns"
-        :data-source="filteredRows"
-        :search="false"
-        :toolbar="false"
-        :pagination="false"
-        :show-index-column="false"
-        :scroll="{ y: 520, x: 1200 }"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'status'">
+      <Grid :grid-options="gridOptions">
+        <template #bodyCell="{ column, row: record }">
+          <template v-if="column.field === 'status'">
             <a-tag :color="getStatusColor(record.status)">
               {{ getStatusText(record.status) }}
             </a-tag>
           </template>
         </template>
-      </ProTable>
+      </Grid>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { VxeTableGridOptions } from '@/libs/table';
+
 import { message } from 'antdv-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, shallowRef, watch } from 'vue';
 
-import type { ProTableColumn } from '@/types/pro';
-
-import ProTable from '@/components/Pro/ProTable/index.vue';
+import { useVxeGrid } from '@/adapters/table';
 import { $t } from '@/locales';
 
 type StatusType = 'active' | 'inactive' | 'pending';
@@ -104,22 +73,33 @@ interface DemoRow {
   updatedAt: string;
 }
 
+const datasetOptions = [5000, 20000, 50000, 100000].map((value) => ({
+  value,
+  label: value.toLocaleString('en-US'),
+}));
+const statusOptions = computed(() => [
+  { value: 'all', label: $t('examples.scaffold.virtualTable.allStatus') },
+  { value: 'active', label: $t('examples.scaffold.virtualTable.statusActive') },
+  { value: 'inactive', label: $t('examples.scaffold.virtualTable.statusInactive') },
+  { value: 'pending', label: $t('examples.scaffold.virtualTable.statusPending') },
+]);
 const datasetSize = ref(20000);
 const keyword = ref('');
 const statusFilter = ref<'all' | StatusType>('all');
-const allRows = ref<DemoRow[]>([]);
+const allRows = shallowRef<DemoRow[]>([]);
 
-const columns = computed<ProTableColumn[]>(() => [
-  { title: $t('examples.scaffold.virtualTable.colId'), dataIndex: 'id', width: 130 },
-  { title: $t('examples.scaffold.virtualTable.colUsername'), dataIndex: 'username', width: 180 },
-  { title: $t('examples.scaffold.virtualTable.colEmail'), dataIndex: 'email', width: 260 },
+const columns = computed<NonNullable<VxeTableGridOptions<DemoRow>['columns']>>(() => [
+  { title: $t('examples.scaffold.virtualTable.colId'), field: 'id', width: 130 },
+  { title: $t('examples.scaffold.virtualTable.colUsername'), field: 'username', minWidth: 180 },
+  { title: $t('examples.scaffold.virtualTable.colEmail'), field: 'email', minWidth: 260 },
+  { title: $t('examples.scaffold.virtualTable.colDepartment'), field: 'department', width: 180 },
   {
-    title: $t('examples.scaffold.virtualTable.colDepartment'),
-    dataIndex: 'department',
-    width: 180,
+    title: $t('examples.scaffold.virtualTable.colStatus'),
+    field: 'status',
+    width: 120,
+    slots: { default: 'bodyCell' },
   },
-  { title: $t('examples.scaffold.virtualTable.colStatus'), dataIndex: 'status', width: 120 },
-  { title: $t('examples.scaffold.virtualTable.colUpdatedAt'), dataIndex: 'updatedAt', width: 200 },
+  { title: $t('examples.scaffold.virtualTable.colUpdatedAt'), field: 'updatedAt', width: 200 },
 ]);
 
 const filteredRows = computed(() => {
@@ -184,6 +164,31 @@ function getStatusColor(status: StatusType) {
 onMounted(() => {
   regenerateRows();
 });
+const gridOptions = computed<VxeTableGridOptions<DemoRow>>(() => ({
+  id: 'example-virtual-table',
+  rowConfig: { keyField: 'id' },
+  columns: columns.value,
+  height: 560,
+  border: true,
+  virtualYConfig: { enabled: true, gt: 50 },
+  customConfig: { storage: true },
+  toolbarConfig: {
+    refresh: true,
+    refreshOptions: {
+      queryMethod: async () => {
+        regenerateRows();
+      },
+    },
+  },
+}));
+const [Grid, gridApi] = useVxeGrid<DemoRow>({ gridOptions: gridOptions.value });
+watch(
+  filteredRows,
+  (rows) => {
+    void gridApi.grid?.loadData(rows);
+  },
+  { flush: 'post' },
+);
 </script>
 
 <style scoped lang="scss">

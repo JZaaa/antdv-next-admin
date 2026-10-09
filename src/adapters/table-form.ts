@@ -19,7 +19,7 @@ export function createTableSearch<T extends object = FormValues, S extends objec
   const defaults: SchemaFormProps<string, Record<never, never>, T, S> = {
     compact: true,
     showCollapseButton: true,
-    collapseTriggerResize: true,
+    collapseTriggerResize: false,
     wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
     submitButtonOptions: { content: computed(() => tableMessages[tableLocale.value].search) },
     handleSubmit: async (values) => {

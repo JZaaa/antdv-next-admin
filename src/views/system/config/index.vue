@@ -17,20 +17,14 @@
 
       <template #main>
         <!-- config list -->
-        <ProTable
-          :key="selectedGroup + refreshKey"
-          :columns="columns"
-          :request="loadConfigList"
-          :search="false"
-          :toolbar="{ title: $t(`config.groups.${selectedGroup}`) }"
-        >
-          <template #toolbar-actions>
+        <Grid :grid-options="gridOptions" :table-title="$t(`config.groups.${selectedGroup}`)">
+          <template #toolbar-tools>
             <a-button type="primary" @click="handleAdd">
               <PlusOutlined /> {{ $t('config.createConfig') }}
             </a-button>
           </template>
-          <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'value'">
+          <template #bodyCell="{ column, row: record }">
+            <template v-if="column.field === 'value'">
               <template v-if="record.valueType === 'boolean'">
                 <a-tag :color="record.value === 'true' ? 'green' : 'default'">
                   {{ record.value === 'true' ? $t('common.yes') : $t('common.no') }}
@@ -40,10 +34,10 @@
                 <span class="config-value">{{ record.value }}</span>
               </template>
             </template>
-            <template v-if="column.key === 'valueType'">
+            <template v-if="column.field === 'valueType'">
               <a-tag>{{ $t(`config.valueTypes.${record.valueType}`) || record.valueType }}</a-tag>
             </template>
-            <template v-if="column.key === 'builtIn'">
+            <template v-if="column.field === 'builtIn'">
               <a-tag :color="record.builtIn ? 'blue' : 'default'">
                 {{
                   record.builtIn
@@ -52,7 +46,7 @@
                 }}
               </a-tag>
             </template>
-            <template v-if="column.key === 'action'">
+            <template v-if="column.field === 'action'">
               <a-space :size="4">
                 <a-button type="link" size="small" @click="handleEdit(record)">
                   <template #icon><EditOutlined /></template>
@@ -71,7 +65,7 @@
               </a-space>
             </template>
           </template>
-        </ProTable>
+        </Grid>
       </template>
     </ProSplitLayout>
 
@@ -133,25 +127,24 @@
 </template>
 
 <script setup lang="ts">
+import type { VxeTableGridOptions } from '@/libs/table';
 import type { SysConfig } from '@/types/config';
-import type { ProTableColumn } from '@/types/pro';
 import type { MenuItemType } from 'antdv-next';
 
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@antdv-next/icons';
 import { message, Modal } from 'antdv-next';
-import { ref, computed, h } from 'vue';
+import { ref, computed, h, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { useVxeGrid } from '@/adapters/table';
 import { getConfigList, createConfig, updateConfig, deleteConfig } from '@/api/config';
 import ProSplitLayout from '@/components/Pro/ProSplitLayout/index.vue';
-import ProTable from '@/components/Pro/ProTable/index.vue';
 
 const { t } = useI18n();
 
 const groups = ref<string[]>(['basic', 'security', 'upload', 'notification']);
 const selectedGroup = ref('basic');
 const allConfigs = ref<SysConfig[]>([]);
-const refreshKey = ref(0);
 const valueTypeOptions = computed(() =>
   ['string', 'number', 'boolean', 'json'].map((value) => ({
     label: t(`config.valueTypes.${value}`),
@@ -209,60 +202,45 @@ const boolValue = computed({
   },
 });
 
-const columns: ProTableColumn[] = [
-  { title: t('config.configName'), dataIndex: 'name', key: 'name', width: 160 },
-  { title: t('config.configKey'), dataIndex: 'key', key: 'key', width: 200 },
+const columns = computed<NonNullable<VxeTableGridOptions<SysConfig>['columns']>>(() => [
+  { title: t('config.configName'), field: 'name', minWidth: 160 },
+  { title: t('config.configKey'), field: 'key', width: 200 },
   {
     title: t('config.configValue'),
-    dataIndex: 'value',
-    key: 'value',
-    ellipsis: true,
+    field: 'value',
+    minWidth: 150,
+    showOverflow: true,
+    slots: { default: 'bodyCell' },
   },
-  {
-    title: t('config.valueType'),
-    dataIndex: 'valueType',
-    key: 'valueType',
-    width: 90,
-  },
-  {
-    title: t('config.builtIn'),
-    dataIndex: 'builtIn',
-    key: 'builtIn',
-    width: 90,
-  },
-  {
-    title: t('config.description'),
-    dataIndex: 'description',
-    key: 'description',
-    ellipsis: true,
-  },
+  { title: t('config.valueType'), field: 'valueType', width: 90, slots: { default: 'bodyCell' } },
+  { title: t('config.builtIn'), field: 'builtIn', width: 90, slots: { default: 'bodyCell' } },
+  { title: t('config.description'), field: 'description', minWidth: 150, showOverflow: true },
   {
     title: t('common.actions'),
-    dataIndex: 'action',
-    key: 'action',
+    field: 'action',
     width: 150,
     fixed: 'right',
+    slots: { default: 'bodyCell' },
   },
-];
+]);
 
 const loadConfigList = async (params: Record<string, unknown>) => {
-  try {
+  let current = Number(params.current || 1);
+  // 左侧切换可能发生在请求中；只把最新分组的数据交给表格。
+  while (true) {
+    const key = selectedGroup.value;
+    if (!key) return { data: [], total: 0, success: true };
     const response = await getConfigList({
-      group: selectedGroup.value,
-      page: params.current as number,
-      pageSize: params.pageSize as number,
+      group: key,
+      page: current,
+      pageSize: Number(params.pageSize || 10),
     });
-    if (response.code === 200) {
-      return {
-        data: response.data.list,
-        total: response.data.total,
-        success: true,
-      };
+    if (key !== selectedGroup.value) {
+      current = 1;
+      continue;
     }
-  } catch (error: unknown) {
-    console.error(t('config.loadConfigFailed'), (error as Error).message);
+    return { data: response.data.list, total: response.data.total, success: true };
   }
-  return { data: [], total: 0, success: false };
 };
 
 // load all configs for group count
@@ -300,7 +278,7 @@ const handleDelete = (record: SysConfig) => {
         const response = await deleteConfig(record.id);
         if (response.code === 200) {
           message.success(t('config.deleteSuccess'));
-          refreshKey.value++;
+          void gridApi.query();
           loadAllConfigs();
         } else {
           message.error(response.message || t('config.deleteFailed'));
@@ -323,7 +301,7 @@ const handleSubmit = async () => {
       if (response.code === 200) {
         message.success(t('config.updateSuccess'));
         modalVisible.value = false;
-        refreshKey.value++;
+        void gridApi.query();
         loadAllConfigs();
       }
     } else {
@@ -331,7 +309,7 @@ const handleSubmit = async () => {
       if (response.code === 200) {
         message.success(t('config.createSuccess'));
         modalVisible.value = false;
-        refreshKey.value++;
+        void gridApi.query();
         loadAllConfigs();
       } else message.error(response.message || t('config.operateFailed'));
     }
@@ -341,6 +319,31 @@ const handleSubmit = async () => {
 };
 
 loadAllConfigs();
+const gridOptions = computed<VxeTableGridOptions<SysConfig>>(() => ({
+  id: 'system-config',
+  height: 'auto',
+  rowConfig: { keyField: 'id' },
+  columns: [{ type: 'seq', width: 60 }, ...columns.value],
+  pagerConfig: { pageSize: 10 },
+  customConfig: { storage: true },
+  proxyConfig: {
+    ajax: {
+      async query({ page }, search: Record<string, unknown>) {
+        const result = await loadConfigList({
+          ...search,
+          current: page.currentPage,
+          pageSize: page.pageSize,
+        });
+        return { items: result.data, total: result.total };
+      },
+    },
+  },
+}));
+const [Grid, gridApi] = useVxeGrid<SysConfig>({ gridOptions: gridOptions.value });
+watch(selectedGroup, () => {
+  gridApi.setGridOptions({ pagerConfig: { currentPage: 1 } });
+  void gridApi.reload();
+});
 </script>
 
 <style scoped lang="scss">

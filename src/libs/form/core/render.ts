@@ -621,10 +621,32 @@ export function createFormRenderer<
                     void nextTick(() => window.dispatchEvent(new Event('resize')));
                 },
               },
-              () =>
+              () => [
                 state.collapsed
                   ? (state.locale?.expand ?? '展开')
                   : (state.locale?.collapse ?? '收起'),
+                h(
+                  'svg',
+                  {
+                    class: 'vben-collapse-icon',
+                    viewBox: '0 0 24 24',
+                    width: '1em',
+                    height: '1em',
+                    fill: 'none',
+                    stroke: 'currentColor',
+                    'stroke-width': 2,
+                    'stroke-linecap': 'round',
+                    'stroke-linejoin': 'round',
+                    'aria-hidden': 'true',
+                    focusable: 'false',
+                    style: {
+                      transform: state.collapsed ? 'none' : 'rotate(180deg)',
+                      transition: 'transform 0.2s',
+                    },
+                  },
+                  [h('path', { d: 'm6 9 6 6 6-6' })],
+                ),
+              ],
             )
           : null,
         slots['expand-after']?.(scope),
@@ -633,6 +655,7 @@ export function createFormRenderer<
   }
   const host = ref<HTMLElement>();
   let observer: ResizeObserver | undefined;
+  let resizeFrame = 0;
   let foldScheduled = false;
   function measure(): void {
     if (!host.value) return;
@@ -676,6 +699,24 @@ export function createFormRenderer<
       if (rows.indexOf(top) >= (api.state.collapsedRows ?? 1))
         node.classList.add('vben-query-folded');
     });
+    // Inline actions occupy a grid cell too. Reserve room in the last collapsed
+    // row, using actual layout so column spans and responsive grids still work.
+    // Keep at least one field on single-column/mobile forms.
+    const actionElement = [...root.children].find(
+      (node): node is HTMLElement =>
+        node instanceof HTMLElement && node.classList.contains('vben-form-actions'),
+    );
+    const lastRowTop = rows[(api.state.collapsedRows ?? 1) - 1];
+    if (!actionElement || api.state.actionLayout === 'newLine' || lastRowTop === undefined) return;
+    const shown = children.filter(
+      (node, index) => positions[index] !== null && !node.classList.contains('vben-query-folded'),
+    );
+    while (shown.length > 1 && actionElement.offsetTop > lastRowTop) {
+      const last = shown[shown.length - 1]!;
+      if (last.offsetTop < lastRowTop) break;
+      last.classList.add('vben-query-folded');
+      shown.pop();
+    }
   }
   function scheduleMeasure(): void {
     if (!foldScheduled) {
@@ -689,13 +730,22 @@ export function createFormRenderer<
   onMounted(() => {
     api.mount(host.value);
     if (typeof ResizeObserver !== 'undefined' && host.value) {
-      observer = new ResizeObserver(scheduleMeasure);
+      // Fold measurement changes layout; defer it outside observer delivery and
+      // combine resize notifications within the same animation frame.
+      observer = new ResizeObserver(() => {
+        if (resizeFrame) return;
+        resizeFrame = requestAnimationFrame(() => {
+          resizeFrame = 0;
+          scheduleMeasure();
+        });
+      });
       observer.observe(host.value);
     }
     scheduleMeasure();
   });
   onBeforeUnmount(() => {
     observer?.disconnect();
+    cancelAnimationFrame(resizeFrame);
     api.unmount();
   });
   watch(

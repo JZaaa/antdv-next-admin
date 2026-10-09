@@ -35,7 +35,8 @@ function setupHost(): void {
             },
             round: true,
             showOverflow: true,
-            size: 'small',
+            size: 'medium',
+            toolbarConfig: { refresh: true, zoom: true, custom: true },
           },
         });
         registerTableRenderers(ui);
@@ -64,10 +65,7 @@ export function useVxeGrid<
   >,
 ] {
   setupHost();
-  return useCoreGrid(
-    { loadingDelayMs: 120, resizeDelayMs: 100, ...options },
-    createTableSearch<T, S>,
-  );
+  return useCoreGrid({ loadingDelayMs: 120, ...options }, createTableSearch<T, S>);
 }
 export { setupVxeTable, VxeUI } from '@/libs/table';
 export type * from '@/libs/table';
