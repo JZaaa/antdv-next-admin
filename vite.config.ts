@@ -70,6 +70,7 @@ export default defineConfig({
     include: ["antdv-next", "@antdv-next/icons", "@iconify/vue"],
   },
   server: {
+    host: "0.0.0.0",
     port: 3000,
     open: false,
     proxy: {},
