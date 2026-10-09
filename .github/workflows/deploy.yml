@@ -54,7 +54,7 @@ jobs:
         run: pnpm run test:unit:run --exclude '**/*form*.spec.ts'
 
       - name: Build
-        run: pnpm run build:demo
+        run: pnpm run build:demo --base=/antdv-next-admin/
         env:
           NODE_ENV: production
 
