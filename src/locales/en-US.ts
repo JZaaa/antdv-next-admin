@@ -73,6 +73,13 @@ export default {
     searchLabel: 'Search {label}',
   },
 
+  updateCheck: {
+    title: 'New Version Available',
+    description: 'The application has been updated. Refresh to use the latest version?',
+    refresh: 'Refresh Page',
+    later: 'Later',
+  },
+
   codeEditor: {
     format: 'Format',
     minify: 'Minify',

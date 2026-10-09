@@ -11,6 +11,10 @@
     >
       <a-app>
         <router-view />
+        <CheckUpdates
+          v-if="appDefaultSettings.updateCheck.enabled && !authStore.sessionChanged"
+          :interval-minutes="appDefaultSettings.updateCheck.intervalMinutes"
+        />
         <a-modal
           v-if="authStore.sessionChanged"
           :open="authStore.sessionChanged"
@@ -43,6 +47,7 @@ import { computed, h, onBeforeMount, onMounted, onUnmounted, watch, watchEffect 
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
+import CheckUpdates from './components/Global/CheckUpdates.vue';
 import { applyLocalePreference } from './locales';
 import { appDefaultSettings } from './settings';
 import { useAuthStore } from './stores/auth';

@@ -73,6 +73,13 @@ export default {
     searchLabel: '搜索{label}',
   },
 
+  updateCheck: {
+    title: '发现新版本',
+    description: '系统已更新，是否刷新页面以使用最新版本？',
+    refresh: '刷新页面',
+    later: '稍后',
+  },
+
   codeEditor: {
     format: '格式化',
     minify: '压缩',

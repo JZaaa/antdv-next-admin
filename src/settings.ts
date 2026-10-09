@@ -39,6 +39,10 @@ export interface ButtonDefaultSettings {
 export interface AppDefaultSettings {
   auth: AuthSettings;
   features: AppFeatures;
+  updateCheck: {
+    enabled: boolean;
+    intervalMinutes: number;
+  };
   preferences: UserPreferences;
   layout: {
     sidebarWidth: number;
@@ -82,6 +86,10 @@ export const appDefaultSettings: AppDefaultSettings = {
     aiChat: true,
     tabs: true,
     breadcrumb: true,
+  },
+  updateCheck: {
+    enabled: true,
+    intervalMinutes: 5,
   },
   // Defaults are merged with validated user overrides in the current cache namespace.
   preferences: {

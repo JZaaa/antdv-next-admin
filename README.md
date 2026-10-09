@@ -315,7 +315,7 @@ npm run test:unit:run   # one-shot
 
 框架默认部署在根路径 "/"。部署到子路径（例如 "/bs/"）时，将 Vite 的 `base` 配置为该路径，或通过 `pnpm run build --base=/bs/` 在流水线构建时指定。使用以 "/" 开头、以 "/" 结尾的绝对路径前缀，确保 History 路由与嵌套路由刷新正确定位应用。
 
-Logo 通过 `APP_LOGO_URL` 读取 `import.meta.env.BASE_URL`，入口 HTML 使用 `%BASE_URL%`；静态 `404.html` 的回跳地址由构建插件注入相同前缀。新增 public 资源引用时也应使用部署前缀，避免写死域名根路径。
+Vue 组件中的 Logo 通过 `APP_LOGO_URL` 读取 `import.meta.env.BASE_URL`。入口 `index.html` 的图片和 favicon 使用 `/logo.png`，由 Vite 的 HTML 资源处理自动添加部署前缀，不再手动拼接 `%BASE_URL%`，避免开发服务生成重复前缀。静态 `404.html` 的回跳地址由构建插件注入相同前缀。Vue 模板中的 public 资源引用仍需显式使用部署前缀。
 
 `VITE_API_BASE_URL` 单独控制接口地址，不控制页面、Logo 或路由前缀。按网关实际配置设置，例如页面使用 "/bs/"，接口可以使用 "/bs/api" 或独立的代理前缀。内置开发 Mock 仍使用 "/api"。
 
