@@ -30,6 +30,7 @@ export default {
     error: '操作失败',
     warning: '警告',
     info: '提示',
+    copy: '复制',
     copySuccess: '复制成功',
     copyFailed: '复制失败',
     actions: '操作',

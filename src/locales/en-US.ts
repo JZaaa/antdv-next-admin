@@ -30,6 +30,7 @@ export default {
     error: 'Error',
     warning: 'Warning',
     info: 'Info',
+    copy: 'Copy',
     copySuccess: 'Copied successfully',
     copyFailed: 'Copy failed',
     actions: 'Actions',

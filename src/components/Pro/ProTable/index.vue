@@ -267,12 +267,12 @@
           </template>
 
           <template v-else-if="column.valueType">
-            <ValueTypeRender
+            <ValueDisplay
               :value="text"
               :type="column.valueType"
-              :enum="resolveValueEnum(column)"
-              :record="record"
-              :value-type-props="column.valueTypeProps"
+              :value-enum="resolveValueEnum(column)"
+              :copyable="column.copyable"
+              :options="column.valueTypeProps"
             />
           </template>
         </template>
@@ -342,6 +342,7 @@ import {
   useAttrs,
 } from 'vue';
 
+import ValueDisplay from '@/components/ValueDisplay/index.vue';
 import { useCrudFormSession } from '@/composables/useCrudFormSession';
 import { $t } from '@/locales';
 import { appDefaultSettings } from '@/settings';
@@ -367,7 +368,6 @@ import {
   normalizeFieldLabel,
   resolveValueEnum,
 } from './composables/useProTableSearch';
-import ValueTypeRender from './ValueTypeRender.vue';
 
 interface Props {
   columns: ProTableColumn[];

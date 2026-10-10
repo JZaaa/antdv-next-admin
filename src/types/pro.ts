@@ -1,6 +1,9 @@
 // Pro Component Types
 
+import type { ValueDisplayOptions, ValueType } from '../components/ValueDisplay/types';
 import type { Component } from 'vue';
+
+export type { ValueType } from '../components/ValueDisplay/types';
 
 export type ProTableRecord = object;
 
@@ -17,21 +20,6 @@ export interface ProTableRequestResult<TRecord extends ProTableRecord = ProTable
 }
 
 // ProTable Types
-export type ValueType =
-  | 'text'
-  | 'date'
-  | 'dateTime'
-  | 'dateRange'
-  | 'time'
-  | 'tag'
-  | 'badge'
-  | 'money'
-  | 'percent'
-  | 'avatar'
-  | 'image'
-  | 'link'
-  | 'progress';
-
 export type HeaderFilterMode = 'client' | 'server' | 'hybrid';
 
 export type ProTableHeaderFilterType = 'keyword' | 'select';
@@ -81,7 +69,7 @@ export interface ProTableColumn<TRecord extends ProTableRecord = ProTableRecord>
   // Value rendering
   valueType?: ValueType;
   valueEnum?: Record<string, { text: string; status?: string; color?: string }>;
-  valueTypeProps?: Record<string, unknown>;
+  valueTypeProps?: ValueDisplayOptions;
   copyable?: boolean;
 
   // Unified options: auto-derives searchOptions and valueEnum when set
@@ -265,7 +253,7 @@ export interface ProDescriptionItem {
   dataIndex: string;
   valueType?: ValueType;
   valueEnum?: Record<string, { text: string; status?: string; color?: string }>;
-  valueTypeProps?: Record<string, unknown>;
+  valueTypeProps?: ValueDisplayOptions;
   span?: number;
   render?: (value: unknown, record: Record<string, unknown>) => unknown;
   copyable?: boolean;
