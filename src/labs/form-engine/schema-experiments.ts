@@ -352,7 +352,7 @@ export async function runSchemaExperiments(
     buttons
       .find((button) => button.textContent?.replace(/\s/g, '').includes('重置'))
       ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    await delay(10);
+    await until(() => resetValue !== undefined);
     assert(
       (resetValue as Record<string, unknown>).x === 'B' && f.api.form.values.x === 'B',
       'Custom reset replaces default',
@@ -523,6 +523,8 @@ export async function runSchemaExperiments(
       ],
     });
     for (const name of ['toggle', 'check', 'radio', 'rate', 'button']) {
+      // Rate is loaded asynchronously; runtime.settle() only waits for form state.
+      await until(() => !!f.node(name).querySelector('.vben-control-wrapper > :first-child'));
       const control = f
         .node(name)
         .querySelector<HTMLElement>('.vben-control-wrapper > :first-child');

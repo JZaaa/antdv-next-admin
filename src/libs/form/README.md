@@ -9,7 +9,7 @@
 将整个 `form` 目录复制到消费项目，例如 `src/libs/form`。模块内部只有相对导入和以下 npm 依赖：
 
 ```sh
-npm install vue@3.5.42 antdv-next@1.5.4 dayjs@1.11.23 @tanstack/vue-form@1.33.5 @tanstack/store@0.11.1 zod@4.4.3 zod-defaults@0.2.3
+npm install vue@3.5.43 antdv-next@1.6.0 dayjs@1.11.23 @tanstack/vue-form@1.33.5 @tanstack/store@0.11.2 zod@4.6.5 zod-defaults@0.2.3
 ```
 
 这些是本版测试版本，宿主已有 Vue、antdv-next、Dayjs 时复用同一安装。使用支持 Vue SFC、CSS 和动态 import 的构建器；Chrome 100 项目将 JS/CSS target 设为 `chrome100`。不需要 Tailwind、Pinia、路由、请求库、项目 i18n 或全局组件注册。样式由公开入口的组件自行导入。宿主可以用 antdv-next ConfigProvider 设置主题、控件语言和全局配置。
