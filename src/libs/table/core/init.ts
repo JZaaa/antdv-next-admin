@@ -3,6 +3,7 @@ import type { TableLocale, TableSetupOptions } from '../types';
 import { isRef, shallowRef, watch } from 'vue';
 import { VxeButton } from 'vxe-pc-ui/es/button';
 import { VxeCheckbox } from 'vxe-pc-ui/es/checkbox';
+import { VxeCheckboxButton } from 'vxe-pc-ui/es/checkbox-button';
 import { VxeCheckboxGroup } from 'vxe-pc-ui/es/checkbox-group';
 import { VxeColorPicker } from 'vxe-pc-ui/es/color-picker';
 import { VxeContextMenu } from 'vxe-pc-ui/es/context-menu';
@@ -22,6 +23,7 @@ import { VxeOption } from 'vxe-pc-ui/es/option';
 import { VxePager } from 'vxe-pc-ui/es/pager';
 import { VxePrint } from 'vxe-pc-ui/es/print';
 import { VxeRadio } from 'vxe-pc-ui/es/radio';
+import { VxeRadioButton } from 'vxe-pc-ui/es/radio-button';
 import { VxeRadioGroup } from 'vxe-pc-ui/es/radio-group';
 import { VxeSelect } from 'vxe-pc-ui/es/select';
 import { VxeSwitch } from 'vxe-pc-ui/es/switch';
@@ -78,6 +80,7 @@ export function initVxeTable(): void {
     VxeToolbar,
     VxeButton,
     VxeCheckbox,
+    VxeCheckboxButton,
     VxeCheckboxGroup,
     VxeForm,
     VxeFormItem,
@@ -88,6 +91,7 @@ export function initVxeTable(): void {
     VxeNumberInput,
     VxePager,
     VxeRadio,
+    VxeRadioButton,
     VxeRadioGroup,
     VxeSelect,
     VxeOption,

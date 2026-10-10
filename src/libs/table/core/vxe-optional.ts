@@ -3,6 +3,7 @@ import VxeUI from 'vxe-pc-ui/es/ui';
 
 // Preserve the complete VXE registry, loading non-table controls only when used.
 // Explicit imports let Vite produce chunks for the pinned vxe-pc-ui 4.18.9 release.
+// CheckboxButton and RadioButton are group dependencies, so init.ts registers them synchronously.
 /**
  * 为尚未注册的可选 VXE 控件注册异步组件，首次使用时加载并复用已有注册项。
  * @returns void。
@@ -24,8 +25,6 @@ export function registerOptionalVxeComponents(): void {
     VxeCarousel: () => import('vxe-pc-ui/es/carousel').then((module) => module.default),
     VxeCarouselItem: () => import('vxe-pc-ui/es/carousel-item').then((module) => module.default),
     VxeCascader: () => import('vxe-pc-ui/es/cascader').then((module) => module.default),
-    VxeCheckboxButton: () =>
-      import('vxe-pc-ui/es/checkbox-button').then((module) => module.default),
     VxeCol: () => import('vxe-pc-ui/es/col').then((module) => module.default),
     VxeCollapse: () => import('vxe-pc-ui/es/collapse').then((module) => module.default),
     VxeCollapsePane: () => import('vxe-pc-ui/es/collapse-pane').then((module) => module.default),
@@ -55,7 +54,6 @@ export function registerOptionalVxeComponents(): void {
     VxePrintPageBreak: () =>
       import('vxe-pc-ui/es/print-page-break').then((module) => module.default),
     VxePulldown: () => import('vxe-pc-ui/es/pulldown').then((module) => module.default),
-    VxeRadioButton: () => import('vxe-pc-ui/es/radio-button').then((module) => module.default),
     VxeRate: () => import('vxe-pc-ui/es/rate').then((module) => module.default),
     VxeResult: () => import('vxe-pc-ui/es/result').then((module) => module.default),
     VxeRow: () => import('vxe-pc-ui/es/row').then((module) => module.default),

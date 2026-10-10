@@ -380,15 +380,24 @@ async function run(): Promise<void> {
     await settle();
   });
   await test('props-priority-over-state-reactive', async () => {
-    localProps.value = { tableTitle: 'Props title', tableData: [rows[20]!] };
-    local.setState({ tableTitle: 'State title' });
-    await settle();
-    assert(
-      local.grid!.getData()[0]?.id === 21 && document.body.textContent?.includes('Props title'),
-      'props precedence',
-    );
-    localProps.value = {};
-    await settle();
+    try {
+      localProps.value = { tableTitle: 'Props title', tableData: [rows[20]!] };
+      local.setState({ tableTitle: 'State title' });
+      await settle();
+      const observed = {
+        firstRowId: local.grid!.getData()[0]?.id,
+        titles: Array.from(document.querySelectorAll('.schema-grid__title'), (element) =>
+          element.textContent,
+        ),
+      };
+      assert(
+        observed.firstRowId === 21 && observed.titles.includes('Props title'),
+        `props precedence: ${JSON.stringify(observed)}`,
+      );
+    } finally {
+      localProps.value = {};
+      await settle();
+    }
     assert(local.grid!.getData()[0]?.id === 1, 'props removal fallback');
   });
   await test('dynamic-columns-and-native-customization', async () => {
