@@ -14,6 +14,7 @@
 
         <!-- Main Content -->
         <a-layout
+          key="vertical-main"
           class="layout-main"
           :style="{
             marginLeft:
@@ -152,7 +153,8 @@
           </div>
         </a-layout-header>
 
-        <a-layout>
+        <!-- Layout 会展开插槽 Fragment；独立 key 防止生产构建复用另一布局的静态属性。 -->
+        <a-layout key="horizontal-main">
           <a-layout-content class="horizontal-content">
             <!-- Tabs -->
             <TabBar v-if="settingsStore.features.tabs" />
