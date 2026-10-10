@@ -301,7 +301,6 @@ export default {
     trustTheme: '主题、语言和布局偏好即时生效',
     statPermission: '权限闭环',
     statMock: '接口演示',
-    statI18n: '语言覆盖',
     moduleDashboardMeta: '实时概览',
     modulePermissionMeta: '角色与用户',
     moduleMenuMeta: '权限代码',

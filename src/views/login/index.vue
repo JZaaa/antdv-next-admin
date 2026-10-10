@@ -45,7 +45,7 @@
         <div class="stats">
           <div v-for="stat in capabilityStats" :key="stat.labelKey" class="stat">
             <div class="stat-value">
-              {{ stat.value }}<span class="stat-unit">{{ stat.unit }}</span>
+              {{ stat.value }}
             </div>
             <div class="stat-label">{{ $t(stat.labelKey) }}</div>
           </div>
@@ -240,9 +240,8 @@ const formState = reactive({
 });
 
 const capabilityStats = [
-  { value: 'RBAC', unit: '', labelKey: 'login.statPermission' },
-  { value: 'Mock', unit: '', labelKey: 'login.statMock' },
-  { value: '4', unit: ' locales', labelKey: 'login.statI18n' },
+  { value: 'RBAC', labelKey: 'login.statPermission' },
+  { value: 'Mock', labelKey: 'login.statMock' },
 ];
 
 const trustItems = ['login.trustPermission', 'login.trustAudit', 'login.trustTheme'];
@@ -625,7 +624,7 @@ const handleSubmit = async (): Promise<void> => {
 /* Stats */
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   padding-top: 28px;
   border-top: 1px solid var(--login-line-strong);
@@ -640,12 +639,6 @@ const handleSubmit = async (): Promise<void> => {
   display: flex;
   align-items: baseline;
   gap: 4px;
-}
-
-.stat-unit {
-  font-size: 12px;
-  color: var(--login-ink-4);
-  font-weight: var(--font-weight-normal);
 }
 
 .stat-label {

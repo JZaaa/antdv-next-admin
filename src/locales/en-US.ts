@@ -304,7 +304,6 @@ export default {
     trustTheme: 'Theme, language, and layout preferences apply instantly',
     statPermission: 'Permission loop',
     statMock: 'API demo',
-    statI18n: 'Locale coverage',
     moduleDashboardMeta: 'Live overview',
     modulePermissionMeta: 'Roles and users',
     moduleMenuMeta: 'Permission codes',
