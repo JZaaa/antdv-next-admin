@@ -399,6 +399,49 @@ async function run(): Promise<void> {
       await settle();
     }
     assert(local.grid!.getData()[0]?.id === 1, 'props removal fallback');
+    assert(document.body.textContent?.includes('State title'), 'title removal fallback');
+  });
+  await test('props-only-add-update-clear-remove', async () => {
+    const element = local.grid!
+      .getRefMaps()
+      .refTable.value?.getRefMaps()
+      .refElem.value?.closest('.schema-grid');
+    assert(element, 'local grid element missing');
+    const title = (): string => element.querySelector('.schema-grid__title')?.textContent ?? '';
+    const fallbackTitle = local.state.tableTitle;
+    const fallbackId = local.state.tableData?.[0]?.id;
+    try {
+      // No API write should be needed to invalidate the merged props.
+      localProps.value = { tableTitle: 'Added props', tableData: [rows[21]!] };
+      await settle();
+      assert(title() === 'Added props', `props-only add title: ${title()}`);
+      assert(local.grid!.getData()[0]?.id === 22, 'props-only add data');
+
+      localProps.value = { tableTitle: 'Updated props', tableData: [rows[22]!] };
+      await settle();
+      assert(title() === 'Updated props', `props-only update title: ${title()}`);
+      assert(local.grid!.getData()[0]?.id === 23, 'props-only update data');
+
+      localProps.value = { tableTitle: '', tableData: [] };
+      await settle();
+      assert(title() === '', 'empty title must override state');
+      assert(local.grid!.getData().length === 0, 'empty data must override state');
+
+      localProps.value = { tableTitle: undefined, tableData: undefined };
+      await settle();
+      assert(title() === fallbackTitle, `undefined title fallback: ${title()}`);
+      assert(local.grid!.getData()[0]?.id === fallbackId, 'undefined data fallback');
+
+      localProps.value = { tableTitle: 'Before removal', tableData: [rows[23]!] };
+      await settle();
+      assert(title() === 'Before removal', 'props re-add title');
+      assert(local.grid!.getData()[0]?.id === 24, 'props re-add data');
+    } finally {
+      localProps.value = {};
+      await settle();
+    }
+    assert(title() === fallbackTitle, `removed title fallback: ${title()}`);
+    assert(local.grid!.getData()[0]?.id === fallbackId, 'removed data fallback');
   });
   await test('dynamic-columns-and-native-customization', async () => {
     local.setGridOptions({ columns: [...columns, { field: 'extra', title: 'Dynamic' }] });

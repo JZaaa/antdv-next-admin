@@ -29,6 +29,23 @@ import { wrapProxy } from './core/proxy';
 import { createViewedRows } from './viewed-row/viewed';
 
 const ACTION_SLOTS = ['reset-before', 'submit-before', 'expand-before', 'expand-after'];
+// Declare every public prop so Vue tracks additions and removals, even on an initially empty Grid.
+// Null options preserve undefined for omitted props and do not coerce optional booleans to false.
+const TABLE_PROP_OPTIONS = {
+  tableData: null,
+  tableTitle: null,
+  tableTitleHelp: null,
+  class: null,
+  gridClass: null,
+  gridOptions: null,
+  gridEvents: null,
+  formOptions: null,
+  loadingDelayMs: null,
+  resizeDelayMs: null,
+  showSearchForm: null,
+  separator: null,
+  viewedRowOptions: null,
+} satisfies Record<keyof TableProps, null>;
 type RenderSlots = Record<string, ((scope: Record<string, unknown>) => VNodeChild) | undefined>;
 export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
   options: TableProps<T, F> = {},
@@ -39,7 +56,8 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
   const Grid = defineComponent({
     name: 'SchemaVxeGrid',
     inheritAttrs: false,
-    setup(_, { attrs, slots, expose }) {
+    props: TABLE_PROP_OPTIONS,
+    setup(props, { attrs, slots, expose }) {
       if (api.grid) throw new Error('One VxeGrid API can only mount one grid at a time');
       let alive = true;
       const grid = shallowRef<VxeGridInstance<T>>();
@@ -53,10 +71,10 @@ export function useVxeGrid<T = TableRow, F = unknown, A = unknown>(
       };
       media?.addEventListener('change', updateMobile);
       const formReady = shallowRef<Promise<void>>(Promise.resolve());
-      // Explicit component attrs replace each wrapper property; store is the fallback.
+      // Explicit component props/attrs replace each wrapper property; store is the fallback.
       const state = computed(() => {
         const result = { ...api.state };
-        for (const [key, value] of Object.entries(attrs)) {
+        for (const [key, value] of Object.entries({ ...props, ...attrs })) {
           if (value != null)
             Object.assign(result, {
               [key.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase())]: value,
