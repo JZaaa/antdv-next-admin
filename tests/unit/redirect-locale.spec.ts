@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createI18n } from 'vue-i18n';
 
+import i18n, { loadLocaleMessages } from '@/locales';
 import en from '@/locales/en-US';
 import zh from '@/locales/zh-CN';
 import { basicRoutes } from '@/router/routes';
@@ -11,16 +11,24 @@ describe('redirect route translations', () => {
     ['en-US', en],
   ] as const)(
     'translates the redirect title in %s without missing-key warnings',
-    (locale, messages) => {
+    async (locale, messages) => {
+      await loadLocaleMessages(locale);
+      const previousLocale = i18n.global.locale.value;
+      const previousMissing = i18n.global.getMissingHandler();
       const missing = vi.fn();
-      const i18n = createI18n({ legacy: false, locale, messages: { [locale]: messages }, missing });
-      const root = basicRoutes.find((route) => route.name === 'Root');
-      const redirect = root?.children?.find((route) => route.name === 'Redirect');
-      const key = redirect?.meta?.title;
-      expect(key).toBe('common.redirecting');
-      expect(i18n.global.t(String(key))).toBe(messages.common.redirecting);
-      expect(i18n.global.t(String(root?.meta?.title))).toBe(messages.menu.dashboard);
-      expect(missing).not.toHaveBeenCalled();
+      try {
+        i18n.global.locale.value = locale;
+        i18n.global.setMissingHandler(missing);
+        const root = basicRoutes.find((route) => route.name === 'Root');
+        const redirect = root?.children?.find((route) => route.name === 'Redirect');
+        // Route getters explicitly call $t; meta.title already contains display text.
+        expect(redirect?.meta?.title).toBe(messages.common.redirecting);
+        expect(root?.meta?.title).toBe(messages.menu.dashboard);
+        expect(missing).not.toHaveBeenCalled();
+      } finally {
+        i18n.global.locale.value = previousLocale;
+        i18n.global.setMissingHandler(previousMissing);
+      }
     },
   );
 });

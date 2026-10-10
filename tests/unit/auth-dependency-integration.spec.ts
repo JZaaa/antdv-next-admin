@@ -30,12 +30,17 @@ function createMemoryStorage(): Storage {
   };
 }
 
-describe('Pinia and Axios auth integration', () => {
+describe.each([false, true])('Pinia and Axios auth integration (remember=%s)', (remember) => {
   let pinia: Pinia;
   let mock: ReturnType<typeof setupBrowserMock>;
+  let credentialStorage: Storage;
+  let unusedStorage: Storage;
 
   beforeEach(() => {
     vi.stubGlobal('localStorage', createMemoryStorage());
+    vi.stubGlobal('sessionStorage', createMemoryStorage());
+    credentialStorage = remember ? localStorage : sessionStorage;
+    unusedStorage = remember ? sessionStorage : localStorage;
     pinia = createPinia();
     setActivePinia(pinia);
     mock = setupBrowserMock(service);
@@ -52,14 +57,22 @@ describe('Pinia and Axios auth integration', () => {
     'logs in as %s and restores persisted roles and permissions',
     async (username) => {
       const auth = useAuthStore();
-      await auth.login(username, '123456');
+      await auth.login(username, '123456', remember);
 
       expect(auth.isLoggedIn).toBe(true);
       expect(auth.user?.username).toBe(username);
       expect(auth.hasRole(username)).toBe(true);
       expect(auth.hasPermission('dashboard.view')).toBe(true);
       expect(auth.hasPermission('system.user.view')).toBe(username === 'admin');
-      expect(localStorage.getItem(getStorageKey('access_token'))).toBe(auth.token);
+      expect(credentialStorage.getItem(getStorageKey('access_token'))).toBe(auth.token);
+      expect(credentialStorage.getItem(getStorageKey('refresh_token'))).toBe(auth.refreshTokenValue);
+      expect(credentialStorage.getItem(getStorageKey('token_expires_at'))).toBe(
+        String(auth.tokenExpiresAt),
+      );
+      expect(JSON.parse(credentialStorage.getItem(getStorageKey('user_info')) ?? 'null')).toEqual(
+        auth.user,
+      );
+      expect(unusedStorage.length).toBe(0);
 
       const permission = usePermissionStore();
       await permission.generateRoutes(auth.userRoles, auth.userPermissions);
@@ -72,36 +85,44 @@ describe('Pinia and Axios auth integration', () => {
       pinia = createPinia();
       setActivePinia(pinia);
       const restored = useAuthStore();
-      restored.initAuth();
+      await restored.initAuth();
       expect(restored.isLoggedIn).toBe(true);
+      expect(restored.token).toBe(auth.token);
+      expect(restored.refreshTokenValue).toBe(auth.refreshTokenValue);
       expect(restored.user?.username).toBe(username);
+      expect(restored.userRoles).toEqual(auth.userRoles);
+      expect(restored.userPermissions).toEqual(auth.userPermissions);
       expect(restored.hasPermission('system.user.view')).toBe(username === 'admin');
 
       restored.logout();
       expect(restored.isLoggedIn).toBe(false);
       expect(restored.userPermissions).toEqual([]);
-      expect(localStorage.getItem(getStorageKey('access_token'))).toBeNull();
-      expect(localStorage.getItem(getStorageKey('refresh_token'))).toBeNull();
-      expect(localStorage.getItem(getStorageKey('user_info'))).toBeNull();
+      expect(credentialStorage.length).toBe(0);
+      expect(unusedStorage.length).toBe(0);
     },
   );
 
   it('refreshes the token with the real auth store and API helpers', async () => {
     const auth = useAuthStore();
-    await auth.login('admin', '123456');
+    await auth.login('admin', '123456', remember);
     const token = await auth.refreshToken();
 
     expect(token).toBe(auth.token);
     expect(mock.history.post.filter((entry) => entry.url === '/auth/refresh')).toHaveLength(1);
     expect(auth.isLoggedIn).toBe(true);
-    expect(localStorage.getItem(getStorageKey('access_token'))).toBe(auth.token);
+    expect(credentialStorage.getItem(getStorageKey('access_token'))).toBe(auth.token);
+    expect(credentialStorage.getItem(getStorageKey('refresh_token'))).toBe(auth.refreshTokenValue);
+    expect(credentialStorage.getItem(getStorageKey('token_expires_at'))).toBe(
+      String(auth.tokenExpiresAt),
+    );
+    expect(unusedStorage.length).toBe(0);
     expect((await getUserInfo()).data.username).toBe('admin');
   });
 
   it('replaces admin permissions when switching to the regular user', async () => {
     const auth = useAuthStore();
-    await auth.login('admin', '123456');
-    await auth.login('user', '123456');
+    await auth.login('admin', '123456', remember);
+    await auth.login('user', '123456', remember);
 
     expect(auth.user?.username).toBe('user');
     expect(auth.hasRole('admin')).toBe(false);
@@ -111,16 +132,19 @@ describe('Pinia and Axios auth integration', () => {
 
   it('does not create a session for invalid credentials', async () => {
     const auth = useAuthStore();
-    await expect(auth.login('admin', 'incorrect')).rejects.toThrow('Invalid username or password');
+    await expect(auth.login('admin', 'incorrect', remember)).rejects.toThrow(
+      'Invalid username or password',
+    );
     expect(auth.isLoggedIn).toBe(false);
-    expect(localStorage.getItem(getStorageKey('access_token'))).toBeNull();
+    expect(credentialStorage.length).toBe(0);
+    expect(unusedStorage.length).toBe(0);
   });
 
-  it('does not restore or delete legacy unscoped login data', () => {
+  it('does not restore or delete legacy unscoped login data', async () => {
     localStorage.setItem('access_token', 'legacy-token');
     localStorage.setItem('user_info', JSON.stringify({ username: 'old-project' }));
     const auth = useAuthStore();
-    auth.initAuth();
+    await auth.initAuth();
     expect(auth.token).toBeNull();
     expect(auth.user).toBeNull();
     auth.logout();

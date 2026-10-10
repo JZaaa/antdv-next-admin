@@ -169,7 +169,7 @@ describe('login navigation feedback', () => {
         const submission = fire(root, 'a-form', 'onFinish');
         await nextTick();
         await nextTick();
-        expect(mocks.login).toHaveBeenCalledWith(username, '123456');
+        expect(mocks.login).toHaveBeenCalledWith(username, '123456', false);
         expect(content(root)).toContain('login.loginSuccess');
         expect(content(root)).toContain('login.entering');
         expect(find(root, 'a-form')).toBeUndefined();
