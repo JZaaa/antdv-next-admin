@@ -192,7 +192,7 @@ import { $t } from '@/locales';
 import { appDefaultSettings } from '@/settings';
 import { hexColorVariables } from '@/utils/color';
 
-const version = __APP_VERSION__;
+const version = APP_VERSION;
 const dependencyVersions = APP_DEPENDENCY_VERSIONS;
 
 const heroBadges = [

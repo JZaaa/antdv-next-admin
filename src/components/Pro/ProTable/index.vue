@@ -1083,8 +1083,8 @@ const tableColumns = computed(() => {
     };
 
     if (headerFilter) {
-      enhancedColumn.__proHeaderFilter = headerFilter;
-      enhancedColumn.__proHeaderFilterKey = key;
+      enhancedColumn.proHeaderFilter = headerFilter;
+      enhancedColumn.proHeaderFilterKey = key;
       enhancedColumn.filteredValue = selectedValues.length > 0 ? selectedValues : null;
       enhancedColumn.filterIcon =
         enhancedColumn.filterIcon ??
@@ -1346,8 +1346,8 @@ const getHeaderFilterEntry = (column: Record<string, unknown>) => {
     return undefined;
   }
 
-  const directHeaderFilter = column.__proHeaderFilter as ProTableHeaderFilter | undefined;
-  const directKey = column.__proHeaderFilterKey as string | undefined;
+  const directHeaderFilter = column.proHeaderFilter as ProTableHeaderFilter | undefined;
+  const directKey = column.proHeaderFilterKey as string | undefined;
   if (directHeaderFilter) {
     return {
       key: String(directKey || column.key || column.dataIndex || ''),

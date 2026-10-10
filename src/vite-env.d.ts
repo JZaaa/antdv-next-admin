@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-declare const __APP_VERSION__: string;
+declare const APP_VERSION: string;
 declare const APP_DEPENDENCY_VERSIONS: Readonly<Record<string, string>>;
 
 declare module 'virtual:local-icon-assets' {

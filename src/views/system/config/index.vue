@@ -230,6 +230,7 @@ const loadConfigList = async (params: Record<string, unknown>) => {
   while (true) {
     const key = selectedGroup.value;
     if (!key) return { data: [], total: 0, success: true };
+    // oxlint-disable-next-line no-await-in-loop -- 请求完成后才能判断分组是否切换并串行重试。
     const response = await getConfigList({
       group: key,
       page: current,

@@ -19,7 +19,7 @@ const [Grid] = useVxeGrid({
     data: Array.from({ length: 10000 }, (_, i) => ({
       id: i + 1,
       ...Object.fromEntries(
-        Array.from({ length: 29 }, (_, j) => [`c${j + 1}`, `${i + 1}:${j + 1}`]),
+        Array.from({ length: 29 }, (_column, j) => [`c${j + 1}`, `${i + 1}:${j + 1}`]),
       ),
     })),
   },

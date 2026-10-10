@@ -26,7 +26,7 @@ const dependencyVersions = Object.fromEntries(
 export default defineConfig({
   base: "/",
   define: {
-    __APP_VERSION__: JSON.stringify(pkg.version),
+    APP_VERSION: JSON.stringify(pkg.version),
     APP_DEPENDENCY_VERSIONS: JSON.stringify(dependencyVersions),
   },
   plugins: [

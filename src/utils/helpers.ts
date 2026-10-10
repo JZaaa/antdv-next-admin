@@ -264,8 +264,8 @@ export function isValidPhone(phone: string): boolean {
  */
 export function isValidURL(url: string): boolean {
   try {
-    const _url = new URL(url);
-    return _url !== null;
+    const parsedUrl = new URL(url);
+    return parsedUrl !== null;
   } catch {
     return false;
   }

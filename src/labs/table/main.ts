@@ -24,9 +24,9 @@ const trace: object[] = [];
 function assert(condition: unknown, detail: string): asserts condition {
   if (!condition) throw new Error(detail);
 }
-async function test(id: string, run: () => unknown): Promise<void> {
+async function test(id: string, scenario: () => unknown): Promise<void> {
   try {
-    results.push({ id, status: 'pass', observed: (await run()) ?? true });
+    results.push({ id, status: 'pass', observed: (await scenario()) ?? true });
   } catch (error) {
     results.push({ id, status: 'error', observed: String(error) });
   }
@@ -218,7 +218,7 @@ const app = createApp(
             name: `Virtual ${i}`,
             age: i,
             ...Object.fromEntries(
-              Array.from({ length: 29 }, (_, j) => [`c${j + 1}`, `Virtual ${i}:${j + 1}`]),
+              Array.from({ length: 29 }, (_column, j) => [`c${j + 1}`, `Virtual ${i}:${j + 1}`]),
             ),
           })),
           virtualYConfig: { enabled: true, gt: 0 },
@@ -542,6 +542,7 @@ async function run(): Promise<void> {
     const observed = [];
     for (const language of ['zh-CN', 'en-US'] as const) {
       locale.value = language;
+      // oxlint-disable-next-line no-await-in-loop -- 每次语言切换都需等待响应式更新后再读取文案。
       await nextTick();
       observed.push(VxeUI.getI18n('vxe.table.emptyText'));
     }
@@ -915,6 +916,7 @@ async function run(): Promise<void> {
   });
   await test('native-export-formats', async () => {
     for (const type of ['txt', 'html', 'xml'] as const) {
+      // oxlint-disable-next-line no-await-in-loop -- 导出操作共享同一表格实例，按格式顺序验证。
       const result = await local.grid!.exportData({ type, download: false });
       assert(result.content.includes('Imported'), `${type} data`);
     }

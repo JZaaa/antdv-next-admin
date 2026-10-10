@@ -1,11 +1,13 @@
-import { message } from 'antdv-next';
-import axios, {
+import type {
   AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios';
+
+import { message } from 'antdv-next';
+import { create } from 'axios';
 
 import router from '@/router';
 import { appDefaultSettings } from '@/settings';
@@ -21,13 +23,13 @@ export interface RequestConfig extends AxiosRequestConfig {
 
 type RetriableRequestConfig = InternalAxiosRequestConfig &
   RequestConfig & {
-    _retry?: boolean;
+    authRefreshRetried?: boolean;
   };
 
 let refreshPromise: Promise<string> | null = null;
 let refreshSessionToken: string | null = null;
 
-export const service: AxiosInstance = axios.create({
+export const service: AxiosInstance = create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15000,
   headers: {
@@ -110,10 +112,10 @@ service.interceptors.response.use(
       let failure: unknown = error;
       if (
         appDefaultSettings.auth.enableRefreshToken &&
-        !originalRequest._retry &&
+        !originalRequest.authRefreshRetried &&
         !originalRequest.skipAuthRefresh
       ) {
-        originalRequest._retry = true;
+        originalRequest.authRefreshRetried = true;
         try {
           if (!refreshPromise || refreshSessionToken !== sessionToken) {
             refreshSessionToken = sessionToken;

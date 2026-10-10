@@ -11,10 +11,10 @@ const { currentRoute, replace } = router;
 const { params, query } = unref(currentRoute);
 const { path } = params;
 
-const _path = Array.isArray(path) ? path.join('/') : path;
+const redirectPath = Array.isArray(path) ? path.join('/') : path;
 
 replace({
-  path: '/' + _path,
+  path: '/' + redirectPath,
   query,
 });
 </script>
