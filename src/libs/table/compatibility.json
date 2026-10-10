@@ -1,13 +1,13 @@
 {
   "status": "validated",
   "validation": {
-    "date": "2026-09-16",
+    "date": "2026-10-10",
     "browser": "Chrome 100.0.4896.0",
-    "tableScenarios": 45,
+    "tableScenarios": 46,
     "exampleScenariosPerRole": 14,
-    "projectUnitTests": 252,
+    "projectUnitTests": 335,
     "standaloneHosts": ["table", "table+form+bridge"],
-    "report": "docs/spec/vxe-table-acceptance.md"
+    "report": "docs/vxe-upgrade-2026-10-10.md"
   },
   "reference": {
     "repository": "vue-vben-admin",
@@ -16,13 +16,13 @@
   },
   "minimumBrowser": "Chrome 100",
   "dependencies": {
-    "vue": "3.5.42",
-    "antdv-next": "1.5.4",
+    "vue": "3.5.43",
+    "antdv-next": "1.6.0",
     "dayjs": "1.11.23",
-    "vxe-table": "4.21.10",
-    "vxe-pc-ui": "4.18.9",
-    "@vxe-ui/core": "4.4.21",
-    "xe-utils": "4.0.13"
+    "vxe-table": "4.22.3",
+    "vxe-pc-ui": "4.19.3",
+    "@vxe-ui/core": "4.4.28",
+    "xe-utils": "4.1.2"
   },
   "locales": ["zh-CN", "en-US"]
 }

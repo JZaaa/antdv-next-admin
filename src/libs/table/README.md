@@ -1,6 +1,6 @@
 # VXE Table
 
-一个 `useVxeGrid`、一个原生 VXE 查询所有者。面向 antdv-next，参考 Vben `df014ae70924b2af011de26d08082d7ebed787df` 的现代封装；按项目要求使用 **vxe-table 4.21.10**，参考仓库原安装版本为 4.21.2。
+一个 `useVxeGrid`、一个原生 VXE 查询所有者。面向 antdv-next，参考 Vben `df014ae70924b2af011de26d08082d7ebed787df` 的现代封装；当前使用 **vxe-table 4.22.3**，参考仓库原安装版本为 4.21.2。
 
 ## 本项目使用
 
@@ -52,7 +52,7 @@ const [Grid, api] = useVxeGrid<Row, Search>({
 复制整个 `src/libs/table` 目录，从复制后的 `table/index.ts` 导入。安装显式依赖：
 
 ```sh
-npm install vue@3.5.42 antdv-next@1.5.4 dayjs@1.11.23 vxe-table@4.21.10 vxe-pc-ui@4.18.9 @vxe-ui/core@4.4.21 xe-utils@4.0.13
+npm install vue@3.5.43 antdv-next@1.6.0 dayjs@1.11.23 vxe-table@4.22.3 vxe-pc-ui@4.19.3 @vxe-ui/core@4.4.28 xe-utils@4.1.2
 ```
 
 使用 Vue SFC/CSS 构建工具；需 Sass 编译 VXE 主题变量样式，例如 `npm install -D sass`。JS/CSS target 均设为 `chrome100`。不需要项目别名、Tailwind、全局组件、router、Pinia、HTTP 客户端或 Form 引擎。库自身导入组件与必要样式。
@@ -88,7 +88,7 @@ const [Grid, api] = useVxeGrid({
 | `toggleSearchForm(show?)`         | 返回显隐布尔值；只隐藏面板，保留草稿/提交条件，不请求                                                                    |
 | 六个已读方法                      | clearViewedRows/getViewedKeys/isRowViewed/markKeysAsViewed/markRowAsViewed/removeViewedKeys；getViewedKeys 返回 Set 副本 |
 
-`await query/reload()` resolve **不表示业务请求成功**。通过原生 querySuccess/queryError 获得业务结果。VXE 4.21.10 在 loading 中跳过新的 query/reload；没有排队、取消网络或最新请求胜出承诺。卸载后尚未返回的 query/queryAll 会进入 VXE 的失败处理分支，阻止对销毁实例写数据和调用已卸载的业务回调。
+`await query/reload()` resolve **不表示业务请求成功**。通过原生 querySuccess/queryError 获得业务结果。VXE 4.22.3 在 loading 中跳过新的 query/reload；没有排队、取消网络或最新请求胜出承诺。卸载后尚未返回的 query/queryAll 会进入 VXE 的失败处理分支，阻止对销毁实例写数据和调用已卸载的业务回调。
 
 配置优先级：显式组件 attrs/props 按 wrapper 属性覆盖 API state；gridOptions 再覆盖 VXE 全局配置。slot 优先于标题/默认 empty/loading。初始 hook options 不做任意深 watch；动态更新使用组件绑定或 `setState`。`tableData: []` 会清空，undefined 表示不提供覆盖。`data`/tableData 与远程 proxy 不应同时作为权威数据源。
 
@@ -130,4 +130,4 @@ boolean 或对象启用，keyField 默认 rowConfig.keyField 或 id。只接受�
 
 ## 验证
 
-宿主 `scripts/table` 包含真实 Chrome 100 合约、独立复制、admin/user 示例及三组性能对照。环境和结果记录在 `docs/spec/vxe-table-acceptance.md` 与能力审计表中；源码可透传不自动意味着任意业务组合都已验证。
+宿主 `scripts/table` 包含真实 Chrome 100 合约、独立复制、admin/user 示例及三组性能对照。当前版本的升级验证见 [2026-10-10 升级记录](../../../docs/vxe-upgrade-2026-10-10.md)，包含 46 项表格场景、双账号示例及两个独立宿主。本次未重跑性能对照；`docs/spec/vxe-table-acceptance.md` 与能力审计表中的旧版本性能数据不代表当前版本。源码可透传不自动意味着任意业务组合都已验证。

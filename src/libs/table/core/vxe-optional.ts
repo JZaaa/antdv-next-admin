@@ -2,7 +2,7 @@ import { defineAsyncComponent, type Component } from 'vue';
 import VxeUI from 'vxe-pc-ui/es/ui';
 
 // Preserve the complete VXE registry, loading non-table controls only when used.
-// Explicit imports let Vite produce chunks for the pinned vxe-pc-ui 4.18.9 release.
+// Explicit imports let Vite produce chunks for the pinned vxe-pc-ui 4.19.3 release.
 // CheckboxButton and RadioButton are group dependencies, so init.ts registers them synchronously.
 /**
  * 为尚未注册的可选 VXE 控件注册异步组件，首次使用时加载并复用已有注册项。

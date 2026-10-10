@@ -1,7 +1,7 @@
 <template>
   <main class="vxe-documentation">
     <h1>VXE Table</h1>
-    <p>v4.21.10 · useVxeGrid · SchemaForm</p>
+    <p>v4.22.3 · useVxeGrid · SchemaForm</p>
     <section v-for="demo in demos" :key="demo.id" :data-table-demo="demo.id">
       <header>
         <h2>{{ demo.title }}</h2>
