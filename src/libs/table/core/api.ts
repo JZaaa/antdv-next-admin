@@ -12,17 +12,17 @@ export class VxeGridApi<T = TableRow, F = unknown, A = unknown> {
   grid?: VxeGridInstance<T>;
   search?: TableSearchBridge<F, A>;
   viewed?: ViewedRows<T>;
-  private readonly value;
+  private readonly stateRef;
   private readonly subscribers = new Set<(state: TableProps<T, F>) => void>();
   readonly store;
   constructor(options: TableProps<T, F> = {}) {
-    this.value = shallowRef<TableProps<T, F>>({
+    this.stateRef = shallowRef<TableProps<T, F>>({
       showSearchForm: true,
       gridOptions: {},
       gridEvents: {},
       ...options,
     });
-    const value = this.value;
+    const value = this.stateRef;
     const subscribers = this.subscribers;
     this.store = {
       get state(): TableProps<T, F> {
@@ -39,7 +39,7 @@ export class VxeGridApi<T = TableRow, F = unknown, A = unknown> {
     };
   }
   get state(): TableProps<T, F> {
-    return this.value.value;
+    return this.stateRef.value;
   }
   get formApi(): A | undefined {
     return this.search?.api;
