@@ -19,7 +19,7 @@
         <div v-if="appDefaultSettings.features.logo" class="hero-icon">
           <img :src="APP_LOGO_URL" alt="Logo" class="hero-logo" />
         </div>
-        <h1 class="hero-title">Antdv Next Admin</h1>
+        <h1 class="hero-title">{{ APP_TITLE }}</h1>
         <p class="hero-desc">{{ $t('about.description') }}</p>
         <div class="hero-badges">
           <span
@@ -47,7 +47,7 @@
           <div class="info-list">
             <div class="info-row">
               <span class="info-label">{{ $t('about.projectName') }}</span>
-              <span class="info-value fw-medium">Antdv Next Admin</span>
+              <span class="info-value fw-medium">{{ APP_TITLE }}</span>
             </div>
             <div class="info-row">
               <span class="info-label">{{ $t('about.version') }}</span>
@@ -63,7 +63,7 @@
             </div>
             <div class="info-row">
               <span class="info-label">{{ $t('about.author') }}</span>
-              <span class="info-value fw-medium">yelog</span>
+              <span class="info-value fw-medium">{{ APP_AUTHOR }}</span>
             </div>
             <div class="info-row">
               <span class="info-label">
@@ -71,7 +71,7 @@
                 {{ $t('about.email') }}
               </span>
               <span class="info-value">
-                <a href="mailto:yelogeek@gmail.com" class="link">yelogeek@gmail.com</a>
+                <a :href="`mailto:${APP_CONTACT_EMAIL}`" class="link">{{ APP_CONTACT_EMAIL }}</a>
               </span>
             </div>
             <div class="info-row">
@@ -81,12 +81,12 @@
               </span>
               <span class="info-value">
                 <a
-                  href="https://github.com/yelog/antdv-next-admin"
+                  :href="APP_REPOSITORY_URL"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="link"
                 >
-                  yelog/antdv-next-admin
+                  {{ APP_REPOSITORY }}
                   <LinkOutlined class="link-arrow" />
                 </a>
               </span>
@@ -187,7 +187,14 @@ import {
   CloudOutlined,
 } from '@antdv-next/icons';
 
-import { APP_LOGO_URL } from '@/constants/app';
+import {
+  APP_AUTHOR,
+  APP_CONTACT_EMAIL,
+  APP_LOGO_URL,
+  APP_REPOSITORY,
+  APP_REPOSITORY_URL,
+  APP_TITLE,
+} from '@/constants/app';
 import { $t } from '@/locales';
 import { appDefaultSettings } from '@/settings';
 import { hexColorVariables } from '@/utils/color';

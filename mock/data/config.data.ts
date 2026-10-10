@@ -32,7 +32,7 @@ export const sysConfigs: SysConfig[] = [
     id: '3',
     name: 'Copyright',
     key: 'site.copyright',
-    value: '© 2024 Antdv Next Admin',
+    value: `© ${new Date().getFullYear()} JZaaa · Antdv Next Admin`,
     valueType: 'string',
     group: 'basic',
     description: 'Footer copyright text',

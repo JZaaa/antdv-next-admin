@@ -2,6 +2,13 @@
   "name": "antdv-next-admin",
   "version": "1.0.0",
   "description": "A modern Vue 3 admin scaffold based on antdv-next",
+  "author": "JZaaa <lih6633319@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JZaaa/antdv-next-admin.git"
+  },
+  "homepage": "https://jzaaa.github.io/antdv-next-admin",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "lab:table": "vite --config labs/table/vite.config.ts --open /table-lab.html",

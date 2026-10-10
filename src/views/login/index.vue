@@ -53,7 +53,7 @@
       </div>
 
       <div class="pane-left-foot">
-        <span>© {{ currentYear }} {{ APP_TITLE }}</span>
+        <span>© {{ currentYear }} {{ APP_AUTHOR }} · {{ APP_TITLE }}</span>
         <span class="coord">⟶ 31.230 N / 121.473 E · SHA</span>
       </div>
     </section>
@@ -215,7 +215,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { SliderCaptcha } from '@/components/Captcha';
 import LanguageSwitch from '@/components/Layout/LanguageSwitch.vue';
 import ThemeToggle from '@/components/Layout/ThemeToggle.vue';
-import { APP_LOGO_URL, APP_TITLE } from '@/constants/app';
+import { APP_AUTHOR, APP_LOGO_URL, APP_TITLE } from '@/constants/app';
 import { $t } from '@/locales';
 import { getLoginRedirect } from '@/router/utils';
 import { appDefaultSettings } from '@/settings';

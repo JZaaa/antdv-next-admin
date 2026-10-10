@@ -4,7 +4,10 @@
 
 ## 📦 部署地址
 
-- **生产环境**: https://yelog.github.io/antdv-next-admin/
+- **在线体验**: https://jzaaa.github.io/antdv-next-admin
+- **项目仓库**: https://github.com/JZaaa/antdv-next-admin
+
+GitHub Pages 部署的是启用浏览器端模拟接口的 Demo 版本。
 
 ## 🚀 自动部署
 
@@ -19,13 +22,15 @@
 ### 1. Vite 配置
 ```typescript
 // vite.config.ts
-base: process.env.NODE_ENV === 'production' ? '/antdv-next-admin/' : '/'
+base: '/'
 ```
+
+Pages 构建通过命令行 `--base=/antdv-next-admin/` 设置仓库子路径。
 
 ### 2. GitHub Actions
 - 工作流文件: `.github/workflows/deploy.yml`
 - 触发条件: 推送到 main 分支或手动触发
-- 构建命令: `npm run build`
+- 构建命令: `pnpm run build:demo --base=/antdv-next-admin/`
 
 ### 3. SPA 路由支持
 - `public/404.html`: 处理 404 重定向
@@ -34,11 +39,14 @@ base: process.env.NODE_ENV === 'production' ? '/antdv-next-admin/' : '/'
 
 ## 📝 手动部署步骤
 
-如果需要手动部署：
+推荐在仓库 Actions 中选择 **Deploy to GitHub Pages → Run workflow** 手动触发，沿用自动部署的构建和检查流程。
+
+如果需要从本地发布到 `gh-pages` 分支，则执行以下命令，并将 Settings → Pages → Source 改为 **Deploy from a branch**，选择 `gh-pages` 分支的 `/ (root)`。此方式与下方 GitHub Actions 发布方式二选一；推送命令会覆盖该部署分支。
 
 ```bash
 # 1. 构建项目
-npm run build
+npm run build:demo -- --base=/antdv-next-admin/
+npm run check:compat:dist
 
 # 2. 进入构建目录
 cd dist
@@ -49,15 +57,15 @@ git add -A
 git commit -m 'deploy'
 
 # 4. 推送到 gh-pages 分支
-git push -f git@github.com:yelog/antdv-next-admin.git main:gh-pages
+git push -f git@github.com:JZaaa/antdv-next-admin.git HEAD:gh-pages
 
 # 5. 返回项目根目录
-cd -
+cd ..
 ```
 
 ## 🔧 GitHub 仓库设置
 
-确保在 GitHub 仓库设置中：
+使用推荐的 GitHub Actions 发布方式时，确保在 `JZaaa/antdv-next-admin` 仓库设置中：
 
 1. 进入仓库 Settings → Pages
 2. Source 选择 "GitHub Actions"

@@ -24,6 +24,7 @@ import { App } from 'antdv-next';
 import { computed, h } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { APP_REPOSITORY_URL } from '@/constants/app';
 import { $t } from '@/locales';
 import { useAuthStore } from '@/stores/auth';
 import { clearSessionState } from '@/utils/session';
@@ -43,7 +44,7 @@ const handleMenuClick = ({ key }: { key: string }) => {
       currentRouter.push('/profile');
       break;
     case 'github':
-      window.open('https://github.com/yelog/antdv-next-admin', '_blank');
+      window.open(APP_REPOSITORY_URL, '_blank');
       break;
     case 'docs':
       window.open('https://antdv-next-admin-doc.yelog.org', '_blank');
