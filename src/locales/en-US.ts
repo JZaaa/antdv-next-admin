@@ -987,19 +987,6 @@ export default {
     progress: 'Step {current} of {total}',
   },
 
-  proTable: {
-    total: 'Total {total} items',
-    density: 'Table Density',
-    checkAll: 'Select All',
-    indexColumn: 'Index Column',
-    fixLeft: 'Pin Left',
-    fixRight: 'Pin Right',
-    densityLarge: 'Spacious',
-    densityMiddle: 'Default',
-    densitySmall: 'Compact',
-    loadDataFailed: 'Failed to load data',
-  },
-
   profile: {
     title: 'Profile',
     basicInfo: 'Basic Information',

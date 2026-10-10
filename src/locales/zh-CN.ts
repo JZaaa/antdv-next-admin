@@ -972,19 +972,6 @@ export default {
     progress: '第 {current} / {total} 步',
   },
 
-  proTable: {
-    total: '共 {total} 条',
-    density: '表格密度',
-    checkAll: '全部勾选',
-    indexColumn: '序号列',
-    fixLeft: '左固定',
-    fixRight: '右固定',
-    densityLarge: '宽松',
-    densityMiddle: '默认',
-    densitySmall: '紧凑',
-    loadDataFailed: '加载数据失败',
-  },
-
   profile: {
     title: '个人中心',
     basicInfo: '基本信息',

@@ -1,6 +1,6 @@
 # ValueDisplay
 
-项目内通用值展示组件，供详情、弹窗和表格插槽复用。独立于 ProTable、ProDescriptions 和 VXE；UI 使用 antdv-next，复制提示复用项目国际化及剪贴板工具。当前未注册 VXE 渲染器，也未改变 VXE 的日期格式化协议。
+项目内通用值展示组件，供详情、弹窗和表格插槽复用。独立于 ProDescriptions 和 VXE；UI 使用 antdv-next，复制提示复用项目国际化及剪贴板工具。当前未注册 VXE 渲染器，也未改变 VXE 的日期格式化协议。
 
 ```vue
 <ValueDisplay :value="amount" type="money" :options="{ symbol: '¥', precision: 2 }" />
@@ -27,4 +27,4 @@
 - time 默认 `HH:mm:ss`，额外支持严格的 `HH:mm`/`HH:mm:ss` 字符串；时间字符串视为墙上时钟时间，不执行时区转换。dateRange 要求两个有效端点，默认以 `~` 连接，可配置 format/rangeSeparator。
 - 原值复制中，数值与布尔值转为字符串；Date/Dayjs 转为 ISO 字符串；双元素数组的两端以 `~` 连接。不序列化任意业务对象。复制成功触发 `copy(text)`，失败提示并触发 `copyError`，失败后可重试。
 - 链接支持 http/https/mailto/tel 和相对路径，其他协议显示为普通文本。新窗口链接设置 noopener/noreferrer。
-- `ProDescriptions` 保留原 columns API，并映射到 ValueDisplay；`types/pro.ts` 暂时重新导出 ValueType，以兼容既有导入。旧 `ProTable/ValueTypeRender.vue` 已移除。
+- `ProDescriptions` 保留原 columns API，并映射到 ValueDisplay；`types/pro.ts` 暂时重新导出 ValueType，以兼容既有导入。组件和类型从本目录独立导入。

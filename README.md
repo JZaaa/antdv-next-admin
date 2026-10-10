@@ -123,7 +123,7 @@ tests/e2e/                # Playwright starter，依赖未安装
 | 国际化    | 支持 `zh-CN`、`en-US`，非默认语言按需异步加载                                                                        |
 | Mock 数据 | 覆盖认证、用户、角色、权限、部门、字典、配置、文件、日志、Dashboard 等模块                                           |
 | 内容编辑  | TipTap 富文本、Milkdown Markdown、CodeMirror 代码编辑器                                                              |
-| 示例体系  | ProTable、复杂表单、主从表、虚拟表格、JSON 输入、i18n 输入、高级筛选、导入导出、请求鉴权、RBAC、可观测性、测试示例等 |
+| 示例体系  | VXE Table、复杂表单、主从表、虚拟表格、JSON 输入、i18n 输入、高级筛选、导入导出、请求鉴权、RBAC、可观测性、测试示例等 |
 | 工程质量  | strict TypeScript、Vitest、oxlint、oxfmt、vue-tsc、生产构建检查                                                      |
 
 ## Pro 组件
@@ -132,7 +132,6 @@ tests/e2e/                # Playwright starter，依赖未安装
 
 | 组件            | 定位                                                                           |
 | --------------- | ------------------------------------------------------------------------------ |
-| ProTable        | 配置化表格，支持请求、搜索、分页、工具栏、列设置、表头过滤、列宽调整、权限动作 |
 | ProForm         | 配置化表单，支持网格布局、校验、动态选项和自定义渲染                           |
 | ProModal        | 增强弹窗，支持拖拽、全屏和表单集成                                             |
 | ProDescriptions | 配置化描述列表                                                                 |
@@ -145,45 +144,59 @@ tests/e2e/                # Playwright starter，依赖未安装
 | ProStatus       | dot/tag/badge 状态展示                                                         |
 | ProCodeEditor   | CodeMirror 代码编辑器                                                          |
 
-ProTable 请求函数需要返回 `ProTableRequestResult`:
+## 表格与值展示
 
-```ts
-import type {
-  ProTableColumn,
-  ProFormItem,
-  ProTableRequestParams,
-  ProTableRequestResult,
-} from '@/types/pro';
+业务表格使用 [VXE Table](src/libs/table/README.md)，通过 `@/adapters/table` 的 `useVxeGrid` 接入 SchemaForm、中英文和主题。搜索条件使用 `formOptions.schema`，列定义使用原生 VXE 的 `field`；默认查询结果结构为 `{ items, total }`。
 
-interface UserRecord {
-  id: number;
-  name: string;
-  status: 'active' | 'disabled';
-  createdAt: string;
-}
-
-const columns: ProTableColumn<UserRecord>[] = [
-  { title: '姓名', dataIndex: 'name', valueType: 'text' },
-  { title: '状态', dataIndex: 'status', valueType: 'tag' },
-  { title: '创建时间', dataIndex: 'createdAt', valueType: 'date' },
-];
-
-const searchFormItems: ProFormItem[] = [
-  { name: 'keyword', label: '关键词', type: 'input' },
-  { name: 'status', label: '状态', type: 'select', options: statusOptions },
-];
-
-async function loadData(params: ProTableRequestParams): Promise<ProTableRequestResult<UserRecord>> {
-  console.log(params);
-  return { data: [], total: 0, success: true };
-}
-```
+下面的示例复用项目已有用户接口，将分页结果转换为表格查询结果：
 
 ```vue
-<ProTable :columns="columns" :request="loadData" :search="{ formItems: searchFormItems }" />
+<template>
+  <Grid />
+</template>
+
+<script setup lang="ts">
+import type { User } from '@/types/auth';
+
+import { useVxeGrid } from '@/adapters/table';
+import { getUserList } from '@/api/user';
+
+interface UserSearch {
+  username?: string;
+}
+
+const [Grid] = useVxeGrid<User, UserSearch>({
+  formOptions: {
+    schema: [{ fieldName: 'username', component: 'Input', label: '用户名' }],
+  },
+  gridOptions: {
+    columns: [
+      { field: 'username', title: '用户名', minWidth: 160 },
+      { field: 'email', title: '邮箱', minWidth: 220 },
+    ],
+    rowConfig: { keyField: 'id' },
+    pagerConfig: { pageSize: 20 },
+    toolbarConfig: { refresh: true, search: true },
+    proxyConfig: {
+      ajax: {
+        async query({ page }, search: UserSearch) {
+          const response = await getUserList({
+            current: page.currentPage,
+            pageSize: page.pageSize,
+            username: search.username?.trim() || undefined,
+          });
+          return { items: response.data.list, total: response.data.total };
+        },
+      },
+    },
+  },
+});
+</script>
 ```
 
-搜索表单推荐通过 `search.formItems` 独立配置（使用 `ProFormItem`），适合搜索条件和表格列不一致或顺序不同的场景；简单列表仍可继续在 `columns` 中使用 `search: true` 快捷生成搜索项。
+表格默认配置位于 `src/adapters/table.ts`。完整示例入口为 `/examples/vxe-table`；高阶业务示例沿用 `/examples/pro-table-advanced` 地址，内部同样使用 VXE Table。
+
+通用字段展示使用 [ValueDisplay](src/components/ValueDisplay/README.md)，支持日期、金额、状态、空值和复制。`ProDescriptions` 已复用该组件；VXE 内可通过单元格插槽使用，尚未注册专用渲染器。
 
 ## 权限用法
 
@@ -307,7 +320,7 @@ npm run test:unit       # watch mode
 npm run test:unit:run   # one-shot
 ```
 
-当前单测覆盖路由权限过滤、ProTable 请求、搜索、表头过滤和关键词搜索等逻辑。
+当前单测覆盖认证与路由权限、VXE Table 查询代理与状态、表单行为、ValueDisplay 格式化与复制、关键词搜索等逻辑。
 
 `tests/e2e/*.spec.ts` 是 Playwright starter，当前项目未安装 Playwright 依赖；如需启用 E2E，需要先补齐依赖、脚本和运行环境。
 

@@ -4,7 +4,7 @@
 
 ## 本项目使用
 
-业务从 `@/adapters/table` 导入，自动接入 SchemaForm、中英文和主题。原有 ProTable 独立保留。
+业务从 `@/adapters/table` 导入，自动接入 SchemaForm、中英文和主题。表格默认参数在该适配层配置。
 
 ```vue
 <template><Grid /></template>

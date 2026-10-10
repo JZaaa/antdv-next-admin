@@ -10,7 +10,9 @@
 | `updateCheck` | 前端更新检测开关与检查间隔 | 仅代码，面板与缓存都不能覆盖 |
 | `preferences` | 主题、布局、动画、标签、语言、AI 分屏等默认值 | 开启个性化时允许用户覆盖 |
 | `layout` | 侧栏展开与收起宽度 | 仅代码 |
-| `proTable`、`input`、`select`、`datePicker`、`button` | 公共组件默认参数 | 仅代码，组件自身 props 可覆盖 |
+| `input`、`select`、`datePicker`、`button` | 公共组件默认参数 | 仅代码，组件自身 props 可覆盖 |
+
+VXE Table 的默认参数在 `src/adapters/table.ts` 中设置，页面通过 `gridOptions` 覆盖，详见 [表格库说明](../src/libs/table/README.md)。
 
 运行时按字段合并：**代码默认值 → 当前命名空间内合法的用户修改项 → 代码模块开关约束**。只保存与默认值不同的用户修改项，不把初始化得到的完整配置写回缓存。新增配置和未修改的字段可以直接获得新的代码默认值。
 
