@@ -130,4 +130,4 @@ boolean 或对象启用，keyField 默认 rowConfig.keyField 或 id。只接受�
 
 ## 验证
 
-宿主 `scripts/table` 包含真实 Chrome 100 合约、独立复制、admin/user 示例及三组性能对照。当前版本的升级验证见 [2026-10-10 升级记录](../../../docs/vxe-upgrade-2026-10-10.md)，包含 46 项表格场景、双账号示例及两个独立宿主。本次未重跑性能对照；`docs/spec/vxe-table-acceptance.md` 与能力审计表中的旧版本性能数据不代表当前版本。源码可透传不自动意味着任意业务组合都已验证。
+宿主 `scripts/table` 包含真实 Chrome 100 合约、独立复制、admin/user 示例及三组性能对照。当前版本的验证结果见 [CHANGELOG](./CHANGELOG.md)，包含 46 项表格场景、双账号示例及两个独立宿主。本次未重跑性能对照；`docs/spec/vxe-table-acceptance.md` 与能力审计表中的旧版本性能数据不代表当前版本。源码可透传不自动意味着任意业务组合都已验证。

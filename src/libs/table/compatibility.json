@@ -7,7 +7,7 @@
     "exampleScenariosPerRole": 14,
     "projectUnitTests": 335,
     "standaloneHosts": ["table", "table+form+bridge"],
-    "report": "docs/vxe-upgrade-2026-10-10.md"
+    "report": "src/libs/table/CHANGELOG.md"
   },
   "reference": {
     "repository": "vue-vben-admin",
