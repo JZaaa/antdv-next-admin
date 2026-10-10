@@ -132,7 +132,6 @@ tests/e2e/                # Playwright starter，依赖未安装
 
 | 组件            | 定位                                                                           |
 | --------------- | ------------------------------------------------------------------------------ |
-| ProForm         | 配置化表单，支持网格布局、校验、动态选项和自定义渲染                           |
 | ProModal        | 增强弹窗，支持拖拽、全屏和表单集成                                             |
 | ProDescriptions | 配置化描述列表                                                                 |
 | ProDetail       | 详情页布局和 Tabs                                                              |
@@ -144,7 +143,9 @@ tests/e2e/                # Playwright starter，依赖未安装
 | ProStatus       | dot/tag/badge 状态展示                                                         |
 | ProCodeEditor   | CodeMirror 代码编辑器                                                          |
 
-## 表格与值展示
+## 表单、表格与值展示
+
+业务表单使用 [SchemaForm](src/libs/form/README.md)，通过 `@/adapters/form` 的 `useSchemaForm` 接入项目国际化，支持网格布局、校验、联动和自定义控件。通用表单弹窗使用 `src/components/SchemaFormModal/index.vue`，基于 ProModal 和 SchemaForm 组合实现。
 
 业务表格使用 [VXE Table](src/libs/table/README.md)，通过 `@/adapters/table` 的 `useVxeGrid` 接入 SchemaForm、中英文和主题。搜索条件使用 `formOptions.schema`，列定义使用原生 VXE 的 `field`；默认查询结果结构为 `{ items, total }`。
 

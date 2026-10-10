@@ -67,7 +67,7 @@ npm run lab:form:check -- --standalone
 - 默认无场景参数运行原生引擎实验；`--tanstack` 运行 TanStack 实验。它们用于专项研究，`--require-capabilities` 可将能力缺口视为失败，`--require-guards` 要求补偿场景通过。
 - SchemaForm、实际页面及独立宿主的缺口、执行错误、浏览器异常、console.error 都使命令失败。
 
-上述表单专项流程均为手动执行，不接入 Build 或 Pages 自动 CI。两个工作流的单元测试也通过 `--exclude '**/*form*.spec.ts'` 排除表单测试，包含 SchemaForm、ProForm、表单会话及报告脚本测试；新增表单测试文件名需包含 `form`。浏览器报告保存实际版本、执行结果和截图，失败时尽量保存错误诊断。项目整体构建、类型、Lint 和 Chrome 100 静态检查仍正常检查完整源码。
+上述表单专项流程均为手动执行，不接入 Build 或 Pages 自动 CI。两个工作流的单元测试也通过 `--exclude '**/*form*.spec.ts'` 排除表单测试，包含 SchemaForm、分步表单、表单会话及报告脚本测试；新增表单测试文件名需包含 `form`。浏览器报告保存实际版本、执行结果和截图，失败时尽量保存错误诊断。项目整体构建、类型、Lint 和 Chrome 100 静态检查仍正常检查完整源码。
 
 ## 专项报告
 
