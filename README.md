@@ -7,13 +7,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8-purple.svg)](https://vite.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-公共性能优化的实现、配置与验证边界见 [公共框架性能优化](docs/framework-performance-optimization.md)。
-
 ## 预览
-
-作者: JZaaa · 联系邮箱: [lih6633319@gmail.com](mailto:lih6633319@gmail.com)
-
-GitHub: [JZaaa/antdv-next-admin](https://github.com/JZaaa/antdv-next-admin)
 
 在线体验: [https://jzaaa.github.io/antdv-next-admin](https://jzaaa.github.io/antdv-next-admin)
 
@@ -358,9 +352,6 @@ Vue 组件中的 Logo 通过 `APP_LOGO_URL` 读取 `import.meta.env.BASE_URL`。
 - 系统管理: 配置、字典、文件、日志
 - 示例中心: 快速开始、表单输入、内容编辑、基础交互、业务脚手架、安全工程、集成导航、异常页
 
-## 许可证
-
-MIT License。保留原作者 yelog 及相关模块的 Vben 版权声明，JZaaa 的修改贡献另行署名，详见根目录及各模块的 LICENSE。
 
 ## 致谢
 
