@@ -21,10 +21,13 @@
 import { Button } from 'antdv-next';
 import { shallowRef } from 'vue';
 
+import { $t } from '@/locales';
+
 import BasicDemo from './demos/BasicDemo.vue';
 import EditDemo from './demos/EditDemo.vue';
 import SearchDemo from './demos/SearchDemo.vue';
 import TreeDemo from './demos/TreeDemo.vue';
+import ValueDemo from './demos/ValueDemo.vue';
 import ViewedDemo from './demos/ViewedDemo.vue';
 import VirtualDemo from './demos/VirtualDemo.vue';
 const sources = import.meta.glob('./demos/*.vue', {
@@ -40,6 +43,14 @@ const virtual = sources['./demos/VirtualDemo.vue'];
 const viewed = sources['./demos/ViewedDemo.vue'];
 const demos = [
   { id: 'basic', title: '基础、列定制与插槽', component: BasicDemo, source: basic },
+  {
+    id: 'value',
+    get title() {
+      return $t('examples.cellValue.title');
+    },
+    component: ValueDemo,
+    source: sources['./demos/ValueDemo.vue'],
+  },
   { id: 'search', title: '远程搜索、分页与 Codec', component: SearchDemo, source: search },
   { id: 'edit', title: '行编辑、校验与保存', component: EditDemo, source: edit },
   { id: 'tree', title: '树形与选择', component: TreeDemo, source: tree },

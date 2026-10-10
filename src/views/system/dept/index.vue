@@ -228,11 +228,11 @@ const deptDescColumns = computed<ProDescriptionItem[]>(() => [
   { label: t('dept.deptName'), dataIndex: 'name' },
   { label: t('dept.parentDept'), dataIndex: 'parentName' },
   { label: t('dept.leader'), dataIndex: 'leader' },
-  { label: t('dept.phone'), dataIndex: 'phone' },
-  { label: t('dept.email'), dataIndex: 'email' },
+  { label: t('dept.phone'), dataIndex: 'phone', copyable: true },
+  { label: t('dept.email'), dataIndex: 'email', copyable: true },
   { label: t('dept.sort'), dataIndex: 'sort' },
-  { label: t('dept.createTime'), dataIndex: 'createTime' },
-  { label: t('dept.updateTime'), dataIndex: 'updateTime' },
+  { label: t('dept.createTime'), dataIndex: 'createTime', valueType: 'dateTime' },
+  { label: t('dept.updateTime'), dataIndex: 'updateTime', valueType: 'dateTime' },
   { label: t('dept.remark'), dataIndex: 'remark', span: 2 },
 ]);
 

@@ -4,6 +4,8 @@ import type { VxeUI } from 'vxe-pc-ui';
 import { Button, Image, Input, InputNumber, Select, Switch } from 'antdv-next';
 import { defineAsyncComponent, defineComponent, h } from 'vue';
 
+import { cellValueRenderer } from './table-value';
+
 interface OperationConfig {
   attrs?: { onClick?: (params: { code: unknown; row: Record<string, unknown> }) => void };
   options?: (string | Record<string, unknown>)[];
@@ -46,6 +48,7 @@ const OperationCell = defineComponent({
 });
 
 export function registerTableRenderers(ui: typeof VxeUI): void {
+  ui.renderer.add('CellValue', cellValueRenderer);
   ui.renderer.add('CellImage', {
     renderTableDefault({ props }, { row, column }) {
       return h(Image, { src: row[column.field], ...props });

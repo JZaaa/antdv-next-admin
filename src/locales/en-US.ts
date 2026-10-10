@@ -1228,6 +1228,19 @@ export default {
   'external.link.openVue': 'Open Vue',
 
   examples: {
+    cellValue: {
+      title: 'Value display / CellValue',
+      description:
+        'Reuse ValueDisplay through column configuration: nested fields, zero and empty values, copying and export. Choose original or displayed data in the export panel.',
+      update: 'Update first row',
+      status: 'Status (nested field)',
+      active: 'Active',
+      disabled: 'Disabled',
+      amount: 'Amount (copy display)',
+      boolean: 'Boolean (copy raw)',
+      percent: 'Percent (fraction)',
+      date: 'Time (UTC)',
+    },
     scaffold: {
       stateCache: {
         title: 'State & Cache Example',

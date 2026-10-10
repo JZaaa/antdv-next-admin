@@ -111,6 +111,7 @@ Table 不导入 Form。`useVxeGrid(options, factory)` 第二参数可注入 `Tab
 - `form-*` 去掉前缀交给表单；操作区 reset-before/submit-before/expand-before/expand-after 使用不带前缀入口，同名带前缀 slot 让位。
 - `formatDate` / `formatDateTime` 使用 Dayjs 默认时区；空值返回空串，非法值记录错误并返回原字符串。
 - 宿主渲染器 CellImage/CellLink 对应 web-antdv-next；CellOperation 提供按钮/actionCodes 桥接。它是本项目宿主扩展，不包含 Vben playground 的整套下拉菜单、删除确认及图标协议。
+- 宿主 `CellValue` 通过 `cellRender.props` 复用 [ValueDisplay](../../components/ValueDisplay/README.md)，支持嵌套 field、枚举、日期、金额、百分比和复制。默认导出展示文本，`original: true` 导出原值文本；类型 `CellValueProps`、`CellValueRenderOptions` 从 `@/adapters/table` 导出。它不属于独立库，详见 `/examples/vxe-table` 中的通用值展示示例。
 - 宿主 AntInput/AntNumber/AntSelect/AntDate/AntSwitch 编辑器只在编辑时创建，使用 update 事件写值；Select/DatePicker 的 body 浮层不会被当成外部点击而关闭编辑。
 
 `clearEdit` 只结束编辑。撤销用 keepSource + revertData；保存失败保留草稿，成功后 reloadRow 更新原始快照。示例用会话序号阻止取消后的旧保存回填。原生引擎可能直接修改传入行对象，要求不可变数据的业务自行提供可编辑副本。

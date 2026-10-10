@@ -197,7 +197,7 @@ const [Grid] = useVxeGrid<User, UserSearch>({
 
 表格默认配置位于 `src/adapters/table.ts`。完整示例入口为 `/examples/vxe-table`；高阶业务示例沿用 `/examples/pro-table-advanced` 地址，内部同样使用 VXE Table。
 
-通用字段展示使用 [ValueDisplay](src/components/ValueDisplay/README.md)，支持日期、金额、状态、空值和复制。`ProDescriptions` 已复用该组件；VXE 内可通过单元格插槽使用，尚未注册专用渲染器。
+通用字段展示使用 [ValueDisplay](src/components/ValueDisplay/README.md)，支持日期、金额、状态、空值和复制。`ProDescriptions` 已复用该组件；VXE 列可配置 `cellRender: { name: 'CellValue', props: { type: 'money' } }`，也可通过单元格插槽使用。`CellValue` 的嵌套字段、复制与导出示例位于 `/examples/vxe-table`。
 
 ## 权限用法
 

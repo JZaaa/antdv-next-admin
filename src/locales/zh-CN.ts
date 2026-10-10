@@ -1209,6 +1209,19 @@ export default {
   'external.link.openVue': '打开 Vue 官网',
 
   examples: {
+    cellValue: {
+      title: '通用值展示 / CellValue',
+      description:
+        '通过列配置复用 ValueDisplay，支持嵌套字段、零值与空值、复制和导出。导出面板可切换原始数据与展示数据。',
+      update: '更新首行',
+      status: '状态（嵌套字段）',
+      active: '启用',
+      disabled: '停用',
+      amount: '金额（复制展示文本）',
+      boolean: '布尔值（复制原值）',
+      percent: '百分比（小数比例）',
+      date: '时间（UTC）',
+    },
     scaffold: {
       stateCache: {
         title: '状态与缓存示例',

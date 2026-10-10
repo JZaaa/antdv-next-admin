@@ -69,3 +69,4 @@ export function useVxeGrid<
 }
 export { setupVxeTable, VxeUI } from '@/libs/table';
 export type * from '@/libs/table';
+export type { CellValueContext, CellValueProps, CellValueRenderOptions } from './table-value';

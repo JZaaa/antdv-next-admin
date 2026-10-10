@@ -1,6 +1,6 @@
 # ValueDisplay
 
-项目内通用值展示组件，供详情、弹窗和表格插槽复用。独立于 ProDescriptions 和 VXE；UI 使用 antdv-next，复制提示复用项目国际化及剪贴板工具。当前未注册 VXE 渲染器，也未改变 VXE 的日期格式化协议。
+项目内通用值展示组件，供详情、弹窗和表格插槽复用。独立于 ProDescriptions 和 VXE；UI 使用 antdv-next，复制提示复用项目国际化及剪贴板工具。VXE 宿主适配层已注册 `CellValue` 渲染器，复用此组件及文本格式化函数；原有 VXE 日期 formatter 的行为保持不变。
 
 ```vue
 <ValueDisplay :value="amount" type="money" :options="{ symbol: '¥', precision: 2 }" />
@@ -28,3 +28,29 @@
 - 原值复制中，数值与布尔值转为字符串；Date/Dayjs 转为 ISO 字符串；双元素数组的两端以 `~` 连接。不序列化任意业务对象。复制成功触发 `copy(text)`，失败提示并触发 `copyError`，失败后可重试。
 - 链接支持 http/https/mailto/tel 和相对路径，其他协议显示为普通文本。新窗口链接设置 noopener/noreferrer。
 - `ProDescriptions` 保留原 columns API，并映射到 ValueDisplay；`types/pro.ts` 暂时重新导出 ValueType，以兼容既有导入。组件和类型从本目录独立导入。
+
+## 在 VXE 中使用
+
+从 `@/adapters/table` 导入 `useVxeGrid` 时自动注册 `CellValue`，列的 `field` 提供值，`cellRender.props` 接收除 `value` 外的组件参数。`account.amount`、`items[0].name` 等嵌套路径沿用 VXE 使用的取值工具。
+
+```ts
+import type { CellValueRenderOptions } from '@/adapters/table';
+
+const amountColumn = {
+  field: 'account.amount',
+  title: '金额',
+  cellRender: {
+    name: 'CellValue',
+    props: { type: 'money', copyable: true, copyMode: 'display' },
+    events: {
+      copy: ({ row }, text) => console.log(row, text),
+    },
+  } satisfies CellValueRenderOptions,
+};
+```
+
+`events.copy(params, text)`、`events.copyError(params)` 遵循 VXE 的上下文优先约定，`params` 包含 `row`、`column`。可用 `CellValueRenderOptions<MyRow>` 指定行类型。
+
+默认导出使用展示文本，例如状态标签导出文案，金额导出带单位的文本，空值使用 `emptyText`。`original: true` 使用 `getRawText` 的原值文本规则，缺失值导出空串；`copyMode` 只影响复制，不影响导出。图片和链接导出地址，进度导出百分比文本。列自身的 `exportMethod` 可覆盖默认规则。展示格式化不改变排序、筛选或编辑所使用的原始行数据。
+
+`CellValue` 仅在项目适配层注册；单独复制 `src/libs/table` 不包含它，需要宿主自行接入。复杂交互继续使用插槽，业务操作和编辑控件沿用现有渲染器。
