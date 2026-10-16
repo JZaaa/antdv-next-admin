@@ -116,6 +116,35 @@ Table 不导入 Form。`useVxeGrid(options, factory)` 第二参数可注入 `Tab
 
 `clearEdit` 只结束编辑。撤销用 keepSource + revertData；保存失败保留草稿，成功后 reloadRow 更新原始快照。示例用会话序号阻止取消后的旧保存回填。原生引擎可能直接修改传入行对象，要求不可变数据的业务自行提供可编辑副本。
 
+## 渲染性能注意事项
+
+### 单行修改可能触发其他行的渲染回调
+
+上游讨论见 [#2749](https://github.com/x-extends/vxe-table/issues/2749) 和
+[#1704](https://github.com/x-extends/vxe-table/issues/1704)。本项目使用原生 VXE 渲染引擎，
+`useVxeGrid` 封装没有消除 renderer/slot 重复调用。不能假设修改一行只会执行这一行的单元格回调，
+也不能仅凭这些 issue 推断所有版本、配置和业务页面都存在相同程度的卡顿。
+
+**渲染函数/插槽调用、子组件 render、组件挂载和 DOM 更新是不同指标**；
+未变化的子组件可以复用，不能把回调执行次数解释为整张表重新挂载或全部 DOM 重建。
+
+### 编写单元格与更新数据
+
+- renderer、slot、formatter 及行/单元格样式回调应保持轻量、无副作用。不要在其中发请求、写响应式状态、
+  反复遍历全表或执行复杂权限计算；可复用的派生数据在数据处理层或有明确依赖的计算属性中准备。
+- 复杂单元格拆成独立组件，传入它实际需要的字段，保持未变化 props 的值或引用稳定。
+  避免每次渲染都构造新对象、数组或函数作为 props。这样可以减少子组件更新，不能保证 VXE 不再调用外层回调。
+- 宿主 `CellOperation` 已通过 `OperationCell` 隔离按钮渲染，但业务具名 slot 不会自动获得同样的隔离。
+  它传入的 `row`、`config` 以及按钮动态属性所读取的响应式依赖仍会影响更新，不能承诺操作列永不重渲染。
+- 为行设置稳定唯一的 `rowConfig.keyField`，保持无关行和列配置的引用稳定。局部编辑时避免无必要地重建全部
+  rows/columns，或反复调用 `setGridOptions`、`reload`；需要重新查询或重置状态时仍应遵守对应 API 契约。
+- 不要为了消除调用计数而直接把可编辑数据全部 `markRaw`，也不要只按会被原地修改的行对象引用做 memo 判断；
+  这可能遗漏字段变化。缓存必须覆盖真实字段依赖，避免界面数据陈旧。
+- 优先控制同时显示的行列和重型组件数量。普通列表使用合理分页；展示态尽量使用轻量内容，编辑器按需创建。
+  当前宿主 AntInput/AntNumber/AntSelect/AntDate/AntSwitch 已通过编辑 renderer 按需创建。
+- 大表格按业务场景配置固定视口及 `virtualYConfig` / `virtualXConfig`，确认虚拟滚动实际生效。
+  虚拟滚动限制渲染窗口，不保证窗口内回调只执行一次；复杂 slot、固定列、合并、树形和可变高度组合仍会影响渲染成本。
+
 ## 已读持久化
 
 boolean 或对象启用，keyField 默认 rowConfig.keyField 或 id。只接受现代 persist 对象：memory/localStorage/sessionStorage/indexedDB/custom。业务 key 应包含用户标识，模块不读取登录信息。viewedKeys 支持数组/Ref，增量合并；回调 rowClassName/rowStyle 与原行样式组合。CellOperation 的 actionCodes 递归覆盖分组子列，原业务回调一次。
