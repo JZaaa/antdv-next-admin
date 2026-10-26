@@ -3,10 +3,11 @@ import vue from "@vitejs/plugin-vue";
 import { readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import Components from "unplugin-vue-components/vite";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
 
 import pkg from "./package.json" with { type: "json" };
+import { compressionPlugin } from "./build/compression.ts";
 import { localIconAssetsPlugin } from "./build/local-icon-assets.ts";
 import { storageNamespacePlugin } from "./build/storage-namespace.ts";
 
@@ -23,13 +24,14 @@ const dependencyVersions = Object.fromEntries(
   }),
 );
 
-export default defineConfig({
-  base: "/",
+export default defineConfig(({ mode }) => ({
+  base: loadEnv(mode, process.cwd()).VITE_BASE || "/",
   define: {
     APP_VERSION: JSON.stringify(pkg.version),
     APP_DEPENDENCY_VERSIONS: JSON.stringify(dependencyVersions),
   },
   plugins: [
+    compressionPlugin(),
     storageNamespacePlugin(),
     localIconAssetsPlugin(),
     vue(),
@@ -102,4 +104,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

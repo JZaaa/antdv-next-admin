@@ -56,6 +56,46 @@ npm run lint && npm run format:check && npm run type-check && npm run test:unit:
 
 Chrome 100 防回归检查已接入 Build 和 Pages 工作流，使用 `pnpm install --frozen-lockfile` 安装依赖。完整检查可运行 `npm run check:ci`，最后生成 Demo 产物。规则范围、兼容例外和发布注意事项见 [Chrome 100 自动检查](docs/chrome-100-ci.md)。
 
+## 部署路径与路由模式
+
+在 `.env` 中配置默认部署路径和路由模式，也可在 `.env.development`、`.env.production` 或 `.env.demo` 中覆盖：
+
+```dotenv
+# 部署到域名根目录；子目录部署时改为 /admin/ 等路径，保留首尾斜杠
+VITE_BASE=/
+# 支持 history 和 hash，默认 history
+VITE_ROUTER_HISTORY=history
+```
+
+例如部署到 `https://example.com/admin/`，配置 `VITE_BASE=/admin/`。使用 `history` 时，登录地址为 `/admin/login`，服务器需要将前端路由回退到 `/admin/index.html`；使用 `hash` 时，登录地址为 `/admin/#/login`，无需配置前端路由回退。
+
+修改环境变量后需重启开发服务，或重新构建并部署。路由基路径和静态资源路径均跟随 Vite 最终解析的 `base`；构建命令中的 `--base` 仍可覆盖 `VITE_BASE`。`VITE_API_BASE_URL` 独立控制后端接口地址。
+
+## 构建预压缩
+
+在 `.env` 或对应环境文件中设置 `VITE_COMPRESS`，重新构建后生效：
+
+| 配置 | 生成的额外文件 |
+| --- | --- |
+| `VITE_COMPRESS=false` 或留空 | 关闭预压缩（默认） |
+| `VITE_COMPRESS=gzip` | `.gz` |
+| `VITE_COMPRESS=brotli` | `.br` |
+| `VITE_COMPRESS=gzip,brotli` | 同时生成 `.gz` 和 `.br` |
+
+仅构建时执行，生产和 Demo 构建均支持。原文件始终保留；处理最终输出目录中的 HTML、JS、MJS、CSS、JSON、SVG、TXT、XML（包含 `public` 复制的文件），跳过小于 1 KB 或压缩后没有变小的文件。gzip 等级为 9，Brotli 等级为 6；配置中的算法可以用逗号分隔并带空格，重复项会去重，不支持的值会使构建报错。
+
+预压缩将压缩计算提前到构建阶段，增加构建耗时和部署体积，减少服务器在线压缩的开销。服务器/CDN 必须支持按客户端的 `Accept-Encoding` 选择文件并返回正确的 `Content-Encoding`，资源引用仍使用原始 URL。
+
+Nginx 已安装相应模块时，可在 `http`、`server` 或 `location` 中配置：
+
+```nginx
+gzip_static on; # 使用已有 .gz，需要 http_gzip_static 模块
+gzip_vary on;   # 按 Accept-Encoding 区分缓存
+# brotli_static on; # 使用已有 .br，仅在已加载 Brotli 静态模块时启用
+```
+
+`gzip on` 控制动态压缩，不会自动读取构建生成的 `.gz`；可按需与 `gzip_static` 配合使用。部署时需同步上传原文件及其压缩版本。若托管平台不识别这些文件，开启预压缩不会改善实际传输。Vite 日志里的 `gzip: xx kB` 只是体积报告，不能据此判断预压缩或线上压缩是否启用。
+
 ## 技术栈
 
 - 核心框架: Vue 3.5、TypeScript 6、Vite 8、Pinia 3、Vue Router 5、vue-i18n 11

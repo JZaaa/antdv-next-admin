@@ -25,6 +25,9 @@ declare module '*.vue' {
 }
 
 interface ImportMetaEnv {
+  readonly VITE_BASE: string;
+  readonly VITE_ROUTER_HISTORY: 'history' | 'hash';
+  readonly VITE_COMPRESS: string;
   readonly VITE_APP_TITLE: string;
   readonly VITE_APP_NAMESPACE: string;
   readonly VITE_APP_CACHE_VERSION: string;
