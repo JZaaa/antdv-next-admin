@@ -1,7 +1,7 @@
 // The pinned VXE release ships ES subpaths without declarations. Reuse its
 // public component types instead of weakening them with ambient any modules.
 declare module 'vxe-pc-ui/es/ui' {
-  export { VxeUI, VxeUI as default } from 'vxe-pc-ui';
+  export { VxeUI as default } from 'vxe-pc-ui';
 }
 declare module 'vxe-pc-ui/es/button' {
   export { VxeButton, VxeButton as default } from 'vxe-pc-ui';

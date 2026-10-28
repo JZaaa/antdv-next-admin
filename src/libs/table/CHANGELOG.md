@@ -1,5 +1,9 @@
 # Changelog
 
+## 未发布
+
+- 升级至 vxe-table 4.23.12、vxe-pc-ui 4.20.33、@vxe-ui/core 4.5.3 和 xe-utils 4.1.4，同步独立复制依赖与示例版本。
+
 ## 1.0.0 — 2026-09-16
 
 - 唯一 useVxeGrid，原生 proxy/实例/事件/插槽、独立搜索桥接和已读存储。

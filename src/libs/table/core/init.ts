@@ -28,7 +28,7 @@ import { VxeRadioGroup } from 'vxe-pc-ui/es/radio-group';
 import { VxeSelect } from 'vxe-pc-ui/es/select';
 import { VxeSwitch } from 'vxe-pc-ui/es/switch';
 import { VxeTooltip } from 'vxe-pc-ui/es/tooltip';
-import { VxeUI } from 'vxe-pc-ui/es/ui';
+import VxeUI from 'vxe-pc-ui/es/ui';
 import { VxeUpload } from 'vxe-pc-ui/es/upload';
 import { VxeWatermark } from 'vxe-pc-ui/es/watermark';
 import { VxeTable, VxeColumn, VxeColgroup, VxeGrid, VxeToolbar } from 'vxe-table';

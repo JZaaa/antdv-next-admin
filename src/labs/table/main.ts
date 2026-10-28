@@ -228,7 +228,7 @@ const app = createApp(
       virtual = virtualApi;
       return () =>
         h('main', { style: 'padding:20px' }, [
-          h('h1', 'VXE Table 4.22.3 acceptance'),
+          h('h1', 'VXE Table 4.23.12 acceptance'),
           show.value ? h(Remote) : null,
           h(Local, localProps.value),
           h(Lazy),
@@ -1050,7 +1050,7 @@ async function run(): Promise<void> {
     assert(callCount === before + 1, 'remount count');
   });
   document.querySelector('#lab-report')!.textContent = JSON.stringify({
-    version: '4.22.3',
+    version: '4.23.12',
     userAgent: navigator.userAgent,
     results,
     trace,

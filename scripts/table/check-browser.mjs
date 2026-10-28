@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promi
 import { tmpdir, cpus, totalmem, platform, arch } from 'node:os';
 import { join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createServer, preview } from 'vite';
+import { createServer, loadEnv, preview } from 'vite';
 
 import { verifyExample } from './example-scenario.mjs';
 
@@ -16,6 +16,7 @@ const reference = process.argv.includes('--reference');
 const controls = process.argv.includes('--performance-controls');
 const performance = process.argv.includes('--performance') || controls;
 const example = process.argv.includes('--example');
+const examplePath = `${loadEnv(dev ? 'development' : 'demo', root).VITE_ROUTER_HISTORY === 'hash' ? '#/' : ''}examples/vxe-table`;
 const username = process.argv.includes('--user') ? 'user' : 'admin';
 const chrome = process.env.TABLE_LAB_CHROME ?? 'E:/chrome-history/chrome-100/chrome.exe';
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -125,7 +126,7 @@ try {
   await send(
     'Page.navigate',
     {
-      url: `http://localhost:${port}/${example ? 'examples/vxe-table' : reference || performance ? `labs/table/reference.html${performance ? '?performance=' + (controls ? 'controls' : '1') : ''}` : standalone ? 'index.html' : 'table-lab.html'}`,
+      url: `http://localhost:${port}/${example ? examplePath : reference || performance ? `labs/table/reference.html${performance ? '?performance=' + (controls ? 'controls' : '1') : ''}` : standalone ? 'index.html' : 'table-lab.html'}`,
     },
     session,
   );
